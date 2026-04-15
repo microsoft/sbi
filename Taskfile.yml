@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# docs: https://taskfile.dev
+---
+version: "3"
+
+set: [pipefail]
+
+vars:
+  PROJECT_NAME: sbi
+  BUILD_DEV_OUTPUT_DIR: bin/{{OS}}-{{ARCH}}
+  BUILD_DEV_ARTIFACT: "{{.BUILD_DEV_OUTPUT_DIR}}/{{.PROJECT_NAME}}{{exeExt}}"
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  deps:
+    desc: Tidy and download dependencies
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  deps:verify:
+    desc: Verify dependencies
+    cmds:
+      - go mod verify
+
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -o {{.BUILD_DEV_ARTIFACT}} .
+    sources:
+      - "**/*.go"
+      - go.mod
+      - go.sum
+    generates:
+      - "{{.BUILD_DEV_ARTIFACT}}"
+
+  build:verify:
+    desc: Verify build of all packages
+    cmds:
+      - go build -v ./...
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - go test -v -race -coverprofile=coverage.out ./...
+
+  test:short:
+    desc: Run short tests only
+    cmds:
+      - go test -short -race ./...
+
+  lint:
+    desc: Run all linters
+    cmds:
+      - task: lint:go
+      - task: lint:md
+      - task: lint:yaml
+      - task: vulncheck
+
+  lint:go:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run --fix
+    sources:
+      - "**/*.go"
+      - "**/*.mod"
+      - "**/*.sum"
+
+  lint:check:
+    desc: Run golangci-lint without fixing
+    cmds:
+      - golangci-lint run
+
+  lint:md:
+    desc: Lint markdown files
+    cmds:
+      - npx --yes markdownlint-cli "**/*.md" --ignore node_modules --fix
+
+  lint:yaml:
+    desc: Lint YAML files
+    cmds:
+      - npx --yes yaml-lint .github/workflows/*.yml Taskfile.yml .goreleaser.yml
+
+  vulncheck:
+    desc: Run Go vulnerability check
+    cmds:
+      - govulncheck -test -show verbose ./...
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf bin/ dist/ coverage.* testresults.json
+
+  scan:
+    desc: Run a scan with default settings
+    deps: [build]
+    cmds:
+      - "{{.BUILD_DEV_ARTIFACT}} scan --verbose"
+
+  report:
+    desc: Generate report from existing database
+    deps: [build]
+    cmds:
+      - "{{.BUILD_DEV_ARTIFACT}} report"
+
+  all:
+    desc: Run deps, lint, test, and build
+    cmds:
+      - task: deps
+      - task: lint
+      - task: test
+      - task: build
