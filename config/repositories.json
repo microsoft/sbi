@@ -1,0 +1,92 @@
+{
+  "defaults": {
+    "registry": "mcr.microsoft.com",
+    "maxTags": 0
+  },
+  "tagFilter": {
+    "skipExact": ["latest", "dev", "nightly", "edge", "rc", "beta", "alpha"],
+    "excludeKeywords": ["debug", "test", "experimental", "arm", "amd", "azl"],
+    "excludePatterns": ["(?i)[-.]?(alpha|beta|rc|preview|dev|nightly|canary)[\\d.]*$"],
+    "requireDigit": true
+  },
+  "repositories": [
+    {
+      "description": "Base / minimal images (no runtime)",
+      "category": "base",
+      "images": [
+        "mcr.microsoft.com/azurelinux/base/core:3.0",
+        "mcr.microsoft.com/azurelinux/distroless/base:3.0",
+        "mcr.microsoft.com/azurelinux/distroless/minimal:3.0"
+      ]
+    },
+    {
+      "description": "Azure Linux Python and Node.js images",
+      "images": [
+        "azurelinux/base/python",
+        "azurelinux/base/nodejs"
+      ]
+    },
+    {
+      "description": "Azure Linux distroless runtime images",
+      "images": [
+        "azurelinux/distroless/python",
+        "azurelinux/distroless/nodejs"
+      ]
+    },
+    {
+      "description": ".NET Azure Linux images",
+      "images": [
+        "mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0",
+        "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0"
+      ]
+    },
+    {
+      "description": ".NET Ubuntu (Noble) images",
+      "images": [
+        "mcr.microsoft.com/dotnet/aspnet:10.0-noble",
+        "mcr.microsoft.com/dotnet/aspnet:9.0-noble",
+        "mcr.microsoft.com/dotnet/aspnet:8.0-noble",
+        "mcr.microsoft.com/dotnet/runtime:10.0-noble",
+        "mcr.microsoft.com/dotnet/runtime:9.0-noble",
+        "mcr.microsoft.com/dotnet/runtime:8.0-noble",
+        "mcr.microsoft.com/dotnet/sdk:10.0-noble",
+        "mcr.microsoft.com/dotnet/sdk:9.0-noble",
+        "mcr.microsoft.com/dotnet/sdk:8.0-noble"
+      ]
+    },
+    {
+      "description": ".NET Debian images",
+      "images": [
+        "mcr.microsoft.com/dotnet/aspnet:8.0",
+        "mcr.microsoft.com/dotnet/runtime:8.0",
+        "mcr.microsoft.com/dotnet/sdk:8.0"
+      ]
+    },
+    {
+      "description": "Go images",
+      "images": [
+        "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0",
+        "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0"
+      ]
+    },
+    {
+      "description": "OpenJDK images",
+      "images": [
+        "mcr.microsoft.com/openjdk/jdk:25-azurelinux",
+        "mcr.microsoft.com/openjdk/jdk:25-distroless",
+        "mcr.microsoft.com/openjdk/jdk:25-ubuntu",
+        "mcr.microsoft.com/openjdk/jdk:21-azurelinux",
+        "mcr.microsoft.com/openjdk/jdk:21-distroless",
+        "mcr.microsoft.com/openjdk/jdk:21-ubuntu",
+        "mcr.microsoft.com/openjdk/jdk:17-distroless",
+        "mcr.microsoft.com/openjdk/jdk:17-ubuntu",
+        "mcr.microsoft.com/openjdk/jdk:11-distroless"
+      ]
+    }
+  ]
+}

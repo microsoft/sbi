@@ -1,32 +1,46 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
-# Binaries for programs and plugins
+# Binaries
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+secure-base-image-daily-recommendations
 
-# Test binary, built with `go test -c`
-*.test
+# Build
+bin/
+dist/
+build/
 
-# Code coverage profiles and other test artifacts
-*.out
+# Test
 coverage.*
-*.coverprofile
-profile.cov
+testresults.json
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+# IDE
+.idea/
+.vscode/
+__debug*
 
-# Go workspace file
-go.work
-go.work.sum
+# OS
+**/.DS_Store
 
-# env file
+# Environment
+*.env
 .env
+.dev/
+_dev/
 
-# Editor/IDE
-# .idea/
-# .vscode/
+# Task
+.task/
+
+# Database (tracked via LFS)
+*.db
+!azure_linux_images.db
+
+# Analysis artifacts
+syft-analysis/
+trivy-analysis/
+docker-analysis/
+
+# Local test reports (nightly reports are committed by CI)
+docs/daily_recommendations.md
+docs/daily_recommendations.json

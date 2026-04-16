@@ -1,0 +1,109 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+---
+name: Nightly Registry Scan
+
+on:
+  schedule:
+    - cron: "0 2 * * *"  # 02:00 UTC nightly
+  workflow_dispatch: {}
+
+concurrency:
+  group: nightly-registry-scan
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  scan-and-update:
+    name: 🔍 Scan & Update
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    permissions:
+      contents: write
+    steps:
+      - name: 🔑 Generate App Token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: ⤵️ Checkout (with LFS)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: 🚧 Setup Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: 🚧 Setup Task
+        uses: go-task/setup-task@3be4020d41929789a01026e0e427a4321ce0ad44 # v2.0.0
+
+      - name: 🔀 Download dependencies
+        run: go mod download
+
+      - name: 🏗️ Build
+        run: task build
+
+      - name: 📌 Load tool versions
+        run: |
+          source .github/tool-versions.sh
+          echo "SYFT_VERSION=$SYFT_VERSION" >> "$GITHUB_ENV"
+          echo "SYFT_INSTALLER_SHA=$SYFT_INSTALLER_SHA" >> "$GITHUB_ENV"
+          echo "TRIVY_VERSION=$TRIVY_VERSION" >> "$GITHUB_ENV"
+          echo "TRIVY_INSTALLER_SHA=$TRIVY_INSTALLER_SHA" >> "$GITHUB_ENV"
+
+      - name: 🔧 Install Syft
+        run: |
+          curl -sSfL "https://raw.githubusercontent.com/anchore/syft/${SYFT_INSTALLER_SHA}/install.sh" | sh -s -- -b /usr/local/bin "${SYFT_VERSION}"
+
+      - name: 🔧 Install Trivy
+        run: |
+          curl -sSfL "https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_INSTALLER_SHA}/contrib/install.sh" | sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+
+      - name: 🐳 Docker info
+        run: docker info
+
+      - name: 🔍 Run nightly scan
+        run: |
+          ./bin/linux-amd64/sbi scan \
+            --database azure_linux_images.db \
+            --config-dir config \
+            --output docs/daily_recommendations.md \
+            --max-tags 0 \
+            --comprehensive \
+            --update-existing \
+            -v
+
+      - name: 📊 Show database stats
+        run: |
+          ls -lh azure_linux_images.db || true
+          sqlite3 azure_linux_images.db 'SELECT COUNT(*) as images FROM images;' || true
+
+      - name: 📝 Commit & push updates
+        if: success()
+        run: |
+          git config user.name 'sbi-nightly-bot[bot]'
+          git config user.email '${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          git add -f azure_linux_images.db docs/daily_recommendations.md docs/daily_recommendations.json || true
+          if [ -n "$(git diff --cached --name-only)" ]; then
+            CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
+            echo "Changed files: $CHANGED_FILES"
+            git commit -m "chore: update nightly scan results [skip ci]"
+            git push
+          else
+            echo 'No changes to commit.'
+          fi
+
+      - name: 📤 Upload database artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nightly-database
+          path: azure_linux_images.db
+          retention-days: 5

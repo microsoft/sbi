@@ -1,0 +1,50 @@
+{
+  "name": "Secure Base Image Daily Recommendations",
+  "image": "mcr.microsoft.com/devcontainers/go:1.26-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": false
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
+      "jqVersion": "latest",
+      "yqVersion": "latest"
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "onCreateCommand": {
+    "install-tools": ".devcontainer/install-tools.sh"
+  },
+  "postCreateCommand": {
+    "git-safe-dir": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "go-deps": "go mod download"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": ["--fast"]
+      },
+      "extensions": [
+        "golang.go",
+        "task.vscode-task",
+        "editorconfig.editorconfig",
+        "redhat.vscode-yaml",
+        "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "github.copilot",
+        "github.copilot-chat",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "usernamehw.errorlens"
+      ]
+    }
+  }
+}

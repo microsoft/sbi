@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+---
+name: Reset Database
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: reset-database
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  reset-db:
+    name: 🗑️ Reset DB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: 🔑 Generate App Token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: ⤵️ Checkout (with LFS)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: 🚧 Setup Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: 🚧 Setup Task
+        uses: go-task/setup-task@3be4020d41929789a01026e0e427a4321ce0ad44 # v2.0.0
+
+      - name: 🔀 Download dependencies
+        run: go mod download
+
+      - name: 🏗️ Build
+        run: task build
+
+      - name: 🗑️ Clear database entries
+        run: |
+          ./bin/linux-amd64/sbi reset-db \
+            --database azure_linux_images.db \
+            -v
+
+      - name: 📝 Commit & push reset outputs
+        if: success()
+        run: |
+          git config user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config user.email '${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          git add -f azure_linux_images.db || true
+          if [ -n "$(git diff --cached --name-only)" ]; then
+            CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
+            echo "Changed files: $CHANGED_FILES"
+            git commit -m "chore: reset database entries [skip ci]"
+            git push
+          else
+            echo 'No changes to commit.'
+          fi
