@@ -131,6 +131,22 @@ jobs:
             return 1
           }
 
+          emit_manual_pr_summary() {
+            local message="$1"
+            local manual_pr_url="https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}"
+
+            echo "::warning::${message}"
+            echo "::warning::Open a PR manually: ${manual_pr_url}"
+            {
+              echo "## Nightly scan results pushed"
+              echo ""
+              echo "${message}"
+              echo ""
+              echo "- Branch: \`${BRANCH}\`"
+              echo "- Open PR manually: ${manual_pr_url}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          }
+
           # Validate expected scan artifacts exist
           MISSING=()
           for f in "${NIGHTLY_ALLOWED_FILES[@]}"; do
@@ -201,15 +217,39 @@ jobs:
           # Create PR if one doesn't already exist (scoped to this repo, not forks)
           EXISTING_PR=$(gh pr list --head "${{ github.repository_owner }}:$BRANCH" --base "$DEFAULT_BRANCH" --state open --json number --jq '.[0].number // empty')
           if [ -z "$EXISTING_PR" ]; then
-            gh pr create \
+            set +e
+            PR_OUTPUT=$(gh pr create \
               --base "$DEFAULT_BRANCH" \
               --head "$BRANCH" \
               --title "$PR_TITLE" \
-              --body-file /tmp/nightly-pr-body.md
+              --body-file /tmp/nightly-pr-body.md 2>&1)
+            PR_STATUS=$?
+            set -e
+
+            if [ $PR_STATUS -eq 0 ]; then
+              printf '%s\n' "$PR_OUTPUT"
+            elif printf '%s' "$PR_OUTPUT" | grep -F -q 'GitHub Actions is not permitted to create or approve pull requests'; then
+              emit_manual_pr_summary "GitHub Actions could not create a pull request with GITHUB_TOKEN."
+            else
+              printf '%s\n' "$PR_OUTPUT" >&2
+              exit $PR_STATUS
+            fi
           else
-            gh pr edit "$EXISTING_PR" \
+            set +e
+            PR_OUTPUT=$(gh pr edit "$EXISTING_PR" \
               --title "$PR_TITLE" \
-              --body-file /tmp/nightly-pr-body.md
+              --body-file /tmp/nightly-pr-body.md 2>&1)
+            PR_STATUS=$?
+            set -e
+
+            if [ $PR_STATUS -eq 0 ]; then
+              printf '%s\n' "$PR_OUTPUT"
+            elif printf '%s' "$PR_OUTPUT" | grep -F -q 'GitHub Actions is not permitted to create or approve pull requests'; then
+              emit_manual_pr_summary "GitHub Actions could not update PR #${EXISTING_PR} with GITHUB_TOKEN."
+            else
+              printf '%s\n' "$PR_OUTPUT" >&2
+              exit $PR_STATUS
+            fi
           fi
 
       - name: 📤 Upload database artifact
