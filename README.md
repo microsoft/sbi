@@ -79,7 +79,7 @@ task build
 | ---- | ------- | ----------- |
 | `--max-tags` | 5 | Maximum tags per repository (0 = all) |
 | `--comprehensive` | false | Enable comprehensive scanning (secrets + misconfigs) |
-| `--update-existing` | false | Rescan images already in the database |
+| `--update-existing` | false | Rescan existing images |
 | `--no-cleanup` | false | Keep Docker images after scanning |
 
 ## Configuration
