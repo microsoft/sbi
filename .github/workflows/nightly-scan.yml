@@ -178,7 +178,12 @@ jobs:
           CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
           echo "Changed files: $CHANGED_FILES"
           git commit -m "chore: update nightly scan results"
-          git push --force-with-lease origin "$BRANCH"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch --no-tags origin "$BRANCH:refs/remotes/origin/$BRANCH"
+            git push --force-with-lease origin "$BRANCH"
+          else
+            git push --set-upstream origin "$BRANCH"
+          fi
 
           printf '%s\n' \
             "Automated nightly scan results update." \
