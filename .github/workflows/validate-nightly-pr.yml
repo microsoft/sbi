@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+---
+name: Validate Nightly PR
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  validate-nightly-pr:
+    name: 🔒 Validate Nightly PR Files
+    if: >-
+      github.event.pull_request.base.ref == github.event.repository.default_branch &&
+      github.head_ref == 'nightly-scan-results' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: ⤵️ Checkout allowlist from base branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          sparse-checkout: .github/nightly-allowed-files.sh
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: 📋 Check modified files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source .github/nightly-allowed-files.sh
+
+          # Get the list of changed files in this PR
+          CHANGED_FILES=$(gh api \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            --paginate --jq '.[].filename')
+
+          UNEXPECTED=()
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            allowed=false
+            for af in "${NIGHTLY_ALLOWED_FILES[@]}"; do
+              if [ "$file" = "$af" ]; then
+                allowed=true
+                break
+              fi
+            done
+            if [ "$allowed" = "false" ]; then
+              UNEXPECTED+=("$file")
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ ${#UNEXPECTED[@]} -gt 0 ]; then
+            echo "::error::Nightly scan PR contains unexpected files:"
+            printf '  - %s\n' "${UNEXPECTED[@]}"
+            echo ""
+            echo "Only the following files are allowed:"
+            printf '  - %s\n' "${NIGHTLY_ALLOWED_FILES[@]}"
+            exit 1
+          fi
+
+          echo "✅ All changed files are in the allowed set:"
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            printf '  - %s\n' "$file"
+          done <<< "$CHANGED_FILES"
