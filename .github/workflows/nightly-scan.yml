@@ -133,17 +133,18 @@ jobs:
 
           emit_manual_pr_summary() {
             local message="$1"
-            local manual_pr_url="https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}"
+            local action_url="${2:-https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}}"
+            local action_label="${3:-Open PR manually}"
 
             echo "::warning::${message}"
-            echo "::warning::Open a PR manually: ${manual_pr_url}"
+            echo "::warning::${action_label}: ${action_url}"
             {
               echo "## Nightly scan results pushed"
               echo ""
               echo "${message}"
               echo ""
               echo "- Branch: \`${BRANCH}\`"
-              echo "- Open PR manually: ${manual_pr_url}"
+              echo "- ${action_label}: ${action_url}"
             } >> "$GITHUB_STEP_SUMMARY"
           }
 
@@ -245,7 +246,10 @@ jobs:
             if [ $PR_STATUS -eq 0 ]; then
               printf '%s\n' "$PR_OUTPUT"
             elif printf '%s' "$PR_OUTPUT" | grep -F -q 'GitHub Actions is not permitted to create or approve pull requests'; then
-              emit_manual_pr_summary "GitHub Actions could not update PR #${EXISTING_PR} with GITHUB_TOKEN."
+              emit_manual_pr_summary \
+                "GitHub Actions could not update PR #${EXISTING_PR} with GITHUB_TOKEN." \
+                "https://github.com/${GITHUB_REPOSITORY}/pull/${EXISTING_PR}" \
+                "Review existing PR manually"
             else
               printf '%s\n' "$PR_OUTPUT" >&2
               exit $PR_STATUS
