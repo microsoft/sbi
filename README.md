@@ -61,16 +61,26 @@ task build
 
 ### CLI Flags
 
+**Global flags** (available on all subcommands):
+
 | Flag | Default | Description |
 | ---- | ------- | ----------- |
 | `--database` | `azure_linux_images.db` | Path to SQLite database |
 | `--config-dir` | `config` | Path to configuration directory |
-| `--output` | `docs/daily_recommendations.md` | Path to output report |
-| `--top-n` | 10 | Number of top images per language |
-| `--max-tags` | 5 | Maximum tags per repository (0 = all) |
-| `--comprehensive` | false | Enable secrets + misconfig scanning |
-| `--update-existing` | false | Rescan images already in the database |
+| `--output` | `docs/daily_recommendations.md` | Path to output report file |
+| `--top-n` | 10 | Number of top images per language per base OS (0 = all) |
+| `--json-top-n` | 20 | Number of top images per language per base OS in JSON report (0 = all) |
 | `--verbose, -v` | false | Enable verbose output |
+| `--debug, -d` | false | Enable debug output |
+
+**`scan` flags:**
+
+| Flag | Default | Description |
+| ---- | ------- | ----------- |
+| `--max-tags` | 5 | Maximum tags per repository (0 = all) |
+| `--comprehensive` | false | Enable comprehensive scanning (secrets + misconfigs) |
+| `--update-existing` | false | Rescan existing images |
+| `--no-cleanup` | false | Keep Docker images after scanning |
 
 ## Configuration
 
