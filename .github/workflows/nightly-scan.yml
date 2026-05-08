@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     permissions:
-      contents: write
+      contents: read
     steps:
       # Authentication: uses a deploy key (SSH) for direct push to main.
       # The deploy key must be added as a bypass actor in the branch
@@ -163,6 +163,10 @@ jobs:
           CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
           echo "Changed files: $CHANGED_FILES"
           git commit -m "chore: update nightly scan results [skip ci]"
+
+          # Rebase onto latest main to avoid non-fast-forward failures
+          # if commits landed during the long-running scan.
+          git pull --rebase origin main
           git push
 
       - name: 📤 Upload database artifact
