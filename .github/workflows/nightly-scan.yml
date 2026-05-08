@@ -19,15 +19,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     steps:
-      # TODO: Replace GITHUB_TOKEN with a GitHub App token once available.
-      #       See https://github.com/microsoft/sbi/issues/6
+      # Authentication: uses a deploy key (SSH) for direct push to main.
+      # The deploy key must be added as a bypass actor in the branch
+      # protection ruleset. See https://github.com/microsoft/sbi/issues/6
 
       - name: ⤵️ Checkout (with LFS)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ssh-key: ${{ secrets.NIGHTLY_WRITE_BOT_KEY }}
           lfs: true
           fetch-depth: 0
 
@@ -40,16 +41,6 @@ jobs:
             echo "::error::Run workflow_dispatch from ${DEFAULT_BRANCH} only."
             exit 1
           fi
-
-      - name: 🔄 Fetch default branch explicitly
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        run: git fetch --no-tags origin "${DEFAULT_BRANCH}:refs/remotes/origin/${DEFAULT_BRANCH}"
-
-      - name: 🌿 Prepare nightly results branch
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        run: git checkout -B nightly-scan-results "origin/${DEFAULT_BRANCH}"
 
       - name: 🚧 Setup Go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
@@ -101,17 +92,11 @@ jobs:
           ls -lh azure_linux_images.db || true
           sqlite3 azure_linux_images.db 'SELECT COUNT(*) as images FROM images;' || true
 
-      - name: 📝 Create PR with scan results
+      - name: 📝 Commit & push updates
         if: success()
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-
-          BRANCH="nightly-scan-results"
-          PR_TITLE="chore: update nightly scan results"
 
           # Source the shared allowlist from the trusted triggering commit
           # so earlier tooling cannot taint the file list.
@@ -129,23 +114,6 @@ jobs:
             done
 
             return 1
-          }
-
-          emit_manual_pr_summary() {
-            local message="$1"
-            local action_url="${2:-https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}}"
-            local action_label="${3:-Open PR manually}"
-
-            echo "::warning::${message}"
-            echo "::warning::${action_label}: ${action_url}"
-            {
-              echo "## Nightly scan results pushed"
-              echo ""
-              echo "${message}"
-              echo ""
-              echo "- Branch: \`${BRANCH}\`"
-              echo "- ${action_label}: ${action_url}"
-            } >> "$GITHUB_STEP_SUMMARY"
           }
 
           # Validate expected scan artifacts exist
@@ -184,7 +152,7 @@ jobs:
             exit 0
           fi
 
-          # Inline path validation: ensure only expected files are staged
+          # Final staged-file validation
           while IFS= read -r -d '' file; do
             if ! is_allowed_file "$file"; then
               echo "::error::Unexpected file staged: $file"
@@ -194,67 +162,12 @@ jobs:
 
           CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
           echo "Changed files: $CHANGED_FILES"
-          git commit -m "chore: update nightly scan results"
-          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-            git fetch --no-tags origin "$BRANCH:refs/remotes/origin/$BRANCH"
-            git push --force-with-lease origin "$BRANCH"
-          else
-            git push --set-upstream origin "$BRANCH"
-          fi
+          git commit -m "chore: update nightly scan results [skip ci]"
 
-          printf '%s\n' \
-            "Automated nightly scan results update." \
-            "" \
-            "This PR was created by the nightly scan workflow and contains updated:" \
-            '- `azure_linux_images.db` — scan database' \
-            '- `docs/daily_recommendations.md` — markdown report' \
-            '- `docs/daily_recommendations.json` — JSON report' \
-            "" \
-            "> **Note:** PRs created by GITHUB_TOKEN do not trigger other workflows (GitHub limitation)." \
-            "> If required status checks are configured, you may need to manually re-push or close/reopen" \
-            "> the PR to trigger them. See https://github.com/microsoft/sbi/issues/6 for details." \
-            > /tmp/nightly-pr-body.md
-
-          # Create PR if one doesn't already exist (scoped to this repo, not forks)
-          EXISTING_PR=$(gh pr list --head "${{ github.repository_owner }}:$BRANCH" --base "$DEFAULT_BRANCH" --state open --json number --jq '.[0].number // empty')
-          if [ -z "$EXISTING_PR" ]; then
-            set +e
-            PR_OUTPUT=$(gh pr create \
-              --base "$DEFAULT_BRANCH" \
-              --head "$BRANCH" \
-              --title "$PR_TITLE" \
-              --body-file /tmp/nightly-pr-body.md 2>&1)
-            PR_STATUS=$?
-            set -e
-
-            if [ $PR_STATUS -eq 0 ]; then
-              printf '%s\n' "$PR_OUTPUT"
-            elif printf '%s' "$PR_OUTPUT" | grep -F -q 'GitHub Actions is not permitted to create or approve pull requests'; then
-              emit_manual_pr_summary "GitHub Actions could not create a pull request with GITHUB_TOKEN."
-            else
-              printf '%s\n' "$PR_OUTPUT" >&2
-              exit $PR_STATUS
-            fi
-          else
-            set +e
-            PR_OUTPUT=$(gh pr edit "$EXISTING_PR" \
-              --title "$PR_TITLE" \
-              --body-file /tmp/nightly-pr-body.md 2>&1)
-            PR_STATUS=$?
-            set -e
-
-            if [ $PR_STATUS -eq 0 ]; then
-              printf '%s\n' "$PR_OUTPUT"
-            elif printf '%s' "$PR_OUTPUT" | grep -F -q 'GitHub Actions is not permitted to create or approve pull requests'; then
-              emit_manual_pr_summary \
-                "GitHub Actions could not update PR #${EXISTING_PR} with GITHUB_TOKEN." \
-                "https://github.com/${GITHUB_REPOSITORY}/pull/${EXISTING_PR}" \
-                "Review existing PR manually"
-            else
-              printf '%s\n' "$PR_OUTPUT" >&2
-              exit $PR_STATUS
-            fi
-          fi
+          # Rebase onto latest main to avoid non-fast-forward failures
+          # if commits landed during the long-running scan.
+          git pull --rebase origin main
+          git push
 
       - name: 📤 Upload database artifact
         if: always()
