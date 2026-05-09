@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-08T14:30:33Z",
+  "generatedAt": "2026-05-09T03:11:01Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -204,10 +204,10 @@
       "totalVulnerabilities": 148,
       "sizeBytes": 202375168,
       "sizeHuman": "193.0 MB",
-      "digest": "sha256:24117fb11f2f27bdacc6f1ffab16e3a7cddd2417b4eae5e6bc825810a0d1746d",
-      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:8.0@sha256:24117fb11f2f27bdacc6f1ffab16e3a7cddd2417b4eae5e6bc825810a0d1746d",
+      "digest": "sha256:513ab9d7d5cbc75e81fa933113a688d00a178a18ffa54c5631eed92902498e87",
+      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:8.0@sha256:513ab9d7d5cbc75e81fa933113a688d00a178a18ffa54c5631eed92902498e87",
       "stableTag": "mcr.microsoft.com/dotnet/runtime:8.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:8.0@sha256:24117fb11f2f27bdacc6f1ffab16e3a7cddd2417b4eae5e6bc825810a0d1746d"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:8.0@sha256:513ab9d7d5cbc75e81fa933113a688d00a178a18ffa54c5631eed92902498e87"
     },
     {
       "rank": 2,
@@ -220,10 +220,10 @@
       "totalVulnerabilities": 148,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
-      "digest": "sha256:f88c77644f4c480a62d3b46dc74db8d5472a24e282df8b1e56195c689d35a6db",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:8.0@sha256:f88c77644f4c480a62d3b46dc74db8d5472a24e282df8b1e56195c689d35a6db",
+      "digest": "sha256:1657ced1f4019bf174ff6ca844ad2545af44e787c135549a843f6a6d609d1c0e",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:8.0@sha256:1657ced1f4019bf174ff6ca844ad2545af44e787c135549a843f6a6d609d1c0e",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:8.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:f88c77644f4c480a62d3b46dc74db8d5472a24e282df8b1e56195c689d35a6db"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:1657ced1f4019bf174ff6ca844ad2545af44e787c135549a843f6a6d609d1c0e"
     },
     {
       "rank": 3,
@@ -236,10 +236,10 @@
       "totalVulnerabilities": 280,
       "sizeBytes": 891289600,
       "sizeHuman": "850.0 MB",
-      "digest": "sha256:4b1cdaa57eed2cecabcf29bdb9bce11e8ca1c287d39dfd2c8b534663ea94d493",
-      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:8.0@sha256:4b1cdaa57eed2cecabcf29bdb9bce11e8ca1c287d39dfd2c8b534663ea94d493",
+      "digest": "sha256:27ee23dc62a99643cfab2dc291582b6f2611ddc2598a0ff0958ddd0972012e52",
+      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:8.0@sha256:27ee23dc62a99643cfab2dc291582b6f2611ddc2598a0ff0958ddd0972012e52",
       "stableTag": "mcr.microsoft.com/dotnet/sdk:8.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:4b1cdaa57eed2cecabcf29bdb9bce11e8ca1c287d39dfd2c8b534663ea94d493"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:27ee23dc62a99643cfab2dc291582b6f2611ddc2598a0ff0958ddd0972012e52"
     },
     {
       "rank": 1,
@@ -384,6 +384,38 @@
       "pinnedReference": "mcr.microsoft.com/dotnet/sdk:8.0-noble@sha256:a91a987babf792bfe535ad5d85e94c492f66ffc2efc25aea343432a5bd606e93",
       "stableTag": "mcr.microsoft.com/dotnet/sdk:8.0",
       "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:8.0-noble@sha256:a91a987babf792bfe535ad5d85e94c492f66ffc2efc25aea343432a5bd606e93"
+    },
+    {
+      "rank": 1,
+      "language": "go",
+      "baseOS": "Azure Linux",
+      "name": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0",
+      "version": "1.25.10",
+      "criticalVulnerabilities": 0,
+      "highVulnerabilities": 0,
+      "totalVulnerabilities": 0,
+      "sizeBytes": 861929472,
+      "sizeHuman": "822.0 MB",
+      "digest": "sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1",
+      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1",
+      "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:1.25",
+      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1"
+    },
+    {
+      "rank": 2,
+      "language": "go",
+      "baseOS": "Azure Linux",
+      "name": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0",
+      "version": "1.26.3",
+      "criticalVulnerabilities": 0,
+      "highVulnerabilities": 0,
+      "totalVulnerabilities": 0,
+      "sizeBytes": 895483904,
+      "sizeHuman": "854.0 MB",
+      "digest": "sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb",
+      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb",
+      "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:1.26",
+      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb"
     },
     {
       "rank": 1,
@@ -569,13 +601,13 @@
       "version": "3.12.9",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 72,
+      "totalVulnerabilities": 0,
       "sizeBytes": 861929472,
       "sizeHuman": "822.0 MB",
-      "digest": "sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06",
-      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06",
+      "digest": "sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1",
+      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1",
       "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06"
+      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:1c574d476ff9e75e5d0ecca45476cf9a02d9d725c7be5be67260289c2ca115c1"
     },
     {
       "rank": 4,
@@ -585,13 +617,13 @@
       "version": "3.12.9",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 80,
+      "totalVulnerabilities": 0,
       "sizeBytes": 895483904,
       "sizeHuman": "854.0 MB",
-      "digest": "sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1",
-      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1",
+      "digest": "sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb",
+      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb",
       "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1"
+      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:29d44da27f9e66f74e24673a79e86a53bfe575752014611df58e910ce135f6fb"
     },
     {
       "rank": 5,
@@ -720,38 +752,6 @@
       "pinnedReference": "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:13b64ec155e9aefa220263957b6d86f1add651106fc5df3cbecacb7a74eb3b06",
       "stableTag": "mcr.microsoft.com/dotnet/sdk:3.12",
       "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:13b64ec155e9aefa220263957b6d86f1add651106fc5df3cbecacb7a74eb3b06"
-    },
-    {
-      "rank": 1,
-      "language": "go",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0",
-      "version": "1.25.9",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 0,
-      "totalVulnerabilities": 72,
-      "sizeBytes": 861929472,
-      "sizeHuman": "822.0 MB",
-      "digest": "sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06",
-      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06",
-      "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:1.25",
-      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:d26f26517633d1e66195eda611b36eff5246baf97fbe3cec466267a30fa06a06"
-    },
-    {
-      "rank": 2,
-      "language": "go",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0",
-      "version": "1.26.2",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 0,
-      "totalVulnerabilities": 80,
-      "sizeBytes": 895483904,
-      "sizeHuman": "854.0 MB",
-      "digest": "sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1",
-      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1",
-      "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:1.26",
-      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:8d4d08bc8713416f28f32c00cafcb3b1d9862a69cb4aacfa925146343d73d9f1"
     },
     {
       "rank": 1,
