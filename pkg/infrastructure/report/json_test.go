@@ -60,7 +60,7 @@ func TestGenerateJSONReport_MultipleOSes(t *testing.T) {
 		{
 			Name: "azl-python:3.12", Registry: "r", Repository: "repo", Tag: "3.12",
 			BaseOSName: "azurelinux", BaseOSVersion: "3.0",
-			Digest: "sha256:abc123", SizeBytes: 85000000,
+			Digest: "sha256:abc123", SizeBytes: 85000000, CreatedDate: "2025-04-15T08:30:00Z",
 			CriticalVulnerabilities: 0, HighVulnerabilities: 0, TotalVulnerabilities: 2,
 			Languages: []domain.Language{{Language: "python", Version: "3.12.1"}},
 		},
@@ -112,6 +112,15 @@ func TestGenerateJSONReport_MultipleOSes(t *testing.T) {
 	}
 	assert.Contains(t, pythonOSes, "Azure Linux")
 	assert.Contains(t, pythonOSes, "Ubuntu")
+
+	var azlPython *JSONImageEntry
+	for i := range report.Images {
+		if report.Images[i].Name == "azl-python:3.12" {
+			azlPython = &report.Images[i]
+		}
+	}
+	require.NotNil(t, azlPython)
+	assert.Equal(t, "2025-04-15T08:30:00Z", azlPython.CreatedDate)
 }
 
 func TestGenerateJSONReport_RankResetsPerOSGroup(t *testing.T) {
@@ -233,7 +242,7 @@ func TestGenerateJSONReport_IncludesHelperFields(t *testing.T) {
 		Name: "mcr.microsoft.com/azurelinux/base/python:3.12", Registry: "mcr.microsoft.com",
 		Repository: "azurelinux/base/python", Tag: "3.12",
 		BaseOSName: "azurelinux", Digest: "sha256:abcdef1234567890",
-		SizeBytes: 85000000, TotalVulnerabilities: 1,
+		SizeBytes: 85000000, CreatedDate: "2025-04-15T08:30:00Z", TotalVulnerabilities: 1,
 		Languages: []domain.Language{{Language: "python", Version: "3.12.1"}},
 	}
 	require.NoError(t, repo.InsertImage(img))
@@ -253,6 +262,7 @@ func TestGenerateJSONReport_IncludesHelperFields(t *testing.T) {
 	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/python:3.12", entry.StableTag)
 	assert.Equal(t, "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:abcdef1234567890", entry.DockerfileFrom)
 	assert.Equal(t, "81.1 MB", entry.SizeHuman)
+	assert.Equal(t, "2025-04-15T08:30:00Z", entry.CreatedDate)
 	assert.Equal(t, "Azure Linux", entry.BaseOS)
 	assert.Equal(t, "python", entry.Language)
 }
@@ -279,6 +289,8 @@ func TestGenerateJSONReport_UnknownOSAsOther(t *testing.T) {
 
 	require.Len(t, report.Images, 1)
 	assert.Equal(t, "Other", report.Images[0].BaseOS)
+	assert.Equal(t, "", report.Images[0].CreatedDate)
+	assert.Contains(t, string(data), `"createdDate": ""`)
 }
 
 func TestGenerateJSONReport_BaseLanguageAppearsLast(t *testing.T) {
@@ -294,7 +306,7 @@ func TestGenerateJSONReport_BaseLanguageAppearsLast(t *testing.T) {
 		},
 		{
 			Name: "python-img:3.12", Registry: "r", Repository: "repo2", Tag: "3.12",
-			BaseOSName: "azurelinux",
+			BaseOSName:              "azurelinux",
 			CriticalVulnerabilities: 1, TotalVulnerabilities: 5,
 			Languages: []domain.Language{{Language: "python", Version: "3.12"}},
 		},
@@ -327,13 +339,13 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 		{
 			Name: "base-core:3.0", Registry: "r", Repository: "repo", Tag: "3.0",
 			BaseOSName: "azurelinux", BaseOSVersion: "3.0",
-			Digest: "sha256:abc123", SizeBytes: 50000000,
+			Digest: "sha256:abc123", SizeBytes: 50000000, CreatedDate: "2025-04-15T08:30:00Z",
 			CriticalVulnerabilities: 0, TotalVulnerabilities: 1,
 			Languages: []domain.Language{{Language: "base", Version: "3.0", PackageType: "base"}},
 		},
 		{
 			Name: "python-img:3.12", Registry: "r", Repository: "repo2", Tag: "3.12",
-			BaseOSName: "azurelinux",
+			BaseOSName:              "azurelinux",
 			CriticalVulnerabilities: 0, TotalVulnerabilities: 3,
 			Languages: []domain.Language{{Language: "python", Version: "3.12"}},
 		},
@@ -359,6 +371,9 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 
 	// Base section should contain the base image
 	assert.Contains(t, content, "base-core:3.0")
+	assert.Contains(t, content, "| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
+	assert.Contains(t, content, "2025-04-15")
+	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | 0 | 0 | 3 | - | - | `` | `-` |")
 }
 
 func TestDisplayLanguageName(t *testing.T) {

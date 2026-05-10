@@ -61,6 +61,7 @@ type JSONImageEntry struct {
 	TotalVulnerabilities    int    `json:"totalVulnerabilities"`
 	SizeBytes               int64  `json:"sizeBytes"`
 	SizeHuman               string `json:"sizeHuman"`
+	CreatedDate             string `json:"createdDate"`
 	Digest                  string `json:"digest"`
 	PinnedReference         string `json:"pinnedReference,omitempty"`
 	StableTag               string `json:"stableTag,omitempty"`
@@ -120,6 +121,7 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 					TotalVulnerabilities:    img.TotalVulnerabilities,
 					SizeBytes:               img.SizeBytes,
 					SizeHuman:               HumanSize(img.SizeBytes),
+					CreatedDate:             img.CreatedDate,
 					Digest:                  img.Digest,
 					PinnedReference:         FormatPinnedReference(img.Name, img.Digest),
 					StableTag:               FormatStableTag(img.Name, img.Version),

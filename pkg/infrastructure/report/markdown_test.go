@@ -25,6 +25,7 @@ package report
 import (
 	"testing"
 
+	"github.com/microsoft/sbi/pkg/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,6 +47,25 @@ func TestHumanSize(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := HumanSize(tt.bytes)
 			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestFormatCreatedDate(t *testing.T) {
+	tests := []struct {
+		name        string
+		createdDate string
+		expected    string
+	}{
+		{"valid RFC3339", "2025-04-15T08:30:00Z", "2025-04-15"},
+		{"valid RFC3339 nano", "2025-04-15T08:30:00.123456789Z", "2025-04-15"},
+		{"empty", "", "-"},
+		{"malformed", "2025-04-15", "-"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, FormatCreatedDate(tt.createdDate))
 		})
 	}
 }
@@ -178,4 +198,28 @@ func TestDisplayOSName(t *testing.T) {
 			assert.Equal(t, tt.expected, DisplayOSName(tt.input))
 		})
 	}
+}
+
+func TestFormatRecommendedImagesIncludesCreatedDate(t *testing.T) {
+	images := []domain.RecommendedImage{
+		{
+			Name:                    "mcr.microsoft.com/azurelinux/base/python:3.12",
+			Version:                 "3.12.1",
+			CriticalVulnerabilities: 0,
+			HighVulnerabilities:     1,
+			TotalVulnerabilities:    5,
+			SizeBytes:               85000000,
+			CreatedDate:             "2025-04-15T08:30:00Z",
+			Digest:                  "sha256:abcdef1234567890",
+		},
+		{
+			Name: "empty-created:latest",
+		},
+	}
+
+	content := FormatRecommendedImages("python", images)
+
+	assert.Contains(t, content, "| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
+	assert.Contains(t, content, "| 1 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.1 | 0 | 1 | 5 | 81.1 MB | 2025-04-15 | `sha256:abcdef123456` |")
+	assert.Contains(t, content, "| 2 | `empty-created:latest` | - | 0 | 0 | 0 | - | - | `` | `-` |")
 }
