@@ -26,38 +26,38 @@ import "time"
 
 // ImageRecord represents a container image with its metadata and vulnerability information.
 type ImageRecord struct {
-	ID                          int64
-	Name                        string
-	Registry                    string
-	Repository                  string
-	Tag                         string
-	Digest                      string
-	SizeBytes                   int64
-	Layers                      int
-	CreatedDate                 string
-	ScanTimestamp               string
-	BaseOSName                  string
-	BaseOSVersion               string
-	TotalVulnerabilities        int
-	CriticalVulnerabilities     int
-	HighVulnerabilities         int
-	MediumVulnerabilities       int
-	LowVulnerabilities          int
-	NegligibleVulnerabilities   int
-	UnknownVulnerabilities      int
-	VulnerabilityScanTimestamp  string
-	VulnerabilityScanner        string
-	SecretsFound                int
-	ConfigIssues                int
-	LicenseIssues               int
-	ComprehensiveScanTimestamp  string
-	ComprehensiveScanner        string
-	Languages                   []Language
-	Vulnerabilities             []Vulnerability
-	PackageManagers             []PackageManager
-	Capabilities                []Capability
-	SystemPackages              []SystemPackage
-	SecurityFindings            []SecurityFinding
+	ID                         int64
+	Name                       string
+	Registry                   string
+	Repository                 string
+	Tag                        string
+	Digest                     string
+	SizeBytes                  int64
+	Layers                     int
+	CreatedDate                string
+	ScanTimestamp              string
+	BaseOSName                 string
+	BaseOSVersion              string
+	TotalVulnerabilities       int
+	CriticalVulnerabilities    int
+	HighVulnerabilities        int
+	MediumVulnerabilities      int
+	LowVulnerabilities         int
+	NegligibleVulnerabilities  int
+	UnknownVulnerabilities     int
+	VulnerabilityScanTimestamp string
+	VulnerabilityScanner       string
+	SecretsFound               int
+	ConfigIssues               int
+	LicenseIssues              int
+	ComprehensiveScanTimestamp string
+	ComprehensiveScanner       string
+	Languages                  []Language
+	Vulnerabilities            []Vulnerability
+	PackageManagers            []PackageManager
+	Capabilities               []Capability
+	SystemPackages             []SystemPackage
+	SecurityFindings           []SecurityFinding
 }
 
 // Language represents a programming language detected in an image.
@@ -226,6 +226,7 @@ type RecommendedImage struct {
 	HighVulnerabilities     int
 	TotalVulnerabilities    int
 	SizeBytes               int64
+	CreatedDate             string
 	Digest                  string
 	BaseOSName              string
 }

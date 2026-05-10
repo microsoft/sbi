@@ -244,7 +244,7 @@ Reports are grouped by **Language → Base OS → ranked table**:
 
 ### Markdown Report
 
-The markdown report shows the top N images per language per OS (default: 10) with columns: Rank, Image, Version, Crit, High, Total, Size, Digest, Pinned Reference.
+The markdown report shows the top N images per language per OS (default: 10) with columns: Rank, Image, Version, Crit, High, Total, Size, Created, Digest, Pinned Reference.
 
 ### JSON Report
 
@@ -259,7 +259,9 @@ The JSON report uses a flat `images` array — each entry has `language` and `ba
 }
 ```
 
-JSON top-N defaults to 20 (configurable via `--json-top-n`, 0 = all). Rank resets per language+OS group. Each entry includes `pinnedReference`, `stableTag`, and `dockerfileFrom`.
+JSON top-N defaults to 20 (configurable via `--json-top-n`, 0 = all). Rank resets per language+OS group. Each entry includes `createdDate`, `pinnedReference`, `stableTag`, and `dockerfileFrom`.
+
+`RecommendedImage` includes image name, language version, vulnerability counts, size, created date, digest, and base OS for report generation.
 
 ## Database Schema
 

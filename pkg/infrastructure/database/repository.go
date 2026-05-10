@@ -80,7 +80,7 @@ func (r *Repository) InsertImage(img *domain.ImageRecord) error {
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(name) DO UPDATE SET
 			digest=excluded.digest, size_bytes=excluded.size_bytes, layers=excluded.layers,
-			scan_timestamp=excluded.scan_timestamp,
+			created_date=excluded.created_date, scan_timestamp=excluded.scan_timestamp,
 			base_os_name=excluded.base_os_name, base_os_version=excluded.base_os_version,
 			total_vulnerabilities=excluded.total_vulnerabilities,
 			critical_vulnerabilities=excluded.critical_vulnerabilities,
@@ -229,7 +229,8 @@ func (r *Repository) QueryLanguages() ([]string, error) {
 func (r *Repository) QueryTopImages(language string, topN int) ([]domain.RecommendedImage, error) {
 	rows, err := r.db.Query(`
 		SELECT i.name, l.version, i.critical_vulnerabilities, i.high_vulnerabilities,
-		       i.total_vulnerabilities, COALESCE(i.size_bytes, 0), i.digest
+		       i.total_vulnerabilities, COALESCE(i.size_bytes, 0),
+		       COALESCE(i.created_date, ''), i.digest
 		FROM images i
 		JOIN languages l ON i.id = l.image_id
 		WHERE LOWER(l.language) = ?
@@ -250,7 +251,8 @@ func (r *Repository) QueryTopImages(language string, topN int) ([]domain.Recomme
 		var digest sql.NullString
 
 		if err := rows.Scan(&img.Name, &img.Version, &img.CriticalVulnerabilities,
-			&img.HighVulnerabilities, &img.TotalVulnerabilities, &img.SizeBytes, &digest); err != nil {
+			&img.HighVulnerabilities, &img.TotalVulnerabilities, &img.SizeBytes,
+			&img.CreatedDate, &digest); err != nil {
 			return nil, fmt.Errorf("scanning image row: %w", err)
 		}
 
@@ -304,7 +306,8 @@ func (r *Repository) QueryTopImagesByOS(language, baseOS string, topN int) ([]do
 
 	rows, err := r.db.Query(`
 		SELECT i.name, l.version, i.critical_vulnerabilities, i.high_vulnerabilities,
-		       i.total_vulnerabilities, COALESCE(i.size_bytes, 0), i.digest,
+		       i.total_vulnerabilities, COALESCE(i.size_bytes, 0),
+		       COALESCE(i.created_date, ''), i.digest,
 		       COALESCE(NULLIF(i.base_os_name, ''), 'Other')
 		FROM images i
 		JOIN languages l ON i.id = l.image_id
@@ -328,7 +331,7 @@ func (r *Repository) QueryTopImagesByOS(language, baseOS string, topN int) ([]do
 
 		if err := rows.Scan(&img.Name, &img.Version, &img.CriticalVulnerabilities,
 			&img.HighVulnerabilities, &img.TotalVulnerabilities, &img.SizeBytes,
-			&digest, &img.BaseOSName); err != nil {
+			&img.CreatedDate, &digest, &img.BaseOSName); err != nil {
 			return nil, fmt.Errorf("scanning image row: %w", err)
 		}
 

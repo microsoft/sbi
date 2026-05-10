@@ -60,6 +60,7 @@ func TestInsertAndQueryImage(t *testing.T) {
 		Tag:                     "3.12",
 		Digest:                  "sha256:abcdef1234567890",
 		SizeBytes:               85000000,
+		CreatedDate:             "2025-04-15T08:30:00Z",
 		TotalVulnerabilities:    5,
 		CriticalVulnerabilities: 0,
 		HighVulnerabilities:     1,
@@ -97,6 +98,7 @@ func TestInsertAndQueryImage(t *testing.T) {
 	assert.Equal(t, 1, images[0].HighVulnerabilities)
 	assert.Equal(t, 5, images[0].TotalVulnerabilities)
 	assert.Equal(t, int64(85000000), images[0].SizeBytes)
+	assert.Equal(t, "2025-04-15T08:30:00Z", images[0].CreatedDate)
 }
 
 func TestQueryTopImagesRanking(t *testing.T) {
@@ -167,6 +169,7 @@ func TestUpsertImage(t *testing.T) {
 
 	img := &domain.ImageRecord{
 		Name: "test:1.0", Registry: "r", Repository: "repo", Tag: "1.0",
+		CreatedDate:          "2025-04-15T08:30:00Z",
 		TotalVulnerabilities: 5,
 		Languages:            []domain.Language{{Language: "python", Version: "3.12"}},
 	}
@@ -174,6 +177,7 @@ func TestUpsertImage(t *testing.T) {
 	require.NoError(t, repo.InsertImage(img))
 
 	// Update the same image with new vuln count
+	img.CreatedDate = "2025-05-01T12:00:00Z"
 	img.TotalVulnerabilities = 3
 	img.Languages = []domain.Language{{Language: "python", Version: "3.12.1"}}
 	require.NoError(t, repo.InsertImage(img))
@@ -183,6 +187,7 @@ func TestUpsertImage(t *testing.T) {
 	require.Len(t, images, 1)
 	assert.Equal(t, 3, images[0].TotalVulnerabilities)
 	assert.Equal(t, "3.12.1", images[0].Version)
+	assert.Equal(t, "2025-05-01T12:00:00Z", images[0].CreatedDate)
 }
 
 func TestUpsertImage_UpdatesBaseOS(t *testing.T) {
@@ -277,7 +282,7 @@ func TestQueryTopImagesByOS(t *testing.T) {
 	images := []domain.ImageRecord{
 		{
 			Name: "azl-python:3.12", Registry: "r", Repository: "repo", Tag: "3.12",
-			BaseOSName: "azurelinux", TotalVulnerabilities: 3,
+			BaseOSName: "azurelinux", CreatedDate: "2025-04-15T08:30:00Z", TotalVulnerabilities: 3,
 			Languages: []domain.Language{{Language: "python", Version: "3.12"}},
 		},
 		{
@@ -296,6 +301,7 @@ func TestQueryTopImagesByOS(t *testing.T) {
 	require.Len(t, result, 1)
 	assert.Equal(t, "azl-python:3.12", result[0].Name)
 	assert.Equal(t, "azurelinux", result[0].BaseOSName)
+	assert.Equal(t, "2025-04-15T08:30:00Z", result[0].CreatedDate)
 }
 
 func TestQueryTopImagesByOS_OtherGroup(t *testing.T) {

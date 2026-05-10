@@ -126,8 +126,8 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 
 // writeImageTable writes a ranked markdown table of images.
 func writeImageTable(sb *strings.Builder, images []domain.RecommendedImage) {
-	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Digest | Pinned Reference |\n")
-	sb.WriteString("|------|-------|---------|------|------|-------|------|--------|------------------|\n")
+	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
+	sb.WriteString("|------|-------|---------|------|------|-------|------|---------|--------|------------------|\n")
 
 	for idx, img := range images {
 		version := img.Version
@@ -140,10 +140,10 @@ func writeImageTable(sb *strings.Builder, images []domain.RecommendedImage) {
 			pinnedRef = "-"
 		}
 
-		fmt.Fprintf(sb, "| %d | `%s` | %s | %d | %d | %d | %s | `%s` | `%s` |\n",
+		fmt.Fprintf(sb, "| %d | `%s` | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
 			idx+1, img.Name, version,
 			img.CriticalVulnerabilities, img.HighVulnerabilities, img.TotalVulnerabilities,
-			HumanSize(img.SizeBytes), FormatDigest(img.Digest), pinnedRef)
+			HumanSize(img.SizeBytes), FormatCreatedDate(img.CreatedDate), FormatDigest(img.Digest), pinnedRef)
 	}
 
 	sb.WriteString("\n")
@@ -215,6 +215,20 @@ func HumanSize(numBytes int64) string {
 	gb := mb / 1024
 
 	return fmt.Sprintf("%.2f GB", gb)
+}
+
+// FormatCreatedDate returns the image creation date in compact report form.
+func FormatCreatedDate(createdDate string) string {
+	if createdDate == "" {
+		return "-"
+	}
+
+	parsed, err := time.Parse(time.RFC3339Nano, createdDate)
+	if err != nil {
+		return "-"
+	}
+
+	return parsed.UTC().Format("2006-01-02")
 }
 
 // FormatDigest returns a shortened digest string for display.
@@ -298,8 +312,8 @@ func FormatRecommendedImages(lang string, images []domain.RecommendedImage) stri
 	var sb strings.Builder
 
 	fmt.Fprintf(&sb, "## %s\n\n", DisplayLanguageName(lang))
-	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Digest | Pinned Reference |\n")
-	sb.WriteString("|------|-------|---------|------|------|-------|------|--------|------------------|\n")
+	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
+	sb.WriteString("|------|-------|---------|------|------|-------|------|---------|--------|------------------|\n")
 
 	for idx, img := range images {
 		version := img.Version
@@ -312,10 +326,10 @@ func FormatRecommendedImages(lang string, images []domain.RecommendedImage) stri
 			pinnedRef = "-"
 		}
 
-		fmt.Fprintf(&sb, "| %d | `%s` | %s | %d | %d | %d | %s | `%s` | `%s` |\n",
+		fmt.Fprintf(&sb, "| %d | `%s` | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
 			idx+1, img.Name, version,
 			img.CriticalVulnerabilities, img.HighVulnerabilities, img.TotalVulnerabilities,
-			HumanSize(img.SizeBytes), FormatDigest(img.Digest), pinnedRef)
+			HumanSize(img.SizeBytes), FormatCreatedDate(img.CreatedDate), FormatDigest(img.Digest), pinnedRef)
 	}
 
 	return sb.String()
