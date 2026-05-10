@@ -11,9 +11,7 @@ Every night, this project scans configured MCR (Microsoft Container Registry) co
 | Markdown | [docs/daily_recommendations.md](docs/daily_recommendations.md)     |
 | JSON     | [docs/daily_recommendations.json](docs/daily_recommendations.json) |
 
-Reports are regenerated nightly at 02:00 UTC via [GitHub Actions](.github/workflows/nightly-scan.yml). Images are ranked per language by: fewest critical → fewest high → fewest total vulnerabilities → smallest size.
-
-> **Note:** The nightly workflow currently pushes results to the `nightly-scan-results` branch and requires a manual PR to merge into `main`, because GitHub Actions on this repository cannot create pull requests automatically. See [#6](https://github.com/microsoft/sbi/issues/6) for details and the planned migration to a GitHub App token.
+Reports are regenerated nightly at 02:00 UTC via [GitHub Actions](.github/workflows/nightly-scan.yml) and committed automatically. Images are ranked per language by: fewest critical → fewest high → fewest total vulnerabilities → smallest size.
 
 ## How It Works
 
