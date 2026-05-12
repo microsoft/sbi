@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-issue-forms.json
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+---
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: What version of SBI are you running? Include OS/distribution and Go version.
+      placeholder: |
+        sbi version: (output of `sbi --version` or commit SHA)
+        OS: macOS 15 / Ubuntu 24.04 / etc.
+        Go: 1.26
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen instead.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Please provide the exact command and flags used.
+      placeholder: |
+        1. Run `sbi scan --config-dir config --database test.db ...`
+        2. Observe error in output
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. Run with `--verbose` for detailed logs. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: If relevant, paste your repositories.json or describe the image(s) being scanned.
+      render: json
