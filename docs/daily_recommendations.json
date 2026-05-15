@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-14T03:15:43Z",
+  "generatedAt": "2026-05-15T04:07:43Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -241,7 +241,7 @@
       "name": "mcr.microsoft.com/dotnet/sdk:8.0",
       "version": "8.0.421",
       "criticalVulnerabilities": 4,
-      "highVulnerabilities": 28,
+      "highVulnerabilities": 32,
       "totalVulnerabilities": 279,
       "sizeBytes": 890241024,
       "sizeHuman": "849.0 MB",
