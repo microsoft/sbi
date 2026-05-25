@@ -29,8 +29,10 @@ import (
 	"github.com/microsoft/sbi/pkg/domain"
 )
 
-// DeduplicateByDigest groups images sharing the same digest, keeping the most
-// specific tag as the primary entry and collecting alternate tag names.
+// DeduplicateByDigest groups images sharing the same repository and digest,
+// keeping the most specific tag as the primary entry and collecting alternate
+// tag names. Only images from the same repository are grouped; different
+// repositories with the same digest remain separate entries.
 // Images with an empty digest are never grouped.
 func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedImage {
 	if len(images) <= 1 {
@@ -44,8 +46,8 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 
 	// Ordered list of groups preserving first-seen order.
 	var groups []group
-	// Maps non-empty digest to index in groups slice.
-	byDigest := make(map[string]int)
+	// Maps "repo\x00digest" to index in groups slice.
+	byKey := make(map[string]int)
 
 	for i, img := range images {
 		d := img.Digest
@@ -54,7 +56,8 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 			continue
 		}
 
-		if gi, ok := byDigest[d]; ok {
+		key := imageRepo(img.Name) + "\x00" + d
+		if gi, ok := byKey[key]; ok {
 			groups[gi].indices = append(groups[gi].indices, i)
 			newScore := tagSpecificity(images[i].Name)
 			oldScore := tagSpecificity(images[groups[gi].primary].Name)
@@ -62,7 +65,7 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 				groups[gi].primary = i
 			}
 		} else {
-			byDigest[d] = len(groups)
+			byKey[key] = len(groups)
 			groups = append(groups, group{primary: i, indices: []int{i}})
 		}
 	}
@@ -134,4 +137,22 @@ func extractTag(name string) string {
 	}
 
 	return ""
+}
+
+// imageRepo returns the repository portion of a full image name (everything
+// before the tag or digest). E.g., "mcr.microsoft.com/repo:3.12" → "mcr.microsoft.com/repo"
+func imageRepo(name string) string {
+	// Strip @digest suffix first.
+	if at := strings.Index(name, "@"); at >= 0 {
+		name = name[:at]
+	}
+
+	lastSlash := strings.LastIndex(name, "/")
+	lastColon := strings.LastIndex(name, ":")
+
+	if lastColon > lastSlash {
+		return name[:lastColon]
+	}
+
+	return name
 }

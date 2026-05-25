@@ -236,3 +236,40 @@ func TestDeduplicateByDigest_DeterministicTieBreak(t *testing.T) {
 	assert.Equal(t, "mcr.microsoft.com/repo:beta", result[0].Name, "lexicographically smaller name should win on tie")
 	assert.Equal(t, []string{":zeta"}, result[0].AlternateTags)
 }
+
+func TestDeduplicateByDigest_CrossRepoSameDigestNotMerged(t *testing.T) {
+	// Images from different repositories with the same digest should NOT be merged.
+	images := []domain.RecommendedImage{
+		{Name: "mcr.microsoft.com/azurelinux/base/python:3.12", Digest: "sha256:same"},
+		{Name: "mcr.microsoft.com/azurelinux/base/nodejs:24", Digest: "sha256:same"},
+	}
+
+	result := DeduplicateByDigest(images)
+
+	assert.Len(t, result, 2, "different repos with same digest should remain separate")
+	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/python:3.12", result[0].Name)
+	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/nodejs:24", result[1].Name)
+	assert.Nil(t, result[0].AlternateTags)
+	assert.Nil(t, result[1].AlternateTags)
+}
+
+func TestImageRepo(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"with tag", "mcr.microsoft.com/repo:3.12", "mcr.microsoft.com/repo"},
+		{"with tag and suffix", "mcr.microsoft.com/repo:3.12-nonroot", "mcr.microsoft.com/repo"},
+		{"no tag", "mcr.microsoft.com/repo", "mcr.microsoft.com/repo"},
+		{"with digest", "mcr.microsoft.com/repo:3.12@sha256:abc", "mcr.microsoft.com/repo"},
+		{"digest only", "mcr.microsoft.com/repo@sha256:abc", "mcr.microsoft.com/repo"},
+		{"nested path", "mcr.microsoft.com/azurelinux/base/python:3.12", "mcr.microsoft.com/azurelinux/base/python"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, imageRepo(tt.input))
+		})
+	}
+}
