@@ -371,9 +371,9 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 
 	// Base section should contain the base image
 	assert.Contains(t, content, "base-core:3.0")
-	assert.Contains(t, content, "| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
+	assert.Contains(t, content, "| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
 	assert.Contains(t, content, "2025-04-15")
-	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | 0 | 0 | 3 | - | - | `` | `-` |")
+	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | - | 0 | 0 | 3 | - | - | `` | `-` |")
 }
 
 func TestDisplayLanguageName(t *testing.T) {

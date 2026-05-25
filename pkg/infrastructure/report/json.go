@@ -51,21 +51,22 @@ type JSONRepoGroup struct {
 
 // JSONImageEntry represents a single recommended image in the JSON report.
 type JSONImageEntry struct {
-	Rank                    int    `json:"rank"`
-	Language                string `json:"language"`
-	BaseOS                  string `json:"baseOS"`
-	Name                    string `json:"name"`
-	Version                 string `json:"version"`
-	CriticalVulnerabilities int    `json:"criticalVulnerabilities"`
-	HighVulnerabilities     int    `json:"highVulnerabilities"`
-	TotalVulnerabilities    int    `json:"totalVulnerabilities"`
-	SizeBytes               int64  `json:"sizeBytes"`
-	SizeHuman               string `json:"sizeHuman"`
-	CreatedDate             string `json:"createdDate"`
-	Digest                  string `json:"digest"`
-	PinnedReference         string `json:"pinnedReference,omitempty"`
-	StableTag               string `json:"stableTag,omitempty"`
-	DockerfileFrom          string `json:"dockerfileFrom,omitempty"`
+	Rank                    int      `json:"rank"`
+	Language                string   `json:"language"`
+	BaseOS                  string   `json:"baseOS"`
+	Name                    string   `json:"name"`
+	Version                 string   `json:"version"`
+	CriticalVulnerabilities int      `json:"criticalVulnerabilities"`
+	HighVulnerabilities     int      `json:"highVulnerabilities"`
+	TotalVulnerabilities    int      `json:"totalVulnerabilities"`
+	SizeBytes               int64    `json:"sizeBytes"`
+	SizeHuman               string   `json:"sizeHuman"`
+	CreatedDate             string   `json:"createdDate"`
+	Digest                  string   `json:"digest"`
+	PinnedReference         string   `json:"pinnedReference,omitempty"`
+	StableTag               string   `json:"stableTag,omitempty"`
+	DockerfileFrom          string   `json:"dockerfileFrom,omitempty"`
+	AlternateTags           []string `json:"alternateTags,omitempty"`
 }
 
 // GenerateJSONReport produces a flat JSON recommendations report from the database.
@@ -103,10 +104,15 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 		}
 
 		for _, osName := range oses {
-			images, err := repo.QueryTopImagesByOS(lang, osName, topN)
+			images, err := repo.QueryTopImagesByOS(lang, osName, 0)
 			if err != nil {
 				log.Warnf("Failed to query images for %s/%s: %v", lang, osName, err)
 				continue
+			}
+
+			images = DeduplicateByDigest(images)
+			if topN > 0 && len(images) > topN {
+				images = images[:topN]
 			}
 
 			for idx, img := range images {
@@ -126,6 +132,7 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 					PinnedReference:         FormatPinnedReference(img.Name, img.Digest),
 					StableTag:               FormatStableTag(img.Name, img.Version),
 					DockerfileFrom:          FormatDockerfileFrom(img.Name, img.Digest),
+					AlternateTags:           img.AlternateTags,
 				})
 			}
 		}
