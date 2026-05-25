@@ -23,6 +23,7 @@
 package report
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/microsoft/sbi/pkg/domain"
@@ -55,7 +56,9 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 
 		if gi, ok := byDigest[d]; ok {
 			groups[gi].indices = append(groups[gi].indices, i)
-			if tagSpecificity(images[i].Name) > tagSpecificity(images[groups[gi].primary].Name) {
+			newScore := tagSpecificity(images[i].Name)
+			oldScore := tagSpecificity(images[groups[gi].primary].Name)
+			if newScore > oldScore || (newScore == oldScore && images[i].Name < images[groups[gi].primary].Name) {
 				groups[gi].primary = i
 			}
 		} else {
@@ -78,6 +81,7 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 				img.AlternateTags = append(img.AlternateTags, ":"+alt)
 			}
 		}
+		sort.Strings(img.AlternateTags)
 
 		result = append(result, img)
 	}
@@ -115,7 +119,13 @@ func tagSpecificity(name string) int {
 
 // extractTag returns the tag portion of a full image name.
 // E.g., "mcr.microsoft.com/repo:3.12-nonroot" → "3.12-nonroot"
+// Strips any @sha256:... digest suffix before parsing.
 func extractTag(name string) string {
+	// Strip @digest suffix if present (e.g., "repo:3.12@sha256:abc..." → "repo:3.12").
+	if at := strings.Index(name, "@"); at >= 0 {
+		name = name[:at]
+	}
+
 	lastSlash := strings.LastIndex(name, "/")
 	lastColon := strings.LastIndex(name, ":")
 

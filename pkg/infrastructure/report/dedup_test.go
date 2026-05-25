@@ -209,6 +209,8 @@ func TestExtractTag(t *testing.T) {
 		{"with tag and suffix", "mcr.microsoft.com/repo:3.12-nonroot", "3.12-nonroot"},
 		{"no tag", "mcr.microsoft.com/repo", ""},
 		{"port in name", "localhost:5000/repo:latest", "latest"},
+		{"with digest suffix", "mcr.microsoft.com/repo:3.12@sha256:abcdef", "3.12"},
+		{"digest only no tag", "mcr.microsoft.com/repo@sha256:abcdef", ""},
 		{"empty", "", ""},
 	}
 
@@ -217,4 +219,20 @@ func TestExtractTag(t *testing.T) {
 			assert.Equal(t, tt.expected, extractTag(tt.input))
 		})
 	}
+}
+
+func TestDeduplicateByDigest_DeterministicTieBreak(t *testing.T) {
+	// When two tags have the same specificity score, the lexicographically
+	// smaller name should be chosen as primary for determinism.
+	// "zeta" and "beta" have the same length and structure, so scores are equal.
+	images := []domain.RecommendedImage{
+		{Name: "mcr.microsoft.com/repo:zeta", Digest: "sha256:aaa"},
+		{Name: "mcr.microsoft.com/repo:beta", Digest: "sha256:aaa"},
+	}
+
+	result := DeduplicateByDigest(images)
+
+	assert.Len(t, result, 1)
+	assert.Equal(t, "mcr.microsoft.com/repo:beta", result[0].Name, "lexicographically smaller name should win on tie")
+	assert.Equal(t, []string{":zeta"}, result[0].AlternateTags)
 }
