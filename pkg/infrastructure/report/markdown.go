@@ -77,10 +77,15 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 				osName = oses[0]
 			}
 
-			images, err := repo.QueryTopImagesByOS(lang, osName, topN)
+			images, err := repo.QueryTopImagesByOS(lang, osName, 0)
 			if err != nil {
 				log.Warnf("Failed to query images for %s: %v", lang, err)
 				continue
+			}
+
+			images = DeduplicateByDigest(images)
+			if topN > 0 && len(images) > topN {
+				images = images[:topN]
 			}
 
 			if len(images) > 0 {
@@ -88,10 +93,15 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 			}
 		} else {
 			for _, osName := range oses {
-				osImages, err := repo.QueryTopImagesByOS(lang, osName, topN)
+				osImages, err := repo.QueryTopImagesByOS(lang, osName, 0)
 				if err != nil {
 					log.Warnf("Failed to query images for %s/%s: %v", lang, osName, err)
 					continue
+				}
+
+				osImages = DeduplicateByDigest(osImages)
+				if topN > 0 && len(osImages) > topN {
+					osImages = osImages[:topN]
 				}
 
 				if len(osImages) == 0 {
@@ -126,8 +136,8 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 
 // writeImageTable writes a ranked markdown table of images.
 func writeImageTable(sb *strings.Builder, images []domain.RecommendedImage) {
-	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
-	sb.WriteString("|------|-------|---------|------|------|-------|------|---------|--------|------------------|\n")
+	sb.WriteString("| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
+	sb.WriteString("|------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|\n")
 
 	for idx, img := range images {
 		version := img.Version
@@ -140,8 +150,13 @@ func writeImageTable(sb *strings.Builder, images []domain.RecommendedImage) {
 			pinnedRef = "-"
 		}
 
-		fmt.Fprintf(sb, "| %d | `%s` | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
-			idx+1, img.Name, version,
+		alsoTagged := "-"
+		if len(img.AlternateTags) > 0 {
+			alsoTagged = strings.Join(img.AlternateTags, ", ")
+		}
+
+		fmt.Fprintf(sb, "| %d | `%s` | %s | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
+			idx+1, img.Name, version, alsoTagged,
 			img.CriticalVulnerabilities, img.HighVulnerabilities, img.TotalVulnerabilities,
 			HumanSize(img.SizeBytes), FormatCreatedDate(img.CreatedDate), FormatDigest(img.Digest), pinnedRef)
 	}
@@ -312,8 +327,8 @@ func FormatRecommendedImages(lang string, images []domain.RecommendedImage) stri
 	var sb strings.Builder
 
 	fmt.Fprintf(&sb, "## %s\n\n", DisplayLanguageName(lang))
-	sb.WriteString("| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
-	sb.WriteString("|------|-------|---------|------|------|-------|------|---------|--------|------------------|\n")
+	sb.WriteString("| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |\n")
+	sb.WriteString("|------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|\n")
 
 	for idx, img := range images {
 		version := img.Version
@@ -326,8 +341,13 @@ func FormatRecommendedImages(lang string, images []domain.RecommendedImage) stri
 			pinnedRef = "-"
 		}
 
-		fmt.Fprintf(&sb, "| %d | `%s` | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
-			idx+1, img.Name, version,
+		alsoTagged := "-"
+		if len(img.AlternateTags) > 0 {
+			alsoTagged = strings.Join(img.AlternateTags, ", ")
+		}
+
+		fmt.Fprintf(&sb, "| %d | `%s` | %s | %s | %d | %d | %d | %s | %s | `%s` | `%s` |\n",
+			idx+1, img.Name, version, alsoTagged,
 			img.CriticalVulnerabilities, img.HighVulnerabilities, img.TotalVulnerabilities,
 			HumanSize(img.SizeBytes), FormatCreatedDate(img.CreatedDate), FormatDigest(img.Digest), pinnedRef)
 	}

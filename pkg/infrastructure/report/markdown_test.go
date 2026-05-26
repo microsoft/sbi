@@ -219,7 +219,7 @@ func TestFormatRecommendedImagesIncludesCreatedDate(t *testing.T) {
 
 	content := FormatRecommendedImages("python", images)
 
-	assert.Contains(t, content, "| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
-	assert.Contains(t, content, "| 1 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.1 | 0 | 1 | 5 | 81.1 MB | 2025-04-15 | `sha256:abcdef123456` |")
-	assert.Contains(t, content, "| 2 | `empty-created:latest` | - | 0 | 0 | 0 | - | - | `` | `-` |")
+	assert.Contains(t, content, "| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
+	assert.Contains(t, content, "| 1 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.1 | - | 0 | 1 | 5 | 81.1 MB | 2025-04-15 | `sha256:abcdef123456` |")
+	assert.Contains(t, content, "| 2 | `empty-created:latest` | - | - | 0 | 0 | 0 | - | - | `` | `-` |")
 }

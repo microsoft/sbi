@@ -229,4 +229,5 @@ type RecommendedImage struct {
 	CreatedDate             string
 	Digest                  string
 	BaseOSName              string
+	AlternateTags           []string
 }

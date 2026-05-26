@@ -371,9 +371,9 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 
 	// Base section should contain the base image
 	assert.Contains(t, content, "base-core:3.0")
-	assert.Contains(t, content, "| Rank | Image | Version | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
+	assert.Contains(t, content, "| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |")
 	assert.Contains(t, content, "2025-04-15")
-	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | 0 | 0 | 3 | - | - | `` | `-` |")
+	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | - | 0 | 0 | 3 | - | - | `` | `-` |")
 }
 
 func TestDisplayLanguageName(t *testing.T) {
@@ -393,4 +393,83 @@ func TestDisplayLanguageName(t *testing.T) {
 			assert.Equal(t, tt.expected, DisplayLanguageName(tt.input))
 		})
 	}
+}
+
+func TestGenerateJSONReport_DeduplicatesAlternateTags(t *testing.T) {
+	db, repo := setupTestDB(t)
+	defer func() { _ = db.Close() }()
+
+	images := []domain.ImageRecord{
+		{
+			Name: "mcr.microsoft.com/azurelinux/base/nodejs:24", Registry: "mcr.microsoft.com",
+			Repository: "azurelinux/base/nodejs", Tag: "24",
+			BaseOSName: "azurelinux", Digest: "sha256:samedigest",
+			SizeBytes: 100000000, TotalVulnerabilities: 1,
+			Languages: []domain.Language{{Language: "node", Version: "24.14.0"}},
+		},
+		{
+			Name: "mcr.microsoft.com/azurelinux/base/nodejs:24.14", Registry: "mcr.microsoft.com",
+			Repository: "azurelinux/base/nodejs", Tag: "24.14",
+			BaseOSName: "azurelinux", Digest: "sha256:samedigest",
+			SizeBytes: 100000000, TotalVulnerabilities: 1,
+			Languages: []domain.Language{{Language: "node", Version: "24.14.0"}},
+		},
+	}
+
+	for i := range images {
+		require.NoError(t, repo.InsertImage(&images[i]))
+	}
+
+	outPath := filepath.Join(t.TempDir(), "report.json")
+	require.NoError(t, GenerateJSONReport(repo, outPath, 10, nil))
+
+	data, err := os.ReadFile(outPath)
+	require.NoError(t, err)
+
+	var report JSONReport
+	require.NoError(t, json.Unmarshal(data, &report))
+
+	require.Len(t, report.Images, 1, "duplicate digests should be merged into one entry")
+	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/nodejs:24.14", report.Images[0].Name)
+	require.Len(t, report.Images[0].AlternateTags, 1)
+	assert.Equal(t, ":24", report.Images[0].AlternateTags[0])
+}
+
+func TestGenerateMarkdownReport_DeduplicatesWithAlternateColumn(t *testing.T) {
+	db, repo := setupTestDB(t)
+	defer func() { _ = db.Close() }()
+
+	images := []domain.ImageRecord{
+		{
+			Name: "mcr.microsoft.com/azurelinux/base/python:3", Registry: "mcr.microsoft.com",
+			Repository: "azurelinux/base/python", Tag: "3",
+			BaseOSName: "azurelinux", Digest: "sha256:pydigest",
+			SizeBytes: 85000000, TotalVulnerabilities: 2,
+			Languages: []domain.Language{{Language: "python", Version: "3.12.9"}},
+		},
+		{
+			Name: "mcr.microsoft.com/azurelinux/base/python:3.12", Registry: "mcr.microsoft.com",
+			Repository: "azurelinux/base/python", Tag: "3.12",
+			BaseOSName: "azurelinux", Digest: "sha256:pydigest",
+			SizeBytes: 85000000, TotalVulnerabilities: 2,
+			Languages: []domain.Language{{Language: "python", Version: "3.12.9"}},
+		},
+	}
+
+	for i := range images {
+		require.NoError(t, repo.InsertImage(&images[i]))
+	}
+
+	outPath := filepath.Join(t.TempDir(), "report.md")
+	require.NoError(t, GenerateReport(repo, outPath, 10, nil))
+
+	data, err := os.ReadFile(outPath)
+	require.NoError(t, err)
+	content := string(data)
+
+	// Should have only one data row (deduped), not two
+	assert.Contains(t, content, "`mcr.microsoft.com/azurelinux/base/python:3.12`")
+	assert.Contains(t, content, "| :3 |", "alternate tag should appear in Also Tagged As column")
+	// Only one ranked row should exist (rank 1, no rank 2)
+	assert.NotContains(t, content, "| 2 | `mcr", "should have only one image row after dedup")
 }
