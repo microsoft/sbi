@@ -473,3 +473,108 @@ func TestGenerateMarkdownReport_DeduplicatesWithAlternateColumn(t *testing.T) {
 	// Only one ranked row should exist (rank 1, no rank 2)
 	assert.NotContains(t, content, "| 2 | `mcr", "should have only one image row after dedup")
 }
+
+func TestGenerateJSONReport_FiltersIncidentalRuntimes(t *testing.T) {
+	db, repo := setupTestDB(t)
+	defer func() { _ = db.Close() }()
+
+	// JDK image with both java and python (python is incidental)
+	jdkImage := domain.ImageRecord{
+		Name: "mcr.microsoft.com/openjdk/jdk:21-azurelinux", Registry: "mcr.microsoft.com",
+		Repository: "openjdk/jdk", Tag: "21-azurelinux",
+		BaseOSName: "azurelinux", TotalVulnerabilities: 3,
+		Languages: []domain.Language{
+			{Language: "java", Version: "21.0.6"},
+			{Language: "python", Version: "3.12.9"},
+		},
+	}
+	// Actual python image
+	pythonImage := domain.ImageRecord{
+		Name: "mcr.microsoft.com/azurelinux/base/python:3.12", Registry: "mcr.microsoft.com",
+		Repository: "azurelinux/base/python", Tag: "3.12",
+		BaseOSName: "azurelinux", TotalVulnerabilities: 2,
+		Languages: []domain.Language{
+			{Language: "python", Version: "3.12.9"},
+		},
+	}
+
+	require.NoError(t, repo.InsertImage(&jdkImage))
+	require.NoError(t, repo.InsertImage(&pythonImage))
+
+	outPath := filepath.Join(t.TempDir(), "report.json")
+	require.NoError(t, GenerateJSONReport(repo, outPath, 10, nil))
+
+	data, err := os.ReadFile(outPath)
+	require.NoError(t, err)
+
+	var report JSONReport
+	require.NoError(t, json.Unmarshal(data, &report))
+
+	// JDK image should appear in java section
+	var javaEntries, pythonEntries []JSONImageEntry
+	for _, img := range report.Images {
+		switch img.Language {
+		case "java":
+			javaEntries = append(javaEntries, img)
+		case "python":
+			pythonEntries = append(pythonEntries, img)
+		}
+	}
+
+	assert.Len(t, javaEntries, 1, "JDK image should appear in java")
+	assert.Equal(t, "mcr.microsoft.com/openjdk/jdk:21-azurelinux", javaEntries[0].Name)
+
+	// Python section should only have the actual python image, not the JDK
+	assert.Len(t, pythonEntries, 1, "only the actual python image should appear")
+	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/python:3.12", pythonEntries[0].Name)
+}
+
+func TestGenerateMarkdownReport_FiltersIncidentalRuntimes(t *testing.T) {
+	db, repo := setupTestDB(t)
+	defer func() { _ = db.Close() }()
+
+	// JDK image with both java and python (python is incidental)
+	jdkImage := domain.ImageRecord{
+		Name: "mcr.microsoft.com/openjdk/jdk:21-azurelinux", Registry: "mcr.microsoft.com",
+		Repository: "openjdk/jdk", Tag: "21-azurelinux",
+		BaseOSName: "azurelinux", TotalVulnerabilities: 1,
+		Languages: []domain.Language{
+			{Language: "java", Version: "21.0.6"},
+			{Language: "python", Version: "3.12.9"},
+		},
+	}
+	pythonImage := domain.ImageRecord{
+		Name: "mcr.microsoft.com/azurelinux/base/python:3.12", Registry: "mcr.microsoft.com",
+		Repository: "azurelinux/base/python", Tag: "3.12",
+		BaseOSName: "azurelinux", TotalVulnerabilities: 2,
+		Languages: []domain.Language{
+			{Language: "python", Version: "3.12.9"},
+		},
+	}
+
+	require.NoError(t, repo.InsertImage(&jdkImage))
+	require.NoError(t, repo.InsertImage(&pythonImage))
+
+	outPath := filepath.Join(t.TempDir(), "report.md")
+	require.NoError(t, GenerateReport(repo, outPath, 10, nil))
+
+	data, err := os.ReadFile(outPath)
+	require.NoError(t, err)
+	content := string(data)
+
+	// Java section should contain the JDK image
+	assert.Contains(t, content, "## Java")
+	assert.Contains(t, content, "`mcr.microsoft.com/openjdk/jdk:21-azurelinux`")
+
+	// Python section should NOT contain the JDK image
+	assert.Contains(t, content, "## Python")
+	pythonIdx := strings.Index(content, "## Python")
+	javaIdx := strings.Index(content, "## Java")
+	// Find the Python section content (between Python heading and next heading or EOF)
+	pythonSection := content[pythonIdx:]
+	if javaIdx > pythonIdx {
+		pythonSection = content[pythonIdx:javaIdx]
+	}
+	assert.NotContains(t, pythonSection, "openjdk/jdk", "JDK image should not appear in Python section")
+	assert.Contains(t, pythonSection, "azurelinux/base/python", "actual python image should appear")
+}

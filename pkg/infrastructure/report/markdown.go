@@ -83,6 +83,7 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 				continue
 			}
 
+			images = FilterIncidentalImages(images, lang)
 			images = DeduplicateByDigest(images)
 			if topN > 0 && len(images) > topN {
 				images = images[:topN]
@@ -99,6 +100,7 @@ func GenerateReport(repo *database.Repository, outputPath string, topN int, repo
 					continue
 				}
 
+				osImages = FilterIncidentalImages(osImages, lang)
 				osImages = DeduplicateByDigest(osImages)
 				if topN > 0 && len(osImages) > topN {
 					osImages = osImages[:topN]
