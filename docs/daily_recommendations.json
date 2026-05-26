@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-26T03:14:06Z",
+  "generatedAt": "2026-05-26T10:43:29Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -351,27 +351,13 @@
       "digest": "sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320",
       "pinnedReference": "mcr.microsoft.com/azurelinux/base/python:3.12@sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320",
       "stableTag": "mcr.microsoft.com/azurelinux/base/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320",
+      "alternateTags": [
+        ":3"
+      ]
     },
     {
       "rank": 6,
-      "language": "python",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/base/python:3",
-      "version": "3.12.9",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 1,
-      "totalVulnerabilities": 1,
-      "sizeBytes": 145752064,
-      "sizeHuman": "139.0 MB",
-      "createdDate": "2026-05-17T10:17:59.106388006Z",
-      "digest": "sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/base/python:3@sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320",
-      "stableTag": "mcr.microsoft.com/azurelinux/base/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/python:3@sha256:485299b016fe5ae745ffee27f0b8a850576841205ed1d420c9a84b126198e320"
-    },
-    {
-      "rank": 7,
       "language": "python",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0",
@@ -388,7 +374,7 @@
       "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:6b157661bfc04c13c2307276b84e6e34f03e2f3991e5b2486a6bac8d2f4010d7"
     },
     {
-      "rank": 8,
+      "rank": 7,
       "language": "python",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0",
@@ -405,7 +391,7 @@
       "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:523573a6ae86d7d1c2b4b0ad8ad7cbc38c8c3f62347292938d0808bdd3869c80"
     },
     {
-      "rank": 9,
+      "rank": 8,
       "language": "python",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot",
@@ -419,10 +405,13 @@
       "digest": "sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b",
+      "alternateTags": [
+        ":3-nonroot"
+      ]
     },
     {
-      "rank": 10,
+      "rank": 9,
       "language": "python",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
@@ -436,41 +425,10 @@
       "digest": "sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f"
-    },
-    {
-      "rank": 11,
-      "language": "python",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/python:3-nonroot",
-      "version": "3.12.9",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 2,
-      "totalVulnerabilities": 2,
-      "sizeBytes": 87765811,
-      "sizeHuman": "83.7 MB",
-      "createdDate": "2026-05-17T10:22:52.630283625Z",
-      "digest": "sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3-nonroot@sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3-nonroot@sha256:c0279d3b8bdddbe189585e9b084b234eed6285ea60dc2c5dec42ba6c8f3cf10b"
-    },
-    {
-      "rank": 12,
-      "language": "python",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/python:3",
-      "version": "3.12.9",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 2,
-      "totalVulnerabilities": 2,
-      "sizeBytes": 87765811,
-      "sizeHuman": "83.7 MB",
-      "createdDate": "2026-05-17T10:19:52.95175166Z",
-      "digest": "sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3@sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3@sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:6e56d7b3b3b6d846401e42a32d969e045c13f476dbd6ad560d82649096d3f81f",
+      "alternateTags": [
+        ":3"
+      ]
     },
     {
       "rank": 1,
@@ -599,7 +557,7 @@
       "version": "8.0.27",
       "criticalVulnerabilities": 3,
       "highVulnerabilities": 6,
-      "totalVulnerabilities": 124,
+      "totalVulnerabilities": 127,
       "sizeBytes": 202375168,
       "sizeHuman": "193.0 MB",
       "createdDate": "2026-05-20T20:27:54.776023024Z",
@@ -616,7 +574,7 @@
       "version": "8.0.27",
       "criticalVulnerabilities": 3,
       "highVulnerabilities": 6,
-      "totalVulnerabilities": 124,
+      "totalVulnerabilities": 127,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
       "createdDate": "2026-05-20T20:28:00.017342419Z",
@@ -633,7 +591,7 @@
       "version": "8.0.421",
       "criticalVulnerabilities": 3,
       "highVulnerabilities": 30,
-      "totalVulnerabilities": 257,
+      "totalVulnerabilities": 269,
       "sizeBytes": 890241024,
       "sizeHuman": "849.0 MB",
       "createdDate": "2026-05-20T20:28:35.725830004Z",
@@ -799,23 +757,6 @@
       "rank": 1,
       "language": "node",
       "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/base/nodejs:24",
-      "version": "24.14.1",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 1,
-      "totalVulnerabilities": 1,
-      "sizeBytes": 168820736,
-      "sizeHuman": "161.0 MB",
-      "createdDate": "2026-05-17T10:42:05.362296901Z",
-      "digest": "sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:24@sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2",
-      "stableTag": "mcr.microsoft.com/azurelinux/base/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24@sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2"
-    },
-    {
-      "rank": 2,
-      "language": "node",
-      "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/base/nodejs:24.14",
       "version": "24.14.1",
       "criticalVulnerabilities": 0,
@@ -827,44 +768,13 @@
       "digest": "sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2",
       "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:24.14@sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2",
       "stableTag": "mcr.microsoft.com/azurelinux/base/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24.14@sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24.14@sha256:20f7ab20fab66f75d70753ac87a8f8c966521d811b109786174e15f2615464c2",
+      "alternateTags": [
+        ":24"
+      ]
     },
     {
-      "rank": 3,
-      "language": "node",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24-nonroot",
-      "version": "24.14.1",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 7,
-      "totalVulnerabilities": 11,
-      "sizeBytes": 127926272,
-      "sizeHuman": "122.0 MB",
-      "createdDate": "2026-05-17T10:47:24.084353557Z",
-      "digest": "sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24-nonroot@sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24-nonroot@sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09"
-    },
-    {
-      "rank": 4,
-      "language": "node",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24",
-      "version": "24.14.1",
-      "criticalVulnerabilities": 0,
-      "highVulnerabilities": 7,
-      "totalVulnerabilities": 11,
-      "sizeBytes": 127926272,
-      "sizeHuman": "122.0 MB",
-      "createdDate": "2026-05-17T10:44:08.223875408Z",
-      "digest": "sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24@sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24@sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b"
-    },
-    {
-      "rank": 5,
+      "rank": 2,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14-nonroot",
@@ -878,10 +788,13 @@
       "digest": "sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14-nonroot@sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.14-nonroot@sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.14-nonroot@sha256:ce9e8f2c397d0456ee0358e93c580df23853926e97b07e505550a910f95bef09",
+      "alternateTags": [
+        ":24-nonroot"
+      ]
     },
     {
-      "rank": 6,
+      "rank": 3,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14",
@@ -895,10 +808,13 @@
       "digest": "sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14@sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.14@sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.14@sha256:9bfbdc2fbf23c114c9ef18926930a11e53536d0519c895cd75bf6f0fc368bf7b",
+      "alternateTags": [
+        ":24"
+      ]
     },
     {
-      "rank": 7,
+      "rank": 4,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/base/nodejs:24.13",
@@ -915,7 +831,7 @@
       "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24.13@sha256:2d1ed7ab9e4b143703eefbbc1ce5d03bd4475da0a335f157e51b313a1948414f"
     },
     {
-      "rank": 8,
+      "rank": 5,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.13-nonroot",
@@ -932,7 +848,7 @@
       "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.13-nonroot@sha256:e25fe7994e0a31cf3d6523d8b53a651f7390cfafd83cfe1e8706bc80f6988d34"
     },
     {
-      "rank": 9,
+      "rank": 6,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.13",
@@ -949,7 +865,7 @@
       "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.13@sha256:9602d686404823a802b0a858f5b65793ae2d6bd8900bcd64bb423d71f7897501"
     },
     {
-      "rank": 10,
+      "rank": 7,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/base/nodejs:20.14",
@@ -963,27 +879,13 @@
       "digest": "sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71",
       "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:20.14@sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71",
       "stableTag": "mcr.microsoft.com/azurelinux/base/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:20.14@sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:20.14@sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71",
+      "alternateTags": [
+        ":20"
+      ]
     },
     {
-      "rank": 11,
-      "language": "node",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/base/nodejs:20",
-      "version": "20.14.0",
-      "criticalVulnerabilities": 1,
-      "highVulnerabilities": 11,
-      "totalVulnerabilities": 51,
-      "sizeBytes": 153092096,
-      "sizeHuman": "146.0 MB",
-      "createdDate": "2026-03-04T11:13:40.290819492Z",
-      "digest": "sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:20@sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71",
-      "stableTag": "mcr.microsoft.com/azurelinux/base/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:20@sha256:b8a48ba88fdff68c20a2895cb002d547ea47779e37e2fdcb6cd64e4a875f8a71"
-    },
-    {
-      "rank": 12,
+      "rank": 8,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14-nonroot",
@@ -997,10 +899,13 @@
       "digest": "sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14-nonroot@sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20.14-nonroot@sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20.14-nonroot@sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50",
+      "alternateTags": [
+        ":20-nonroot"
+      ]
     },
     {
-      "rank": 13,
+      "rank": 9,
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14",
@@ -1014,41 +919,10 @@
       "digest": "sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6",
       "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14@sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20.14@sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6"
-    },
-    {
-      "rank": 14,
-      "language": "node",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:20-nonroot",
-      "version": "20.14.0",
-      "criticalVulnerabilities": 1,
-      "highVulnerabilities": 17,
-      "totalVulnerabilities": 46,
-      "sizeBytes": 111149056,
-      "sizeHuman": "106.0 MB",
-      "createdDate": "2026-03-04T11:21:33.517362092Z",
-      "digest": "sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:20-nonroot@sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20-nonroot@sha256:60773809112a278016c356118123621ddf763c80f970faa36e6366bdaf794d50"
-    },
-    {
-      "rank": 15,
-      "language": "node",
-      "baseOS": "Azure Linux",
-      "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:20",
-      "version": "20.14.0",
-      "criticalVulnerabilities": 1,
-      "highVulnerabilities": 17,
-      "totalVulnerabilities": 46,
-      "sizeBytes": 111149056,
-      "sizeHuman": "106.0 MB",
-      "createdDate": "2026-03-04T11:16:32.020529796Z",
-      "digest": "sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:20@sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6",
-      "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:20.14",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20@sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6"
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:20.14@sha256:dfc185c7bb4ac4f740b6581ee50d2a5f868dd12c7626b40a1fc5698c980c12e6",
+      "alternateTags": [
+        ":20"
+      ]
     },
     {
       "rank": 1,
