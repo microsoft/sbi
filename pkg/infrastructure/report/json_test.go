@@ -521,11 +521,11 @@ func TestGenerateJSONReport_FiltersIncidentalRuntimes(t *testing.T) {
 		}
 	}
 
-	assert.Len(t, javaEntries, 1, "JDK image should appear in java")
+	require.Len(t, javaEntries, 1, "JDK image should appear in java")
 	assert.Equal(t, "mcr.microsoft.com/openjdk/jdk:21-azurelinux", javaEntries[0].Name)
 
 	// Python section should only have the actual python image, not the JDK
-	assert.Len(t, pythonEntries, 1, "only the actual python image should appear")
+	require.Len(t, pythonEntries, 1, "only the actual python image should appear")
 	assert.Equal(t, "mcr.microsoft.com/azurelinux/base/python:3.12", pythonEntries[0].Name)
 }
 
@@ -563,13 +563,14 @@ func TestGenerateMarkdownReport_FiltersIncidentalRuntimes(t *testing.T) {
 	content := string(data)
 
 	// Java section should contain the JDK image
-	assert.Contains(t, content, "## Java")
-	assert.Contains(t, content, "`mcr.microsoft.com/openjdk/jdk:21-azurelinux`")
+	require.Contains(t, content, "## Java")
+	require.Contains(t, content, "`mcr.microsoft.com/openjdk/jdk:21-azurelinux`")
 
 	// Python section should NOT contain the JDK image
-	assert.Contains(t, content, "## Python")
+	require.Contains(t, content, "## Python")
 	pythonIdx := strings.Index(content, "## Python")
 	javaIdx := strings.Index(content, "## Java")
+	require.NotEqual(t, -1, pythonIdx, "Python section must exist")
 	// Find the Python section content (between Python heading and next heading or EOF)
 	pythonSection := content[pythonIdx:]
 	if javaIdx > pythonIdx {
