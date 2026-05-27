@@ -5,4 +5,5 @@ NIGHTLY_ALLOWED_FILES=(
   "azure_linux_images.db"
   "docs/daily_recommendations.md"
   "docs/daily_recommendations.json"
+  "docs/daily_recommendations_detail.json"
 )
