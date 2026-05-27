@@ -116,6 +116,8 @@ The `tagFilter` section controls which discovered tags are included:
 | `excludePatterns` | Skip tags matching these regex patterns | `["(?i)[-.]?(alpha\|beta)"]` |
 | `requireDigit` | Only include tags that contain a digit | `true` |
 
+By default, `excludePatterns` skips pre-release tags and date-stamped historical build tags such as `3.0.20250206`. If you need historical comparisons, remove the date-stamped pattern from a custom config.
+
 ### Full config example
 
 ```json
@@ -127,7 +129,10 @@ The `tagFilter` section controls which discovered tags are included:
   "tagFilter": {
     "skipExact": ["latest", "dev", "nightly", "edge"],
     "excludeKeywords": ["debug", "test", "arm", "amd"],
-    "excludePatterns": ["(?i)[-.]?(alpha|beta|rc|preview)[\\d.]*$"],
+    "excludePatterns": [
+      "(?i)[-.]?(alpha|beta|rc|preview)[\\d.]*$",
+      "^\\d+\\.\\d+\\.\\d{8}$"
+    ],
     "requireDigit": true
   },
   "repositories": [

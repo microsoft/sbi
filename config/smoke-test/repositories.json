@@ -6,7 +6,10 @@
   "tagFilter": {
     "skipExact": ["latest", "dev", "nightly", "edge", "rc", "beta", "alpha"],
     "excludeKeywords": ["debug", "test", "experimental", "arm", "amd", "azl"],
-    "excludePatterns": ["(?i)[-.]?(alpha|beta|rc|preview|dev|nightly|canary)[\\d.]*$"],
+    "excludePatterns": [
+      "(?i)[-.]?(alpha|beta|rc|preview|dev|nightly|canary)[\\d.]*$",
+      "^\\d+\\.\\d+\\.\\d{8}$"
+    ],
     "requireDigit": true
   },
   "repositories": [
