@@ -2,3 +2,4 @@
 # Storing the DB with LFS prevents repo bloat from daily binary diffs.
 # You must run `git lfs install` locally (once per machine) after pulling this change.
 azure_linux_images.db filter=lfs diff=lfs merge=lfs -text
+docs/*_detail.json filter=lfs diff=lfs merge=lfs -text

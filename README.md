@@ -10,6 +10,7 @@ Every night, this project scans configured MCR (Microsoft Container Registry) co
 |----------|--------------------------------------------------------------------|
 | Markdown | [docs/daily_recommendations.md](docs/daily_recommendations.md)     |
 | JSON     | [docs/daily_recommendations.json](docs/daily_recommendations.json) |
+| Detailed JSON | [On-demand with `--detailed`](docs/detailed-report.md) (per-image packages, CVEs, languages) |
 
 Reports are regenerated nightly at 02:00 UTC via [GitHub Actions](.github/workflows/nightly-scan.yml) and committed automatically. Images are ranked per language by: fewest critical → fewest high → fewest total vulnerabilities → smallest size.
 
@@ -48,6 +49,9 @@ sbi scan --verbose
 # Regenerate reports from existing database
 sbi report
 
+# Generate reports with detailed per-image breakdown
+sbi report --detailed
+
 # Clear the database
 sbi reset-db
 ```
@@ -70,6 +74,7 @@ task build
 | `--output` | `docs/daily_recommendations.md` | Path to output report file |
 | `--top-n` | 10 | Number of top images per language per base OS (0 = all) |
 | `--json-top-n` | 20 | Number of top images per language per base OS in JSON report (0 = all) |
+| `--detailed` | false | Generate detailed per-image JSON report with packages and vulnerabilities |
 | `--verbose, -v` | false | Enable verbose output |
 | `--debug, -d` | false | Enable debug output |
 
@@ -81,6 +86,8 @@ task build
 | `--comprehensive` | false | Enable comprehensive scanning (secrets + misconfigs) |
 | `--update-existing` | false | Rescan existing images |
 | `--no-cleanup` | false | Keep Docker images after scanning |
+
+> **Tip:** The `--detailed` flag generates a rich per-image JSON report with packages, CVEs, and languages. See [docs/detailed-report.md](docs/detailed-report.md) for the report schema and jq query examples.
 
 ## Configuration
 

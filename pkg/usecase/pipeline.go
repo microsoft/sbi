@@ -103,7 +103,17 @@ func (p *Pipeline) GenerateReport() error {
 
 	jsonPath := strings.TrimSuffix(p.config.OutputPath, ".md") + ".json"
 
-	return report.GenerateJSONReport(p.repo, jsonPath, p.config.TopNJSON, &p.repoCfg)
+	if err := report.GenerateJSONReport(p.repo, jsonPath, p.config.TopNJSON, &p.repoCfg); err != nil {
+		return err
+	}
+
+	if p.config.Detailed {
+		detailPath := strings.TrimSuffix(jsonPath, ".json") + "_detail.json"
+
+		return report.GenerateDetailJSONReport(p.repo, detailPath)
+	}
+
+	return nil
 }
 
 func (p *Pipeline) scanRepository(repo string, category string) error {

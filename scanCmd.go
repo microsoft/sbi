@@ -72,6 +72,7 @@ func runScan(cmd *cobra.Command, _ []string) error {
 		CleanupImages:     !flgNoCleanup,
 		UpdateExisting:    flgUpdateExisting,
 		Verbose:           flgVerbose,
+		Detailed:          flgDetailed,
 	}
 
 	repo := database.NewRepository(db)

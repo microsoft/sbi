@@ -138,6 +138,7 @@ type ScanConfig struct {
 	CleanupImages     bool
 	UpdateExisting    bool
 	Verbose           bool
+	Detailed          bool
 }
 
 // RepositoryConfig represents the JSON configuration for image sources and tag filtering.
