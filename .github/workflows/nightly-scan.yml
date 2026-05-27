@@ -85,6 +85,7 @@ jobs:
             --max-tags 0 \
             --comprehensive \
             --update-existing \
+            --detailed \
             -v
 
       - name: 📊 Show database stats
