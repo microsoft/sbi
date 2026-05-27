@@ -6,11 +6,11 @@ Every night, this project scans configured MCR (Microsoft Container Registry) co
 
 ## 📊 Daily Reports
 
-| Format   | Link                                                               |
-|----------|--------------------------------------------------------------------|
-| Markdown | [docs/daily_recommendations.md](docs/daily_recommendations.md)     |
-| JSON     | [docs/daily_recommendations.json](docs/daily_recommendations.json) |
-| Detailed JSON | [On-demand with `--detailed`](docs/detailed-report.md) (per-image packages, CVEs, languages) |
+| Format        | Link                                                                             |
+|---------------|----------------------------------------------------------------------------------|
+| Markdown      | [docs/daily_recommendations.md](docs/daily_recommendations.md)                   |
+| JSON          | [docs/daily_recommendations.json](docs/daily_recommendations.json)               |
+| Detailed JSON | [docs/daily_recommendations_detail.json](docs/daily_recommendations_detail.json) |
 
 Reports are regenerated nightly at 02:00 UTC via [GitHub Actions](.github/workflows/nightly-scan.yml) and committed automatically. Images are ranked per language by: fewest critical → fewest high → fewest total vulnerabilities → smallest size.
 
@@ -23,7 +23,7 @@ A nightly [GitHub Actions workflow](.github/workflows/nightly-scan.yml) runs the
 3. **Scan** — Run [Trivy](https://github.com/aquasecurity/trivy) vulnerability scanning
 4. **Verify** — Runtime verification of detected languages inside containers
 5. **Store** — Persist results in a SQLite database (tracked via Git LFS)
-6. **Report** — Generate ranked markdown and JSON reports, commit and push to this repo
+6. **Report** — Generate ranked markdown, JSON, and [detailed JSON](docs/detailed-report.md) reports, commit and push to this repo
 
 ### What Gets Scanned
 
