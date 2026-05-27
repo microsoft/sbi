@@ -238,6 +238,16 @@ Reports are grouped by **Language → Base OS → ranked table**:
 - Images with unknown/empty OS are grouped as "Other" (sorted last).
 - The **"Base / No Runtime"** section (language = `"base"`) always appears last, after all runtime language sections. It contains minimal images (e.g., `azurelinux/base/core`) suitable for deploying static binaries (Go, Rust).
 
+### Incidental Runtime Filtering
+
+At report generation time, images are filtered so that recommendation sections only include images whose **primary runtime** matches the section language. This prevents images with incidental secondary runtimes (e.g., Python installed as a system dependency in JDK images) from appearing in unrelated language sections.
+
+**How it works:** The primary language is inferred from the image's repository path segments. For example, `openjdk/jdk` → Java, `azurelinux/base/python` → Python, `dotnet/aspnet` → .NET. If no primary language can be inferred from the image name, the image is kept in all sections (safe fallback).
+
+**Mapped segments:** `python` → Python, `nodejs`/`node` → Node.js, `openjdk`/`jdk`/`jre` → Java, `golang`/`go` → Go, `dotnet`/`aspnet` → .NET, `ruby` → Ruby, `php` → PHP, `rust` → Rust.
+
+All detected languages are still stored in the database — the filtering is applied only when generating reports. The filter runs before deduplication and top-N limiting.
+
 **Language display names:** `"base"` → "Base / No Runtime", all others → title case (e.g., `"python"` → "Python").
 
 **OS display names:** `azurelinux` → "Azure Linux", `ubuntu` → "Ubuntu", `debian` → "Debian", `alpine` → "Alpine".

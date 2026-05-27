@@ -110,6 +110,7 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 				continue
 			}
 
+			images = FilterIncidentalImages(images, lang)
 			images = DeduplicateByDigest(images)
 			if topN > 0 && len(images) > topN {
 				images = images[:topN]
