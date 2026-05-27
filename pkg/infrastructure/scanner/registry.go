@@ -40,7 +40,7 @@ func DefaultTagFilter() domain.TagFilterConfig {
 	return domain.TagFilterConfig{
 		SkipExact:       []string{"latest", "dev", "nightly", "edge", "rc", "beta", "alpha"},
 		ExcludeKeywords: []string{"debug", "test", "experimental", "arm", "amd", "azl"},
-		ExcludePatterns: []string{`(?i)[-.]?(alpha|beta|rc|preview|dev|nightly|canary)[\d.]*$`},
+		ExcludePatterns: []string{`(?i)[-.]?(alpha|beta|rc|preview|dev|nightly|canary)[\d.]*$`, `^\d+\.\d+\.\d{8}$`},
 		RequireDigit:    true,
 	}
 }

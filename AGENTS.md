@@ -125,7 +125,7 @@ Generate reports:
   "tagFilter": {
     "skipExact": ["latest", "dev", "nightly"],
     "excludeKeywords": ["debug", "test", "experimental", "arm", "amd", "azl"],
-    "excludePatterns": ["(?i)[-.]?(alpha|beta|rc|preview)..."],
+    "excludePatterns": ["(?i)[-.]?(alpha|beta|rc|preview)...", "^\\d+\\.\\d+\\.\\d{8}$"],
     "requireDigit": true
   },
   "repositories": [
@@ -149,6 +149,7 @@ Generate reports:
 - **No colon** -> repository: tags are discovered via `GET /v2/{repo}/tags/list`, then filtered
 - **Has colon** -> single image: scanned directly, no tag discovery
 - **`"category": "base"`** -> marks a group as containing minimal/no-runtime images. During scanning, images in these groups that have no detected language runtime receive a synthetic `"base"` language entry, so they appear in a **"Base / No Runtime"** report section. Images in the group that do have detected languages are unaffected.
+- Default tag filtering excludes date-stamped historical build tags such as `3.0.20250206`; remove `^\\d+\\.\\d+\\.\\d{8}$` from a custom config to scan historical tags.
 
 ## Language Detection (3-stage pipeline)
 

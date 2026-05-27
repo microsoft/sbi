@@ -30,17 +30,21 @@ import (
 
 func TestFilterTags(t *testing.T) {
 	tags := []string{"3.12", "3.11", "3.12-rc1", "3.11-beta", "3.10-alpha", "latest", "3.12-preview",
-		"3.12.9-8-azl3.0.20260204-arm64", "3.12.9-8-azl3.0.20260204-amd64", "3.12.9-8-debug-nonroot"}
+		"3.0.20250206", "3.12.9", "10.0.19041", "3.12.9-8-azl3.0.20260204-arm64", "3.12.9-8-azl3.0.20260204-amd64",
+		"3.12.9-8-debug-nonroot"}
 	filtered := FilterTags(tags, DefaultTagFilter())
 
 	assert.Contains(t, filtered, "3.12")
 	assert.Contains(t, filtered, "3.11")
+	assert.Contains(t, filtered, "3.12.9")
+	assert.Contains(t, filtered, "10.0.19041")
 	assert.NotContains(t, filtered, "latest")
 	assert.NotContains(t, filtered, "3.12-rc1")
 	assert.NotContains(t, filtered, "3.11-beta")
 	assert.NotContains(t, filtered, "3.10-alpha")
 	assert.NotContains(t, filtered, "3.12-preview")
-	// Arch-specific and build-specific tags should be excluded
+	assert.NotContains(t, filtered, "3.0.20250206")
+	// Arch-specific, dated, and build-specific tags should be excluded
 	assert.NotContains(t, filtered, "3.12.9-8-azl3.0.20260204-arm64")
 	assert.NotContains(t, filtered, "3.12.9-8-azl3.0.20260204-amd64")
 	assert.NotContains(t, filtered, "3.12.9-8-debug-nonroot")
