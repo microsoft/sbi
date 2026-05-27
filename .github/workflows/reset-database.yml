@@ -17,19 +17,25 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
-      contents: write
+      contents: read
     steps:
-      - name: 🔑 Generate App Token
-        id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      # Authentication: uses a deploy key (SSH) for direct push to main.
+      # The deploy key must be added as a bypass actor in the branch
+      # protection ruleset. See https://github.com/microsoft/sbi/issues/6
+
+      - name: ✅ Require default branch for manual runs
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/${DEFAULT_BRANCH}" ]; then
+            echo "::error::Run workflow_dispatch from ${DEFAULT_BRANCH} only."
+            exit 1
+          fi
 
       - name: ⤵️ Checkout (with LFS)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          ssh-key: ${{ secrets.NIGHTLY_WRITE_BOT_KEY }}
           lfs: true
           fetch-depth: 0
 
@@ -57,14 +63,73 @@ jobs:
       - name: 📝 Commit & push reset outputs
         if: success()
         run: |
-          git config user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config user.email '${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
-          git add -f azure_linux_images.db || true
-          if [ -n "$(git diff --cached --name-only)" ]; then
-            CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
-            echo "Changed files: $CHANGED_FILES"
-            git commit -m "chore: reset database entries [skip ci]"
-            git push
-          else
-            echo 'No changes to commit.'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # Source the shared allowlist from the trusted triggering commit
+          # so earlier tooling cannot taint the file list.
+          git restore --source='${{ github.sha }}' -- .github/reset-db-allowed-files.sh
+          source .github/reset-db-allowed-files.sh
+
+          is_allowed_file() {
+            local candidate="$1"
+            local allowed_file
+
+            for allowed_file in "${RESET_DB_ALLOWED_FILES[@]}"; do
+              if [ "$candidate" = "$allowed_file" ]; then
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
+          # Validate expected artifacts exist
+          MISSING=()
+          for f in "${RESET_DB_ALLOWED_FILES[@]}"; do
+            [ -f "$f" ] || MISSING+=("$f")
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Missing expected reset artifacts:"
+            printf '  - %s\n' "${MISSING[@]}"
+            exit 1
           fi
+
+          # Validate the full working tree so unexpected files cannot be
+          # hidden by selectively staging only the allowlisted outputs.
+          UNEXPECTED=()
+          while IFS= read -r -d '' file; do
+            if ! is_allowed_file "$file"; then
+              UNEXPECTED+=("$file")
+            fi
+          done < <(git diff --name-only -z)
+          while IFS= read -r -d '' file; do
+            if ! is_allowed_file "$file"; then
+              UNEXPECTED+=("$file")
+            fi
+          done < <(git ls-files --others --exclude-standard -z)
+          if [ ${#UNEXPECTED[@]} -gt 0 ]; then
+            echo "::error::Reset-db produced unexpected file changes:"
+            printf '  - %s\n' "${UNEXPECTED[@]}"
+            exit 1
+          fi
+
+          git add -f "${RESET_DB_ALLOWED_FILES[@]}"
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+
+          # Final staged-file validation
+          while IFS= read -r -d '' file; do
+            if ! is_allowed_file "$file"; then
+              echo "::error::Unexpected file staged: $file"
+              exit 1
+            fi
+          done < <(git diff --cached --name-only -z)
+
+          CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+          git commit -m "chore: reset database entries [skip ci]"
+          git pull --rebase origin main
+          git push
