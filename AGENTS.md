@@ -19,7 +19,7 @@ pkg/
   infrastructure/
     database/                 # SQLite schema, persistence, ranked queries
       schema.go               # Table definitions (images, languages, vulnerabilities, etc.)
-      repository.go           # InsertImage (upsert), QueryTopImages, QueryLanguages
+      repository.go           # InsertImage (upsert), QueryTopImages, QueryLanguages, QueryAllImageDetails
     scanner/
       analyzer.go             # Orchestrates: pull -> inspect -> syft -> trivy -> verify
       syft.go                 # SBOM parsing, language detection from packages
@@ -28,7 +28,8 @@ pkg/
       docker.go               # Docker pull, inspect, run commands in containers
     report/
       markdown.go             # Markdown report generation
-      json.go                 # JSON report generation
+      json.go                 # JSON summary report generation
+      json_detail.go          # Detailed per-image JSON report (packages, CVEs, languages)
   usecase/
     pipeline.go               # Top-level orchestration: config -> discover -> scan -> report
 config/
@@ -87,6 +88,7 @@ sbi reset-db --database azure_linux_images.db
 - `--json-top-n N` — number of top images per language per base OS in JSON report (default 20, 0 = all)
 - `--max-tags N` — limit tags per repository (0 = all)
 - `--comprehensive` — enable secrets + misconfiguration scanning
+- `--detailed` — generate a detailed per-image JSON report with full package/vulnerability/language data
 - `--update-existing` — rescan images already in the database
 - `--no-cleanup` — keep Docker images after scanning
 
@@ -273,6 +275,10 @@ The JSON report uses a flat `images` array — each entry has `language` and `ba
 JSON top-N defaults to 20 (configurable via `--json-top-n`, 0 = all). Rank resets per language+OS group. Each entry includes `createdDate`, `pinnedReference`, `stableTag`, and `dockerfileFrom`.
 
 `RecommendedImage` includes image name, language version, vulnerability counts, size, created date, digest, and base OS for report generation.
+
+### Detailed JSON Report
+
+When `--detailed` is passed, a separate `*_detail.json` file is generated with per-image package inventories, vulnerability breakdowns (CVE ID, severity, CVSS, fix availability), system packages, package managers, and detected languages. This report covers all scanned images (not top-N filtered), uses a flat `images` array with one entry per DB image, and includes a `schemaVersion` field for forward compatibility. See [docs/detailed-report.md](docs/detailed-report.md) for schema and jq query examples.
 
 ## Database Schema
 
