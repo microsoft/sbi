@@ -38,6 +38,7 @@ var (
 	flgUpdateExisting bool
 	flgVerbose        bool
 	flgDebug          bool
+	flgDetailed       bool
 )
 
 // NewRootCommand creates the root cobra command.
@@ -57,6 +58,7 @@ and generates a markdown report ranking images by security posture per language.
 	rootCmd.PersistentFlags().IntVar(&flgTopNJSON, "json-top-n", 20, "Number of top images per language per base OS in JSON report (0 = all)")
 	rootCmd.PersistentFlags().BoolVarP(&flgVerbose, "verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().BoolVarP(&flgDebug, "debug", "d", false, "Enable debug output")
+	rootCmd.PersistentFlags().BoolVar(&flgDetailed, "detailed", false, "Generate detailed per-image JSON report with packages and vulnerabilities")
 
 	rootCmd.AddCommand(NewScanCommand())
 	rootCmd.AddCommand(NewReportCommand())

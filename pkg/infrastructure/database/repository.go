@@ -357,6 +357,205 @@ func (r *Repository) ClearDatabase() error {
 	return nil
 }
 
+// QueryAllImageDetails returns every image with its child data populated
+// (languages, vulnerabilities, system packages, package managers).
+// Uses batched eager loading within a read transaction for snapshot consistency.
+func (r *Repository) QueryAllImageDetails() ([]domain.ImageRecord, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("beginning read transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	// Step 1: Load all images
+	imgRows, err := tx.Query(`
+		SELECT id, name, registry, repository, tag, digest,
+		       COALESCE(size_bytes, 0), layers, COALESCE(created_date, ''),
+		       COALESCE(scan_timestamp, ''), COALESCE(base_os_name, ''),
+		       COALESCE(base_os_version, ''),
+		       total_vulnerabilities, critical_vulnerabilities, high_vulnerabilities,
+		       medium_vulnerabilities, low_vulnerabilities, negligible_vulnerabilities,
+		       unknown_vulnerabilities
+		FROM images
+		ORDER BY name ASC`)
+	if err != nil {
+		return nil, fmt.Errorf("querying images: %w", err)
+	}
+
+	imageMap := make(map[int64]*domain.ImageRecord)
+	var imageOrder []int64
+
+	for imgRows.Next() {
+		var img domain.ImageRecord
+		if err := imgRows.Scan(
+			&img.ID, &img.Name, &img.Registry, &img.Repository, &img.Tag, &img.Digest,
+			&img.SizeBytes, &img.Layers, &img.CreatedDate,
+			&img.ScanTimestamp, &img.BaseOSName, &img.BaseOSVersion,
+			&img.TotalVulnerabilities, &img.CriticalVulnerabilities, &img.HighVulnerabilities,
+			&img.MediumVulnerabilities, &img.LowVulnerabilities, &img.NegligibleVulnerabilities,
+			&img.UnknownVulnerabilities,
+		); err != nil {
+			_ = imgRows.Close()
+			return nil, fmt.Errorf("scanning image: %w", err)
+		}
+
+		imageMap[img.ID] = &img
+		imageOrder = append(imageOrder, img.ID)
+	}
+
+	if err := imgRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing image rows: %w", err)
+	}
+
+	if err := imgRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating images: %w", err)
+	}
+
+	if len(imageMap) == 0 {
+		return nil, nil
+	}
+
+	// Step 2: Load languages
+	langRows, err := tx.Query(`
+		SELECT image_id, language, COALESCE(version, ''), COALESCE(major_minor, ''),
+		       COALESCE(package_name, ''), COALESCE(package_type, ''), verified
+		FROM languages ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying languages: %w", err)
+	}
+
+	for langRows.Next() {
+		var imageID int64
+		var l domain.Language
+		var verified int
+
+		if err := langRows.Scan(&imageID, &l.Language, &l.Version, &l.MajorMinor,
+			&l.PackageName, &l.PackageType, &verified); err != nil {
+			_ = langRows.Close()
+			return nil, fmt.Errorf("scanning language: %w", err)
+		}
+
+		l.Verified = verified != 0
+
+		if img, ok := imageMap[imageID]; ok {
+			img.Languages = append(img.Languages, l)
+		}
+	}
+
+	if err := langRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing language rows: %w", err)
+	}
+
+	if err := langRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating languages: %w", err)
+	}
+
+	// Step 3: Load vulnerabilities
+	vulnRows, err := tx.Query(`
+		SELECT image_id, COALESCE(vulnerability_id, ''), COALESCE(severity, ''),
+		       COALESCE(package_name, ''), COALESCE(package_version, ''),
+		       COALESCE(fixed_version, ''), COALESCE(description, ''),
+		       COALESCE(cvss_score, 0)
+		FROM vulnerabilities ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying vulnerabilities: %w", err)
+	}
+
+	for vulnRows.Next() {
+		var imageID int64
+		var v domain.Vulnerability
+
+		if err := vulnRows.Scan(&imageID, &v.VulnerabilityID, &v.Severity,
+			&v.PackageName, &v.PackageVersion, &v.FixedVersion,
+			&v.Description, &v.CVSSScore); err != nil {
+			_ = vulnRows.Close()
+			return nil, fmt.Errorf("scanning vulnerability: %w", err)
+		}
+
+		if img, ok := imageMap[imageID]; ok {
+			img.Vulnerabilities = append(img.Vulnerabilities, v)
+		}
+	}
+
+	if err := vulnRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing vulnerability rows: %w", err)
+	}
+
+	if err := vulnRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating vulnerabilities: %w", err)
+	}
+
+	// Step 4: Load system packages
+	spRows, err := tx.Query(`
+		SELECT image_id, COALESCE(name, ''), COALESCE(version, ''),
+		       COALESCE(package_type, '')
+		FROM system_packages ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying system packages: %w", err)
+	}
+
+	for spRows.Next() {
+		var imageID int64
+		var sp domain.SystemPackage
+
+		if err := spRows.Scan(&imageID, &sp.Name, &sp.Version, &sp.PackageType); err != nil {
+			_ = spRows.Close()
+			return nil, fmt.Errorf("scanning system package: %w", err)
+		}
+
+		if img, ok := imageMap[imageID]; ok {
+			img.SystemPackages = append(img.SystemPackages, sp)
+		}
+	}
+
+	if err := spRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing system package rows: %w", err)
+	}
+
+	if err := spRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating system packages: %w", err)
+	}
+
+	// Step 5: Load package managers
+	pmRows, err := tx.Query(`
+		SELECT image_id, COALESCE(name, ''), COALESCE(version, ''),
+		       COALESCE(language, '')
+		FROM package_managers ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying package managers: %w", err)
+	}
+
+	for pmRows.Next() {
+		var imageID int64
+		var pm domain.PackageManager
+
+		if err := pmRows.Scan(&imageID, &pm.Name, &pm.Version, &pm.Language); err != nil {
+			_ = pmRows.Close()
+			return nil, fmt.Errorf("scanning package manager: %w", err)
+		}
+
+		if img, ok := imageMap[imageID]; ok {
+			img.PackageManagers = append(img.PackageManagers, pm)
+		}
+	}
+
+	if err := pmRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing package manager rows: %w", err)
+	}
+
+	if err := pmRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating package managers: %w", err)
+	}
+
+	// Assemble in original order
+	results := make([]domain.ImageRecord, 0, len(imageOrder))
+	for _, id := range imageOrder {
+		results = append(results, *imageMap[id])
+	}
+
+	return results, nil
+}
+
 // GetDatabaseStats returns basic statistics about the database.
 func (r *Repository) GetDatabaseStats() (map[string]int, error) {
 	stats := make(map[string]int)
