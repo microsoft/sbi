@@ -8,8 +8,8 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
     "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
-      "jqVersion": "latest",
-      "yqVersion": "latest"
+      "jqVersion": "1.8.1",
+      "yqVersion": "v4.53.2"
     }
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
