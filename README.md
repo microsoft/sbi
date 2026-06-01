@@ -2,6 +2,8 @@
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/microsoft/sbi/badge)](https://scorecard.dev/viewer/?uri=github.com/microsoft/sbi)
 
+📝 **Blog post:** [The Best MCR Base Image for Your Language? SBI Scans Nightly So You Don't Have To](https://medium.com/microsoftazure/the-best-mcr-base-image-for-your-language-sbi-scans-nightly-so-you-dont-have-to-62f17587a45e)
+
 Every night, this project scans configured MCR (Microsoft Container Registry) container base images for vulnerabilities and generates a recommended secure base images report, ranked by language. The default configuration targets MCR images, but the tool supports scanning any container registry.
 
 ## 📊 Daily Reports
