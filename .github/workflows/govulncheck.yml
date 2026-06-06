@@ -59,7 +59,7 @@ jobs:
             exit "$status"
           fi
 
-          if jq -e 'select(.finding != null)' govulncheck.json > /dev/null 2>&1; then
+          if jq -e -s 'any(.[]; .finding != null)' govulncheck.json > /dev/null 2>&1; then
             echo "found=true" >> "$GITHUB_OUTPUT"
           elif jq empty govulncheck.json 2>/dev/null; then
             echo "found=false" >> "$GITHUB_OUTPUT"
@@ -107,10 +107,9 @@ jobs:
           issue_number=$(gh issue list \
             --label "$ISSUE_LABEL" \
             --state open \
-            --search "in:title $ISSUE_TITLE" \
-            --json number \
-            --jq '.[0].number // empty' \
-            --repo "${{ github.repository }}" 2>/dev/null || true)
+            --json number,title \
+            --jq '.[] | select(.title == env.ISSUE_TITLE) | .number' \
+            --repo "${{ github.repository }}" 2>/dev/null | head -n 1 || true)
           echo "number=${issue_number}" >> "$GITHUB_OUTPUT"
 
       - name: 📝 Create or update issue
