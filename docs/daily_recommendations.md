@@ -1,6 +1,6 @@
 # Daily Recommended Images by Language
 
-_Generated: 2026-06-11T03:13:46Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
+_Generated: 2026-06-12T03:13:42Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
 
 **Note:** Image sizes are based on Linux amd64 platform as reported by `docker images` on GitHub runners. Actual sizes may vary significantly on other platforms (macOS, Windows, etc.).
 
@@ -87,9 +87,9 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/dotnet/runtime:8.0` | 8.0.28 | - | 5 | 12 | 153 | 193.0 MB | 2026-06-09 | `sha256:8cb15be646f4` | `mcr.microsoft.com/dotnet/runtime:8.0@sha256:8cb15be646f4ca86fc9cf9d9e6e93652b10bdf97569ca2090e7d4d32d072fbf2` |
-| 2 | `mcr.microsoft.com/dotnet/aspnet:8.0` | 8.0.28 | - | 5 | 12 | 153 | 218.0 MB | 2026-06-09 | `sha256:0d39437fd3b5` | `mcr.microsoft.com/dotnet/aspnet:8.0@sha256:0d39437fd3b598b2fd91f4d27118948b6ca1694ab90f90fef256504f822528fc` |
-| 3 | `mcr.microsoft.com/dotnet/sdk:8.0` | 8.0.422 | - | 11 | 45 | 303 | 850.0 MB | 2026-06-09 | `sha256:c0761ac934d5` | `mcr.microsoft.com/dotnet/sdk:8.0@sha256:c0761ac934d599d5be35e5d237aba6b08f47032a492c765e5ffa8d4bfc851e79` |
+| 1 | `mcr.microsoft.com/dotnet/runtime:8.0` | 8.0.28 | - | 3 | 7 | 122 | 193.0 MB | 2026-06-12 | `sha256:c6905176a21a` | `mcr.microsoft.com/dotnet/runtime:8.0@sha256:c6905176a21a105e182f0c0ba0120c6043b0bfd95ffeae2147477d07dc7c7fd9` |
+| 2 | `mcr.microsoft.com/dotnet/aspnet:8.0` | 8.0.28 | - | 3 | 7 | 122 | 218.0 MB | 2026-06-12 | `sha256:8e7aefa6e35d` | `mcr.microsoft.com/dotnet/aspnet:8.0@sha256:8e7aefa6e35d12dec6301c26bd3ceba514aee4e699562b7b10cc242b2bd48c12` |
+| 3 | `mcr.microsoft.com/dotnet/sdk:8.0` | 8.0.422 | - | 9 | 40 | 272 | 850.0 MB | 2026-06-12 | `sha256:00055ab5021a` | `mcr.microsoft.com/dotnet/sdk:8.0@sha256:00055ab5021a5c649911db11e6b18cc8ae921c15fdb59ef4f787f4858c4298f5` |
 
 ### Ubuntu
 
@@ -104,6 +104,13 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 | 7 | `mcr.microsoft.com/dotnet/sdk:10.0-noble` | 10.0.301 | - | 0 | 0 | 46 | 882.0 MB | 2026-06-09 | `sha256:548d93f8a18a` | `mcr.microsoft.com/dotnet/sdk:10.0-noble@sha256:548d93f8a18a1acbe6cc127bc4f47281430d34a9e35c18afa80a8d6741c2adc3` |
 | 8 | `mcr.microsoft.com/dotnet/sdk:9.0-noble` | 9.0.315 | - | 0 | 0 | 56 | 843.0 MB | 2026-06-09 | `sha256:bdf453c44d37` | `mcr.microsoft.com/dotnet/sdk:9.0-noble@sha256:bdf453c44d3729380bab181de1a9178d9920ad4f84273382d683ed2003e4e890` |
 | 9 | `mcr.microsoft.com/dotnet/sdk:8.0-noble` | 8.0.422 | - | 0 | 10 | 66 | 842.0 MB | 2026-06-09 | `sha256:d1e5dd229d0d` | `mcr.microsoft.com/dotnet/sdk:8.0-noble@sha256:d1e5dd229d0d1d936df1273de6ff4b7114a39be127f0b1dfb0aa61fd922d3b7e` |
+
+## Go
+
+| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
+|------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
+| 1 | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0` | 1.25.11 | - | 0 | 0 | 0 | 809.0 MB | 2026-06-10 | `sha256:8ee12dec6294` | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:8ee12dec6294a234ce629efd7edbc08a9b5a8b81e521f17ac1ae75c8ed59eb12` |
+| 2 | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0` | 1.26.4 | - | 0 | 0 | 0 | 841.0 MB | 2026-06-10 | `sha256:877c8a506069` | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:877c8a5060696d888263c5b13ce99158455cf309e95cec4a8208c0bdd6726394` |
 
 ## Java
 
@@ -147,13 +154,6 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 | 1 | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot` | 3.12.9 | :3-nonroot | 0 | 0 | 0 | 83.7 MB | 2026-06-05 | `sha256:d83c8a8f7356` | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:d83c8a8f73567d7f3888262685693b8be4bcc1f5616692bed33e304da1e6e17a` |
 | 2 | `mcr.microsoft.com/azurelinux/distroless/python:3.12` | 3.12.9 | :3 | 0 | 0 | 0 | 83.7 MB | 2026-06-05 | `sha256:7eef130986e3` | `mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:7eef130986e3ab36c9bd5069b7260276343beab88b39927fdb523c5daf60012d` |
 | 3 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.9 | :3 | 0 | 0 | 0 | 139.0 MB | 2026-06-05 | `sha256:086a668fc26d` | `mcr.microsoft.com/azurelinux/base/python:3.12@sha256:086a668fc26db53e11452f977f303d6da11a57e6408add617f18eb9568eb0308` |
-
-## Go
-
-| Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
-|------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0` | 1.25.11 | - | 0 | 105 | 164 | 809.0 MB | 2026-06-03 | `sha256:91664b8bf244` | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:91664b8bf244b7abb63bed58abedbd64907ebad4dd15c3486d879b3a23303fa9` |
-| 2 | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0` | 1.26.4 | - | 0 | 105 | 164 | 841.0 MB | 2026-06-03 | `sha256:5f95bf70f4c4` | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:5f95bf70f4c437de4a6ba1f72ef1532f69fca392c131fff2172993cabbea359c` |
 
 ## Base / No Runtime
 
