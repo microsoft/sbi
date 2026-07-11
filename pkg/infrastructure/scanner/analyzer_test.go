@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFilterTags(t *testing.T) {
@@ -48,6 +49,83 @@ func TestFilterTags(t *testing.T) {
 	assert.NotContains(t, filtered, "3.12.9-8-azl3.0.20260204-arm64")
 	assert.NotContains(t, filtered, "3.12.9-8-azl3.0.20260204-amd64")
 	assert.NotContains(t, filtered, "3.12.9-8-debug-nonroot")
+}
+
+func TestFilterTags_VersionAwareNewestFirst(t *testing.T) {
+	// Reverse string sort would put 9.0 before 10.0; version-aware sort must not.
+	tags := []string{"1.26", "1.25", "10.0", "9.0", "8.0", "2.0"}
+	filtered := FilterTags(tags, DefaultTagFilter())
+
+	require.Equal(t, []string{"10.0", "9.0", "8.0", "2.0", "1.26", "1.25"}, filtered)
+
+	// With max-tags, the newest majors must be selected (not 9.x/8.x only).
+	assert.Equal(t, []string{"10.0", "9.0", "8.0"}, LimitTags(filtered, 3))
+}
+
+func TestSortTagsNewestFirst(t *testing.T) {
+	tests := []struct {
+		name  string
+		input []string
+		want  []string
+	}{
+		{
+			name:  "major versions not lexical",
+			input: []string{"9.0", "10.0", "8.0"},
+			want:  []string{"10.0", "9.0", "8.0"},
+		},
+		{
+			name:  "patch vs minor",
+			input: []string{"3.12", "3.12.9", "3.11"},
+			want:  []string{"3.12.9", "3.12", "3.11"},
+		},
+		{
+			name:  "suffix after version",
+			input: []string{"8.0-noble", "10.0-azurelinux3.0", "9.0"},
+			want:  []string{"10.0-azurelinux3.0", "9.0", "8.0-noble"},
+		},
+		{
+			name:  "single segment",
+			input: []string{"21", "25", "17"},
+			want:  []string{"25", "21", "17"},
+		},
+		{
+			name:  "equal version different suffix",
+			input: []string{"8.0-noble", "8.0-azurelinux3.0"},
+			// Ascending rest: "-azurelinux3.0" < "-noble"; newest-first reverses that.
+			want: []string{"8.0-noble", "8.0-azurelinux3.0"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := append([]string(nil), tt.input...)
+			sortTagsNewestFirst(got)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestVersionPrefix(t *testing.T) {
+	tests := []struct {
+		tag      string
+		wantSegs []int
+		wantRest string
+	}{
+		{"10.0", []int{10, 0}, ""},
+		{"10.0-noble", []int{10, 0}, "-noble"},
+		{"3.12.9", []int{3, 12, 9}, ""},
+		{"21-azurelinux", []int{21}, "-azurelinux"},
+		{"latest", nil, "latest"},
+		{"", nil, ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.tag, func(t *testing.T) {
+			segs, rest := versionPrefix(tt.tag)
+			assert.Equal(t, tt.wantSegs, segs)
+			assert.Equal(t, tt.wantRest, rest)
+		})
+	}
 }
 
 func TestLimitTags(t *testing.T) {
