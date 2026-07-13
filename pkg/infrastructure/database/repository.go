@@ -60,9 +60,9 @@ func (r *Repository) InsertImage(img *domain.ImageRecord) (err error) {
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
+	// Defer is registered only after Begin succeeds, so tx is always non-nil here.
 	defer func() {
-		// Only roll back a live transaction; Begin failure leaves tx nil.
-		if err != nil && tx != nil {
+		if err != nil {
 			if rbErr := tx.Rollback(); rbErr != nil {
 				log.Errorf("rollback failed: %v", rbErr)
 			}
