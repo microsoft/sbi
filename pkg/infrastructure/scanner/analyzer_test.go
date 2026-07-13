@@ -62,6 +62,16 @@ func TestFilterTags_VersionAwareNewestFirst(t *testing.T) {
 	assert.Equal(t, []string{"10.0", "9.0", "8.0"}, LimitTags(filtered, 3))
 }
 
+func TestFilterTags_VPrefixedVersionAwareNewestFirst(t *testing.T) {
+	// Reverse string sort ranks v9.0 above v10.0; version-aware sort must not.
+	// These tags pass RequireDigit and must keep numeric major ordering under --max-tags.
+	tags := []string{"v1.26", "v1.25", "v10.0", "v9.0", "v8.0", "v2.0"}
+	filtered := FilterTags(tags, DefaultTagFilter())
+
+	require.Equal(t, []string{"v10.0", "v9.0", "v8.0", "v2.0", "v1.26", "v1.25"}, filtered)
+	assert.Equal(t, []string{"v10.0", "v9.0", "v8.0"}, LimitTags(filtered, 3))
+}
+
 func TestSortTagsNewestFirst(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -74,6 +84,16 @@ func TestSortTagsNewestFirst(t *testing.T) {
 			want:  []string{"10.0", "9.0", "8.0"},
 		},
 		{
+			name:  "v-prefixed majors not lexical",
+			input: []string{"v9.0", "v10.0", "v8.0"},
+			want:  []string{"v10.0", "v9.0", "v8.0"},
+		},
+		{
+			name:  "mixed bare and v-prefixed majors",
+			input: []string{"v9.0", "10.0", "v8.0"},
+			want:  []string{"10.0", "v9.0", "v8.0"},
+		},
+		{
 			name:  "patch vs minor",
 			input: []string{"3.12", "3.12.9", "3.11"},
 			want:  []string{"3.12.9", "3.12", "3.11"},
@@ -82,6 +102,11 @@ func TestSortTagsNewestFirst(t *testing.T) {
 			name:  "suffix after version",
 			input: []string{"8.0-noble", "10.0-azurelinux3.0", "9.0"},
 			want:  []string{"10.0-azurelinux3.0", "9.0", "8.0-noble"},
+		},
+		{
+			name:  "v-prefixed with suffix",
+			input: []string{"v8.0-noble", "v10.0-azurelinux3.0", "v9.0"},
+			want:  []string{"v10.0-azurelinux3.0", "v9.0", "v8.0-noble"},
 		},
 		{
 			name:  "single segment",
@@ -113,9 +138,15 @@ func TestVersionPrefix(t *testing.T) {
 	}{
 		{"10.0", []int{10, 0}, ""},
 		{"10.0-noble", []int{10, 0}, "-noble"},
+		{"v10.0", []int{10, 0}, ""},
+		{"V10.0", []int{10, 0}, ""},
+		{"v10.0-noble", []int{10, 0}, "-noble"},
+		{"v9.0", []int{9, 0}, ""},
 		{"3.12.9", []int{3, 12, 9}, ""},
 		{"21-azurelinux", []int{21}, "-azurelinux"},
 		{"latest", nil, "latest"},
+		{"version", nil, "version"}, // leading 'v' but not a version prefix
+		{"v", nil, "v"},
 		{"", nil, ""},
 	}
 

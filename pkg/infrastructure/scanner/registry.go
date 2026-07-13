@@ -211,10 +211,20 @@ func tagVersionLess(a, b string) bool {
 }
 
 // versionPrefix parses the leading numeric version from a tag.
-// Examples: "10.0-noble" → ([10, 0], "-noble"), "3.12.9" → ([3, 12, 9], ""),
-// "21-azurelinux" → ([21], "-azurelinux"), "latest" → (nil, "latest").
+// An optional conventional "v"/"V" prefix is skipped when immediately followed
+// by a digit (e.g. "v10.0" is treated like "10.0"), so version-aware sort does
+// not regress to reverse-lexicographic order for v-prefixed tags.
+// Examples: "10.0-noble" → ([10, 0], "-noble"), "v10.0" → ([10, 0], ""),
+// "3.12.9" → ([3, 12, 9], ""), "21-azurelinux" → ([21], "-azurelinux"),
+// "latest" → (nil, "latest").
 func versionPrefix(tag string) (segs []int, rest string) {
 	i := 0
+	// Skip optional conventional version prefix only when a digit follows
+	// (so "version" / "vv1" are not misparsed as versions).
+	if len(tag) >= 2 && (tag[0] == 'v' || tag[0] == 'V') && tag[1] >= '0' && tag[1] <= '9' {
+		i = 1
+	}
+
 	for i < len(tag) {
 		if tag[i] < '0' || tag[i] > '9' {
 			break
@@ -233,6 +243,12 @@ func versionPrefix(tag string) (segs []int, rest string) {
 		}
 
 		break
+	}
+
+	if len(segs) == 0 {
+		// No version parsed — return the original tag as rest (including any
+		// leading character we may have peeked but not treated as a prefix).
+		return nil, tag
 	}
 
 	return segs, tag[i:]
