@@ -152,10 +152,106 @@ func FilterTags(tags []string, cfg domain.TagFilterConfig) []string {
 		filtered = append(filtered, tag)
 	}
 
-	// Sort descending (newest first assuming semver-like ordering)
-	sort.Sort(sort.Reverse(sort.StringSlice(filtered)))
+	// Sort newest-first with version-aware ordering so LimitTags keeps
+	// higher releases (e.g. 10.0 before 9.0), not reverse lexicographic order.
+	sortTagsNewestFirst(filtered)
 
 	return filtered
+}
+
+// sortTagsNewestFirst sorts tags descending by leading numeric version
+// (major.minor.patch…), then by the remaining suffix. Tags without a leading
+// version number sort last.
+func sortTagsNewestFirst(tags []string) {
+	sort.SliceStable(tags, func(i, j int) bool {
+		// Descending: i before j when j < i in ascending version order.
+		return tagVersionLess(tags[j], tags[i])
+	})
+}
+
+// tagVersionLess reports whether a sorts before b in ascending version order.
+func tagVersionLess(a, b string) bool {
+	aSegs, aRest := versionPrefix(a)
+	bSegs, bRest := versionPrefix(b)
+
+	// Non-version tags sort before versioned tags in ascending order so they
+	// appear last when sorted newest-first.
+	switch {
+	case len(aSegs) == 0 && len(bSegs) == 0:
+		return a < b
+	case len(aSegs) == 0:
+		return true
+	case len(bSegs) == 0:
+		return false
+	}
+
+	n := len(aSegs)
+	if len(bSegs) > n {
+		n = len(bSegs)
+	}
+
+	for i := 0; i < n; i++ {
+		av, bv := 0, 0
+		if i < len(aSegs) {
+			av = aSegs[i]
+		}
+		if i < len(bSegs) {
+			bv = bSegs[i]
+		}
+		if av != bv {
+			return av < bv
+		}
+	}
+
+	if aRest != bRest {
+		return aRest < bRest
+	}
+
+	return a < b
+}
+
+// versionPrefix parses the leading numeric version from a tag.
+// An optional conventional "v"/"V" prefix is skipped when immediately followed
+// by a digit (e.g. "v10.0" is treated like "10.0"), so version-aware sort does
+// not regress to reverse-lexicographic order for v-prefixed tags.
+// Examples: "10.0-noble" → ([10, 0], "-noble"), "v10.0" → ([10, 0], ""),
+// "3.12.9" → ([3, 12, 9], ""), "21-azurelinux" → ([21], "-azurelinux"),
+// "latest" → (nil, "latest").
+func versionPrefix(tag string) (segs []int, rest string) {
+	i := 0
+	// Skip optional conventional version prefix only when a digit follows
+	// (so "version" / "vv1" are not misparsed as versions).
+	if len(tag) >= 2 && (tag[0] == 'v' || tag[0] == 'V') && tag[1] >= '0' && tag[1] <= '9' {
+		i = 1
+	}
+
+	for i < len(tag) {
+		if tag[i] < '0' || tag[i] > '9' {
+			break
+		}
+
+		n := 0
+		for i < len(tag) && tag[i] >= '0' && tag[i] <= '9' {
+			n = n*10 + int(tag[i]-'0')
+			i++
+		}
+		segs = append(segs, n)
+
+		if i < len(tag) && tag[i] == '.' && i+1 < len(tag) && tag[i+1] >= '0' && tag[i+1] <= '9' {
+			i++ // consume dot between version segments
+			continue
+		}
+
+		break
+	}
+
+	if len(segs) == 0 {
+		// No version parsed — return the original tag as rest (including any
+		// leading character we may have peeked but not treated as a prefix).
+		return nil, tag
+	}
+
+	return segs, tag[i:]
 }
 
 // LimitTags returns at most maxTags tags. If maxTags is 0, all tags are returned.
