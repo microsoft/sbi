@@ -25,6 +25,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/microsoft/sbi/pkg/domain"
@@ -394,4 +395,61 @@ func TestQueryLanguages_BaseSortsLast(t *testing.T) {
 	assert.Equal(t, "go", languages[0])
 	assert.Equal(t, "python", languages[1])
 	assert.Equal(t, "base", languages[2])
+}
+
+// TestInsertImage_RollbackOnClearFailure ensures a failure while clearing
+// related tables rolls back the whole upsert and releases the connection.
+//
+// This guards against the classic Go bug where `if _, err := tx.Exec(...)`
+// shadows the outer err used by deferred rollback, leaving the transaction
+// open (and, with MaxOpenConns(1), blocking all further DB use).
+func TestInsertImage_RollbackOnClearFailure(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "rollback.db")
+	db, err := sql.Open("sqlite", dbPath)
+	require.NoError(t, err)
+	defer func() { _ = db.Close() }()
+
+	// Match production OpenDB: a single connection so a leaked tx is observable.
+	db.SetMaxOpenConns(1)
+	_, err = db.Exec("PRAGMA foreign_keys=ON")
+	require.NoError(t, err)
+	require.NoError(t, CreateTables(db))
+
+	repo := NewRepository(db)
+	img := &domain.ImageRecord{
+		Name:                 "test:1.0",
+		Registry:             "r",
+		Repository:           "repo",
+		Tag:                  "1.0",
+		TotalVulnerabilities: 5,
+		Languages: []domain.Language{
+			{Language: "python", Version: "3.12"},
+		},
+	}
+	require.NoError(t, repo.InsertImage(img))
+
+	// Force the related-table clear path to fail on the next upsert.
+	_, err = db.Exec("DROP TABLE languages")
+	require.NoError(t, err)
+
+	img.TotalVulnerabilities = 99
+	err = repo.InsertImage(img)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "clearing languages")
+
+	// Upsert must not have been committed.
+	var total int
+	err = db.QueryRow(`SELECT total_vulnerabilities FROM images WHERE name = ?`, img.Name).Scan(&total)
+	require.NoError(t, err)
+	assert.Equal(t, 5, total, "failed clear must roll back the image upsert")
+
+	// Connection must be released so further writes can proceed.
+	require.NoError(t, CreateTables(db)) // recreates languages (IF NOT EXISTS)
+	img.TotalVulnerabilities = 7
+	img.Languages = []domain.Language{{Language: "python", Version: "3.12.1"}}
+	require.NoError(t, repo.InsertImage(img))
+
+	err = db.QueryRow(`SELECT total_vulnerabilities FROM images WHERE name = ?`, img.Name).Scan(&total)
+	require.NoError(t, err)
+	assert.Equal(t, 7, total)
 }

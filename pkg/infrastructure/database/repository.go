@@ -53,11 +53,14 @@ func (r *Repository) ImageExists(name string) (bool, error) {
 }
 
 // InsertImage inserts an image and all its related data in a transaction.
-func (r *Repository) InsertImage(img *domain.ImageRecord) error {
+// err is a named result so the deferred rollback always sees failures from
+// every return path (including short-declaration shadows in nested scopes).
+func (r *Repository) InsertImage(img *domain.ImageRecord) (err error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return fmt.Errorf("beginning transaction: %w", err)
 	}
+	// Defer is registered only after Begin succeeds, so tx is always non-nil here.
 	defer func() {
 		if err != nil {
 			if rbErr := tx.Rollback(); rbErr != nil {
@@ -118,10 +121,11 @@ func (r *Repository) InsertImage(img *domain.ImageRecord) error {
 		return fmt.Errorf("getting image id: %w", err)
 	}
 
-	// Clear old related data on upsert
+	// Clear old related data on upsert.
+	// Assign to the named err (not :=) so deferred rollback observes failures.
 	relTables := []string{"languages", "vulnerabilities", "package_managers", "capabilities", "system_packages", "security_findings"}
 	for _, t := range relTables {
-		if _, err := tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE image_id = ?", t), imageID); err != nil {
+		if _, err = tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE image_id = ?", t), imageID); err != nil {
 			return fmt.Errorf("clearing %s: %w", t, err)
 		}
 	}
@@ -183,8 +187,7 @@ func (r *Repository) InsertImage(img *domain.ImageRecord) error {
 		}
 	}
 
-	err = tx.Commit()
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		return fmt.Errorf("committing transaction: %w", err)
 	}
 
