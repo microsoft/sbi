@@ -68,26 +68,57 @@ func NewPipeline(config domain.ScanConfig, repo *database.Repository) (*Pipeline
 	}, nil
 }
 
+// scanStats tracks per-operation outcomes for ScanAll.
+type scanStats struct {
+	attempted int
+	failed    int
+}
+
+// result returns an error when every attempt failed. Partial failure is OK.
+func (s *scanStats) result() error {
+	if s.attempted == 0 {
+		return nil
+	}
+	if s.failed == s.attempted {
+		return fmt.Errorf("all %d scan operations failed", s.attempted)
+	}
+	return nil
+}
+
 // ScanAll loads repositories from config, discovers tags, and scans all images.
+// Individual image failures are logged and scanning continues. Returns an error
+// only when every scan attempt failed (total outage), so partial success still
+// allows report generation from newly scanned images.
 func (p *Pipeline) ScanAll() error {
+	stats := &scanStats{}
+
 	for _, group := range p.repoCfg.Repositories {
 		repos, singleImages := scanner.ParseImagePatterns(group.Images)
 		log.Infof("Group %q: %d repositories, %d single images", group.Description, len(repos), len(singleImages))
 
 		for _, repo := range repos {
-			if err := p.scanRepository(repo, group.Category); err != nil {
-				log.Errorf("Error scanning repository %s: %v", repo, err)
-			}
+			p.scanRepository(repo, group.Category, stats)
 		}
 
 		for _, img := range singleImages {
+			stats.attempted++
 			if err := p.scanSingleImage(img, group.Category); err != nil {
+				stats.failed++
 				log.Errorf("Error scanning image %s: %v", img, err)
 			}
 		}
 	}
 
-	return nil
+	if stats.attempted == 0 {
+		log.Warn("No scan operations were attempted")
+		return nil
+	}
+
+	if stats.failed > 0 && stats.failed < stats.attempted {
+		log.Warnf("Scan completed with %d/%d failures", stats.failed, stats.attempted)
+	}
+
+	return stats.result()
 }
 
 // ScanImage scans a single image by name.
@@ -116,12 +147,16 @@ func (p *Pipeline) GenerateReport() error {
 	return nil
 }
 
-func (p *Pipeline) scanRepository(repo string, category string) error {
+func (p *Pipeline) scanRepository(repo string, category string, stats *scanStats) {
 	log.Infof("Scanning repository: %s", repo)
 
 	tags, err := p.registry.GetTags(repo)
 	if err != nil {
-		return fmt.Errorf("getting tags for %s: %w", repo, err)
+		// Count tag discovery failure as a single failed attempt for this repo.
+		stats.attempted++
+		stats.failed++
+		log.Errorf("Error scanning repository %s: getting tags: %v", repo, err)
+		return
 	}
 
 	filtered := scanner.FilterTags(tags, p.repoCfg.TagFilter)
@@ -132,13 +167,12 @@ func (p *Pipeline) scanRepository(repo string, category string) error {
 	defaultRegistry := p.repoCfg.Defaults.Registry
 	for _, tag := range limited {
 		imageName := scanner.BuildFullImageName(defaultRegistry, repo, tag)
-
+		stats.attempted++
 		if err := p.scanSingleImage(imageName, category); err != nil {
+			stats.failed++
 			log.Errorf("Error scanning %s: %v", imageName, err)
 		}
 	}
-
-	return nil
 }
 
 func (p *Pipeline) scanSingleImage(imageName string, category string) error {
