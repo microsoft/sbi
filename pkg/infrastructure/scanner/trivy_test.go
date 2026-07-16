@@ -23,7 +23,9 @@
 package scanner
 
 import (
+	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -365,13 +367,13 @@ func TestParseTrivyResult_VulnerabilityDetails(t *testing.T) {
 	// Find the CRITICAL vuln
 	var critVuln *struct {
 		id, severity, pkg, pkgVer, fixedVer, desc string
-		cvss                                       float64
+		cvss                                      float64
 	}
 	for _, v := range result.Vulnerabilities {
 		if v.Severity == "CRITICAL" {
 			critVuln = &struct {
 				id, severity, pkg, pkgVer, fixedVer, desc string
-				cvss                                       float64
+				cvss                                      float64
 			}{v.VulnerabilityID, v.Severity, v.PackageName, v.PackageVersion, v.FixedVersion, v.Description, v.CVSSScore}
 			break
 		}
@@ -403,8 +405,42 @@ func TestParseTrivyResult_DescriptionTruncation(t *testing.T) {
 
 	result := parseTrivyResult(output)
 	require.Len(t, result.Vulnerabilities, 1)
-	assert.Len(t, result.Vulnerabilities[0].Description, 500, "description should be truncated to 500 chars")
+	assert.Len(t, result.Vulnerabilities[0].Description, 500, "description should be truncated to 500 bytes")
 	assert.Equal(t, "...", result.Vulnerabilities[0].Description[497:], "should end with ...")
+	assert.True(t, utf8.ValidString(result.Vulnerabilities[0].Description))
+}
+
+func TestTruncateString_UTF8Safe(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		maxLen int
+	}{
+		{"ascii short", "hello", 10},
+		{"ascii exact", "hello", 5},
+		{"ascii truncate", "hello world", 8},
+		{"cjk mid-rune boundary", "中文漏洞描述", 5},
+		{"cjk longer", strings.Repeat("中文", 40), 50},
+		{"emoji", "🚨CRITICAL vulnerability description", 10},
+		{"empty", "", 10},
+		{"max zero", "abc", 0},
+		{"max three", "abcdef", 3},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			out := truncateString(tt.input, tt.maxLen)
+			assert.True(t, utf8.ValidString(out), "output must be valid UTF-8: %q", out)
+			if tt.maxLen > 0 {
+				assert.LessOrEqual(t, len(out), tt.maxLen)
+			} else {
+				assert.Empty(t, out)
+			}
+			if len(tt.input) <= tt.maxLen {
+				assert.Equal(t, tt.input, out)
+			}
+		})
+	}
 }
 
 // ============================================================================
@@ -604,5 +640,3 @@ func TestParseTrivyResult_OSMetadata_AllOSFamilies(t *testing.T) {
 		})
 	}
 }
-
-

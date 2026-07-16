@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/microsoft/sbi/pkg/domain"
 	log "github.com/sirupsen/logrus"
@@ -49,13 +50,13 @@ type trivyOS struct {
 }
 
 type trivyResult struct {
-	Target          string             `json:"Target"`
-	Class           string             `json:"Class"`
-	Type            string             `json:"Type"`
-	Vulnerabilities []trivyVuln        `json:"Vulnerabilities"`
-	Secrets         []trivySecret      `json:"Secrets"`
-	Misconfigs      []trivyMisconfig   `json:"Misconfigurations"`
-	Licenses        []trivyLicense     `json:"Licenses"`
+	Target          string           `json:"Target"`
+	Class           string           `json:"Class"`
+	Type            string           `json:"Type"`
+	Vulnerabilities []trivyVuln      `json:"Vulnerabilities"`
+	Secrets         []trivySecret    `json:"Secrets"`
+	Misconfigs      []trivyMisconfig `json:"Misconfigurations"`
+	Licenses        []trivyLicense   `json:"Licenses"`
 }
 
 type trivyCVSS struct {
@@ -183,10 +184,39 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 	return result
 }
 
+// truncateString shortens s to at most maxLen bytes, never splitting a UTF-8
+// rune. When truncation is needed, the result ends with "..." (included in
+// maxLen). maxLen <= 0 yields ""; maxLen < 4 yields a pure rune prefix with
+// no ellipsis when the string does not already fit.
 func truncateString(s string, maxLen int) string {
+	if maxLen <= 0 {
+		return ""
+	}
 	if len(s) <= maxLen {
 		return s
 	}
 
-	return s[:maxLen-3] + "..."
+	// Reserve room for "..." when possible; otherwise keep a pure prefix.
+	ellipsis := "..."
+	budget := maxLen
+	if maxLen >= len(ellipsis) {
+		budget = maxLen - len(ellipsis)
+	} else {
+		ellipsis = ""
+	}
+
+	var b strings.Builder
+	b.Grow(budget)
+	for _, r := range s {
+		rl := utf8.RuneLen(r)
+		if rl < 0 {
+			rl = 1
+		}
+		if b.Len()+rl > budget {
+			break
+		}
+		b.WriteRune(r)
+	}
+
+	return b.String() + ellipsis
 }
