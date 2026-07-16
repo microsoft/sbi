@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -34,6 +35,9 @@ import (
 	"github.com/microsoft/sbi/pkg/domain"
 	log "github.com/sirupsen/logrus"
 )
+
+// tagsPageSize is the per-request page size for registry tags/list pagination.
+const tagsPageSize = 100
 
 // DefaultTagFilter returns the default tag filter configuration.
 func DefaultTagFilter() domain.TagFilterConfig {
@@ -63,27 +67,83 @@ func NewRegistryScanner(defaultRegistry string) *RegistryScanner {
 	}
 }
 
-// GetTags fetches available tags for an MCR repository.
+// GetTags fetches available tags for a repository, following Registry API
+// pagination via the Link response header (rel="next").
 func (s *RegistryScanner) GetTags(repo string) ([]string, error) {
-	url := fmt.Sprintf("%s/v2/%s/tags/list", s.registryURL, repo)
-	log.Debugf("Fetching tags from: %s", url)
+	next := fmt.Sprintf("%s/v2/%s/tags/list?n=%d", s.registryURL, repo, tagsPageSize)
+	var all []string
 
-	resp, err := s.client.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("fetching tags for %s: %w", repo, err)
+	for next != "" {
+		log.Debugf("Fetching tags from: %s", next)
+
+		req, err := http.NewRequest(http.MethodGet, next, nil)
+		if err != nil {
+			return nil, fmt.Errorf("creating tags request for %s: %w", repo, err)
+		}
+
+		resp, err := s.client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("fetching tags for %s: %w", repo, err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			_ = resp.Body.Close()
+			return nil, fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
+		}
+
+		var tagsResp domain.TagsResponse
+		if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
+			_ = resp.Body.Close()
+			return nil, fmt.Errorf("decoding tags response: %w", err)
+		}
+		_ = resp.Body.Close()
+
+		all = append(all, tagsResp.Tags...)
+
+		base, err := url.Parse(next)
+		if err != nil {
+			return nil, fmt.Errorf("parsing tags URL for %s: %w", repo, err)
+		}
+		next = nextPageFromLink(base, resp.Header.Get("Link"))
 	}
-	defer func() { _ = resp.Body.Close() }()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
+	return all, nil
+}
+
+// nextPageFromLink returns the absolute URL for rel="next" from an RFC 5988
+// Link header, or "" when there is no next page.
+func nextPageFromLink(base *url.URL, linkHeader string) string {
+	if linkHeader == "" || base == nil {
+		return ""
 	}
 
-	var tagsResp domain.TagsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
-		return nil, fmt.Errorf("decoding tags response: %w", err)
+	for _, part := range strings.Split(linkHeader, ",") {
+		part = strings.TrimSpace(part)
+		lower := strings.ToLower(part)
+		// Accept rel="next" / rel=next / rel='next'
+		if !strings.Contains(lower, `rel="next"`) &&
+			!strings.Contains(lower, `rel='next'`) &&
+			!strings.Contains(lower, `rel=next`) {
+			continue
+		}
+
+		start := strings.Index(part, "<")
+		end := strings.Index(part, ">")
+		if start < 0 || end <= start {
+			continue
+		}
+
+		ref := strings.TrimSpace(part[start+1 : end])
+		resolved, err := base.Parse(ref)
+		if err != nil {
+			log.Warnf("Invalid pagination Link URL %q: %v", ref, err)
+			return ""
+		}
+
+		return resolved.String()
 	}
 
-	return tagsResp.Tags, nil
+	return ""
 }
 
 // FilterTags removes pre-release, arch-specific, and unwanted tags based on the provided config.
