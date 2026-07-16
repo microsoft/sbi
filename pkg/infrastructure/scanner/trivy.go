@@ -49,13 +49,13 @@ type trivyOS struct {
 }
 
 type trivyResult struct {
-	Target          string             `json:"Target"`
-	Class           string             `json:"Class"`
-	Type            string             `json:"Type"`
-	Vulnerabilities []trivyVuln        `json:"Vulnerabilities"`
-	Secrets         []trivySecret      `json:"Secrets"`
-	Misconfigs      []trivyMisconfig   `json:"Misconfigurations"`
-	Licenses        []trivyLicense     `json:"Licenses"`
+	Target          string           `json:"Target"`
+	Class           string           `json:"Class"`
+	Type            string           `json:"Type"`
+	Vulnerabilities []trivyVuln      `json:"Vulnerabilities"`
+	Secrets         []trivySecret    `json:"Secrets"`
+	Misconfigs      []trivyMisconfig `json:"Misconfigurations"`
+	Licenses        []trivyLicense   `json:"Licenses"`
 }
 
 type trivyCVSS struct {
@@ -170,13 +170,32 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 			})
 		}
 
-		// Process secrets
-		result.SecretsFound += len(r.Secrets)
+		// Process secrets (counts + detailed findings for persistence)
+		for _, s := range r.Secrets {
+			result.SecretsFound++
+			result.SecurityFindings = append(result.SecurityFindings, domain.SecurityFinding{
+				FindingType: "secret",
+				Severity:    s.Severity,
+				RuleID:      s.RuleID,
+				Title:       s.Title,
+				Description: truncateString(s.Match, 500),
+				Category:    s.Category,
+			})
+		}
 
 		// Process misconfigurations
-		result.ConfigIssues += len(r.Misconfigs)
+		for _, m := range r.Misconfigs {
+			result.ConfigIssues++
+			result.SecurityFindings = append(result.SecurityFindings, domain.SecurityFinding{
+				FindingType: "misconfiguration",
+				Severity:    m.Severity,
+				RuleID:      m.ID,
+				Title:       m.Title,
+				Message:     m.Message,
+			})
+		}
 
-		// Process licenses
+		// Process licenses (counts only — not stored as security_findings rows)
 		result.LicenseIssues += len(r.Licenses)
 	}
 
