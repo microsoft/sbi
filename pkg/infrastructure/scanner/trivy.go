@@ -49,13 +49,13 @@ type trivyOS struct {
 }
 
 type trivyResult struct {
-	Target          string             `json:"Target"`
-	Class           string             `json:"Class"`
-	Type            string             `json:"Type"`
-	Vulnerabilities []trivyVuln        `json:"Vulnerabilities"`
-	Secrets         []trivySecret      `json:"Secrets"`
-	Misconfigs      []trivyMisconfig   `json:"Misconfigurations"`
-	Licenses        []trivyLicense     `json:"Licenses"`
+	Target          string           `json:"Target"`
+	Class           string           `json:"Class"`
+	Type            string           `json:"Type"`
+	Vulnerabilities []trivyVuln      `json:"Vulnerabilities"`
+	Secrets         []trivySecret    `json:"Secrets"`
+	Misconfigs      []trivyMisconfig `json:"Misconfigurations"`
+	Licenses        []trivyLicense   `json:"Licenses"`
 }
 
 type trivyCVSS struct {
@@ -96,14 +96,16 @@ type trivyLicense struct {
 func RunTrivy(imageName string, comprehensive bool) (*domain.TrivyResult, error) {
 	log.Infof("Running Trivy on: %s (comprehensive=%v)", imageName, comprehensive)
 
-	securityChecks := "vuln"
+	// Prefer --scanners (Trivy renamed --security-checks). Use "misconfig"
+	// rather than the deprecated "config" scanner name.
+	scanners := "vuln"
 	if comprehensive {
-		securityChecks = "vuln,secret,config"
+		scanners = "vuln,secret,misconfig"
 	}
 
 	cmd := exec.Command("trivy", "image",
 		"--format", "json",
-		"--security-checks", securityChecks,
+		"--scanners", scanners,
 		imageName,
 	)
 
