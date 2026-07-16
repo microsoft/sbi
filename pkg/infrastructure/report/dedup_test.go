@@ -183,20 +183,39 @@ func TestDeduplicateByDigest_PreservesOrder(t *testing.T) {
 
 func TestTagSpecificity(t *testing.T) {
 	tests := []struct {
-		name     string
-		less     string
-		more     string
+		name string
+		less string
+		more string
 	}{
 		{"major vs major.minor", "mcr.microsoft.com/repo:3", "mcr.microsoft.com/repo:3.12"},
 		{"major.minor vs major.minor.patch", "mcr.microsoft.com/repo:24.14", "mcr.microsoft.com/repo:24.14.1"},
 		{"with suffix", "mcr.microsoft.com/repo:24-nonroot", "mcr.microsoft.com/repo:24.14-nonroot"},
+		{"v-prefix vs older bare major", "mcr.microsoft.com/repo:9.0", "mcr.microsoft.com/repo:v10.0"},
+		{"v-prefix vs latest", "mcr.microsoft.com/repo:latest", "mcr.microsoft.com/repo:v3.12"},
+		{"v major.minor vs v major", "mcr.microsoft.com/repo:v3", "mcr.microsoft.com/repo:v3.12"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Greater(t, tagSpecificity(tt.more), tagSpecificity(tt.less))
+			assert.Greater(t, tagSpecificity(tt.more), tagSpecificity(tt.less),
+				"specificity(%s)=%d specificity(%s)=%d",
+				tt.more, tagSpecificity(tt.more), tt.less, tagSpecificity(tt.less))
 		})
 	}
+}
+
+func TestDeduplicateByDigest_VPrefixedNumericPreferred(t *testing.T) {
+	// Bare "9.0" must not outrank "v10.0" solely because the latter starts with 'v'.
+	images := []domain.RecommendedImage{
+		{Name: "mcr.microsoft.com/repo:9.0", Digest: "sha256:aaa"},
+		{Name: "mcr.microsoft.com/repo:v10.0", Digest: "sha256:aaa"},
+	}
+
+	result := DeduplicateByDigest(images)
+
+	assert.Len(t, result, 1)
+	assert.Equal(t, "mcr.microsoft.com/repo:v10.0", result[0].Name)
+	assert.Equal(t, []string{":9.0"}, result[0].AlternateTags)
 }
 
 func TestExtractTag(t *testing.T) {
