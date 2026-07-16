@@ -411,6 +411,13 @@ func TestParseTrivyResult_DescriptionTruncation(t *testing.T) {
 }
 
 func TestTruncateString_UTF8Safe(t *testing.T) {
+	// Multi-byte examples use Unicode escapes so the test file stays ASCII-safe
+	// and does not depend on source-file encoding. U+00E9 (é) is 2 bytes; U+1F6A8
+	// (emergency siren emoji) is 4 bytes — both used to catch mid-rune cuts.
+	accented := "caf\u00e9 overflow detail " + strings.Repeat("x", 40) // café...
+	emojiPrefix := "\U0001f6a8CRITICAL vulnerability description"     // 🚨...
+	emojiOnly := "\U0001f6a8\U0001f6a8\U0001f6a8\U0001f6a8\U0001f6a8"
+
 	tests := []struct {
 		name   string
 		input  string
@@ -419,9 +426,10 @@ func TestTruncateString_UTF8Safe(t *testing.T) {
 		{"ascii short", "hello", 10},
 		{"ascii exact", "hello", 5},
 		{"ascii truncate", "hello world", 8},
-		{"cjk mid-rune boundary", "中文漏洞描述", 5},
-		{"cjk longer", strings.Repeat("中文", 40), 50},
-		{"emoji", "🚨CRITICAL vulnerability description", 10},
+		{"accented mid-rune budget", accented, 6},
+		{"accented longer", accented, 50},
+		{"emoji prefix", emojiPrefix, 10},
+		{"emoji mid-code-unit", emojiOnly, 5},
 		{"empty", "", 10},
 		{"max zero", "abc", 0},
 		{"max three", "abcdef", 3},
