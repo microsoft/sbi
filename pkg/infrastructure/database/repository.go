@@ -361,7 +361,8 @@ func (r *Repository) ClearDatabase() error {
 }
 
 // QueryAllImageDetails returns every image with its child data populated
-// (languages, vulnerabilities, system packages, package managers).
+// (languages, vulnerabilities, system packages, package managers,
+// security findings, capabilities).
 // Uses batched eager loading within a read transaction for snapshot consistency.
 func (r *Repository) QueryAllImageDetails() ([]domain.ImageRecord, error) {
 	tx, err := r.db.Begin()
@@ -548,6 +549,70 @@ func (r *Repository) QueryAllImageDetails() ([]domain.ImageRecord, error) {
 
 	if err := pmRows.Err(); err != nil {
 		return nil, fmt.Errorf("iterating package managers: %w", err)
+	}
+
+	// Step 6: Load security findings (secrets / misconfigurations)
+	sfRows, err := tx.Query(`
+		SELECT image_id, COALESCE(finding_type, ''), COALESCE(severity, ''),
+		       COALESCE(rule_id, ''), COALESCE(title, ''), COALESCE(description, ''),
+		       COALESCE(file_path, ''), COALESCE(category, ''), COALESCE(message, '')
+		FROM security_findings ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying security findings: %w", err)
+	}
+
+	for sfRows.Next() {
+		var imageID int64
+		var sf domain.SecurityFinding
+
+		if err := sfRows.Scan(&imageID, &sf.FindingType, &sf.Severity,
+			&sf.RuleID, &sf.Title, &sf.Description, &sf.FilePath,
+			&sf.Category, &sf.Message); err != nil {
+			_ = sfRows.Close()
+			return nil, fmt.Errorf("scanning security finding: %w", err)
+		}
+
+		if img, ok := imageMap[imageID]; ok {
+			img.SecurityFindings = append(img.SecurityFindings, sf)
+		}
+	}
+
+	if err := sfRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing security finding rows: %w", err)
+	}
+
+	if err := sfRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating security findings: %w", err)
+	}
+
+	// Step 7: Load capabilities
+	capRows, err := tx.Query(`
+		SELECT image_id, COALESCE(capability, '')
+		FROM capabilities ORDER BY image_id, id`)
+	if err != nil {
+		return nil, fmt.Errorf("querying capabilities: %w", err)
+	}
+
+	for capRows.Next() {
+		var imageID int64
+		var c domain.Capability
+
+		if err := capRows.Scan(&imageID, &c.Capability); err != nil {
+			_ = capRows.Close()
+			return nil, fmt.Errorf("scanning capability: %w", err)
+		}
+
+		if img, ok := imageMap[imageID]; ok {
+			img.Capabilities = append(img.Capabilities, c)
+		}
+	}
+
+	if err := capRows.Close(); err != nil {
+		return nil, fmt.Errorf("closing capability rows: %w", err)
+	}
+
+	if err := capRows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating capabilities: %w", err)
 	}
 
 	// Assemble in original order

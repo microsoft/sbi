@@ -514,6 +514,16 @@ func TestParseTrivyResult_SecretsAndMisconfigs(t *testing.T) {
 	assert.Equal(t, 1, result.ConfigIssues)
 	assert.Equal(t, 2, result.LicenseIssues)
 	assert.Equal(t, 0, result.TotalVulnerabilities, "secrets/misconfigs/licenses don't count as vulns")
+
+	require.Len(t, result.SecurityFindings, 3)
+	assert.Equal(t, "secret", result.SecurityFindings[0].FindingType)
+	assert.Equal(t, "aws-secret-key", result.SecurityFindings[0].RuleID)
+	assert.Equal(t, "CRITICAL", result.SecurityFindings[0].Severity)
+	assert.Equal(t, "secret", result.SecurityFindings[1].FindingType)
+	assert.Equal(t, "generic-api-key", result.SecurityFindings[1].RuleID)
+	assert.Equal(t, "misconfiguration", result.SecurityFindings[2].FindingType)
+	assert.Equal(t, "DS001", result.SecurityFindings[2].RuleID)
+	assert.Equal(t, "root user", result.SecurityFindings[2].Title)
 }
 
 // ============================================================================
