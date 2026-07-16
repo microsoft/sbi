@@ -296,24 +296,42 @@ func BuildFullImageName(defaultRegistry, repo, tag string) string {
 }
 
 // ExtractRegistryAndRepo splits a full image name into registry, repository, and tag.
+// Digest suffixes (@sha256:...) are stripped before parsing. Tags are taken from the
+// last ":" after the last "/", so host:port registries (e.g. localhost:5000) work.
 func ExtractRegistryAndRepo(imageName string) (registry, repository, tag string) {
-	// Split off the tag
-	parts := strings.SplitN(imageName, ":", 2)
-	nameWithoutTag := parts[0]
-	if len(parts) == 2 {
-		tag = parts[1]
+	name := imageName
+
+	// Strip @digest first — digests contain ":" (e.g. sha256:abc) and must not
+	// be mistaken for tags.
+	if at := strings.Index(name, "@"); at >= 0 {
+		name = name[:at]
 	}
 
-	// Split into registry and repository
+	// Tag separator is the last ":" after the last "/".
+	lastSlash := strings.LastIndex(name, "/")
+	lastColon := strings.LastIndex(name, ":")
+	nameWithoutTag := name
+	if lastColon > lastSlash {
+		tag = name[lastColon+1:]
+		nameWithoutTag = name[:lastColon]
+	}
+
+	// Registry is the first path segment when it looks like a host.
 	segments := strings.SplitN(nameWithoutTag, "/", 2)
-	if len(segments) == 2 && strings.Contains(segments[0], ".") {
+	if len(segments) == 2 && looksLikeRegistryHost(segments[0]) {
 		registry = segments[0]
 		repository = segments[1]
 	} else {
-		// Default to MCR
+		// Default to MCR for short names like "azurelinux/base/python:3.12"
 		registry = "mcr.microsoft.com"
 		repository = nameWithoutTag
 	}
 
 	return registry, repository, tag
+}
+
+// looksLikeRegistryHost reports whether s is a registry host (domain, host:port,
+// or localhost) rather than a repository path segment.
+func looksLikeRegistryHost(s string) bool {
+	return strings.Contains(s, ".") || strings.Contains(s, ":") || strings.EqualFold(s, "localhost")
 }

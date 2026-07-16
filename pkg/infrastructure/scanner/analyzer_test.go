@@ -195,6 +195,11 @@ func TestExtractRegistryAndRepo(t *testing.T) {
 		{"Docker Hub", "docker.io/library/python:3.12-slim", "docker.io", "library/python", "3.12-slim"},
 		{"Short MCR", "azurelinux/base/python:3.12", "mcr.microsoft.com", "azurelinux/base/python", "3.12"},
 		{"No tag", "mcr.microsoft.com/azurelinux/base/python", "mcr.microsoft.com", "azurelinux/base/python", ""},
+		{"Tag with digest", "mcr.microsoft.com/dotnet/aspnet:8.0@sha256:abcdef", "mcr.microsoft.com", "dotnet/aspnet", "8.0"},
+		{"Digest only", "mcr.microsoft.com/dotnet/aspnet@sha256:abcdef", "mcr.microsoft.com", "dotnet/aspnet", ""},
+		{"Registry with port", "localhost:5000/myrepo:1.0", "localhost:5000", "myrepo", "1.0"},
+		{"Localhost no port", "localhost/myrepo:1.0", "localhost", "myrepo", "1.0"},
+		{"Nested path with digest", "mcr.microsoft.com/azurelinux/base/python:3.12-nonroot@sha256:deadbeef", "mcr.microsoft.com", "azurelinux/base/python", "3.12-nonroot"},
 	}
 
 	for _, tt := range tests {
