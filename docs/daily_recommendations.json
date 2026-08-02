@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T03:11:19Z",
+  "generatedAt": "2026-08-02T03:12:07Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -241,7 +241,7 @@
       "name": "mcr.microsoft.com/dotnet/sdk:8.0",
       "version": "8.0.423",
       "criticalVulnerabilities": 17,
-      "highVulnerabilities": 71,
+      "highVulnerabilities": 67,
       "totalVulnerabilities": 370,
       "sizeBytes": 891289600,
       "sizeHuman": "850.0 MB",
@@ -562,17 +562,17 @@
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/base/nodejs:24.18",
-      "version": "24.18.0",
+      "version": "24.18.1",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
       "totalVulnerabilities": 0,
       "sizeBytes": 206569472,
       "sizeHuman": "197.0 MB",
-      "createdDate": "2026-07-29T02:02:59.059473491Z",
-      "digest": "sha256:0e75641e2e38595bd04caaeb2050738dc90ca2ecebf5522705ba07ac3da7a526",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:24.18@sha256:0e75641e2e38595bd04caaeb2050738dc90ca2ecebf5522705ba07ac3da7a526",
+      "createdDate": "2026-07-31T23:37:31.179817217Z",
+      "digest": "sha256:6523505968bf37b0f97975cedfd202a3dbaee44ed653d17890d36deead3828cc",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/base/nodejs:24.18@sha256:6523505968bf37b0f97975cedfd202a3dbaee44ed653d17890d36deead3828cc",
       "stableTag": "mcr.microsoft.com/azurelinux/base/nodejs:24.18",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24.18@sha256:0e75641e2e38595bd04caaeb2050738dc90ca2ecebf5522705ba07ac3da7a526",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/nodejs:24.18@sha256:6523505968bf37b0f97975cedfd202a3dbaee44ed653d17890d36deead3828cc",
       "alternateTags": [
         ":24"
       ]
@@ -599,17 +599,17 @@
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18-nonroot",
-      "version": "24.18.0",
+      "version": "24.18.1",
       "criticalVulnerabilities": 1,
       "highVulnerabilities": 4,
       "totalVulnerabilities": 12,
       "sizeBytes": 164626432,
       "sizeHuman": "157.0 MB",
-      "createdDate": "2026-07-29T02:08:29.612879218Z",
-      "digest": "sha256:265a12a4c3631cd23ea7013f0601a88e2b4412cf9eb61cd5b4b8772a947a8355",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18-nonroot@sha256:265a12a4c3631cd23ea7013f0601a88e2b4412cf9eb61cd5b4b8772a947a8355",
+      "createdDate": "2026-07-31T23:42:23.176951491Z",
+      "digest": "sha256:ad7995197668d617eb71bb198d90d1d95049f6f43028b27c0a694cddb430c073",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18-nonroot@sha256:ad7995197668d617eb71bb198d90d1d95049f6f43028b27c0a694cddb430c073",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.18-nonroot@sha256:265a12a4c3631cd23ea7013f0601a88e2b4412cf9eb61cd5b4b8772a947a8355",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.18-nonroot@sha256:ad7995197668d617eb71bb198d90d1d95049f6f43028b27c0a694cddb430c073",
       "alternateTags": [
         ":24-nonroot"
       ]
@@ -619,17 +619,17 @@
       "language": "node",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18",
-      "version": "24.18.0",
+      "version": "24.18.1",
       "criticalVulnerabilities": 1,
       "highVulnerabilities": 4,
       "totalVulnerabilities": 12,
       "sizeBytes": 164626432,
       "sizeHuman": "157.0 MB",
-      "createdDate": "2026-07-29T02:05:08.05190169Z",
-      "digest": "sha256:5a2fa3b1ccc3c60bc21c06ca606f37058df63ef5fe6787bd61d64d1da3b2df6e",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18@sha256:5a2fa3b1ccc3c60bc21c06ca606f37058df63ef5fe6787bd61d64d1da3b2df6e",
+      "createdDate": "2026-07-31T23:39:26.460534263Z",
+      "digest": "sha256:8652f9953ce393d2018727371948afda3fc085aaceb07b2ade8f8b1c112e1b1c",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18@sha256:8652f9953ce393d2018727371948afda3fc085aaceb07b2ade8f8b1c112e1b1c",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/nodejs:24.18",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.18@sha256:5a2fa3b1ccc3c60bc21c06ca606f37058df63ef5fe6787bd61d64d1da3b2df6e",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/nodejs:24.18@sha256:8652f9953ce393d2018727371948afda3fc085aaceb07b2ade8f8b1c112e1b1c",
       "alternateTags": [
         ":24"
       ]
@@ -841,11 +841,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 87765811,
       "sizeHuman": "83.7 MB",
-      "createdDate": "2026-07-29T01:48:09.822839547Z",
-      "digest": "sha256:eb1c2baadb95379102db6129406ab00deda74c2656e2cbfa28dd40c78d34c79d",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:eb1c2baadb95379102db6129406ab00deda74c2656e2cbfa28dd40c78d34c79d",
+      "createdDate": "2026-07-31T23:46:14.503144509Z",
+      "digest": "sha256:81accc5dfe9a015fd026bda4856d3073cdc0928e54ceb8ce1df85c306d5a5ca7",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:81accc5dfe9a015fd026bda4856d3073cdc0928e54ceb8ce1df85c306d5a5ca7",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:eb1c2baadb95379102db6129406ab00deda74c2656e2cbfa28dd40c78d34c79d",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:81accc5dfe9a015fd026bda4856d3073cdc0928e54ceb8ce1df85c306d5a5ca7",
       "alternateTags": [
         ":3-nonroot"
       ]
@@ -861,11 +861,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 87765811,
       "sizeHuman": "83.7 MB",
-      "createdDate": "2026-07-29T01:44:55.379283636Z",
-      "digest": "sha256:6d35905ed696c91bb33dff68139fd47a5f2c43e23634a968af778e54f48bebb7",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:6d35905ed696c91bb33dff68139fd47a5f2c43e23634a968af778e54f48bebb7",
+      "createdDate": "2026-07-31T23:43:15.236297791Z",
+      "digest": "sha256:8b486e043e646e69a9bfc25a404909f1036b8af386a9e1d410f90936d923fb23",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:8b486e043e646e69a9bfc25a404909f1036b8af386a9e1d410f90936d923fb23",
       "stableTag": "mcr.microsoft.com/azurelinux/distroless/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:6d35905ed696c91bb33dff68139fd47a5f2c43e23634a968af778e54f48bebb7",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:8b486e043e646e69a9bfc25a404909f1036b8af386a9e1d410f90936d923fb23",
       "alternateTags": [
         ":3"
       ]
@@ -881,11 +881,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 145752064,
       "sizeHuman": "139.0 MB",
-      "createdDate": "2026-07-29T01:42:49.734582093Z",
-      "digest": "sha256:8b00ae81651563f82c466eb7dbdb3df660962b0278c6ece65c14aa141d6612fb",
-      "pinnedReference": "mcr.microsoft.com/azurelinux/base/python:3.12@sha256:8b00ae81651563f82c466eb7dbdb3df660962b0278c6ece65c14aa141d6612fb",
+      "createdDate": "2026-07-31T23:41:21.628115372Z",
+      "digest": "sha256:66097f09fcca9f87dfa6481938c1fa4a8b81ea5d6319f1129c610367f1436c06",
+      "pinnedReference": "mcr.microsoft.com/azurelinux/base/python:3.12@sha256:66097f09fcca9f87dfa6481938c1fa4a8b81ea5d6319f1129c610367f1436c06",
       "stableTag": "mcr.microsoft.com/azurelinux/base/python:3.12",
-      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:8b00ae81651563f82c466eb7dbdb3df660962b0278c6ece65c14aa141d6612fb",
+      "dockerfileFrom": "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:66097f09fcca9f87dfa6481938c1fa4a8b81ea5d6319f1129c610367f1436c06",
       "alternateTags": [
         ":3"
       ]
