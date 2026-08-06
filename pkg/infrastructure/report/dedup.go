@@ -95,28 +95,36 @@ func DeduplicateByDigest(images []domain.RecommendedImage) []domain.RecommendedI
 // tagSpecificity scores how specific an image tag is.
 // Higher score = more specific. Prefers numeric version tags over
 // non-numeric ones, then counts dot-separated version segments.
+// Optional conventional "v"/"V" prefixes (when followed by a digit) are treated
+// as numeric, consistent with version-aware tag sorting.
 func tagSpecificity(name string) int {
 	tag := extractTag(name)
 	if tag == "" {
 		return 0
 	}
 
-	// Tags starting with a digit are strongly preferred over non-numeric tags
-	// (e.g., "3.12" should always beat "latest").
+	// Normalize optional v/V prefix so "v10.0" is scored like a numeric tag.
+	versionTag := tag
+	if len(tag) >= 2 && (tag[0] == 'v' || tag[0] == 'V') && tag[1] >= '0' && tag[1] <= '9' {
+		versionTag = tag[1:]
+	}
+
+	// Tags with a leading digit (after optional v-prefix) are strongly preferred
+	// over non-numeric tags (e.g., "3.12" / "v3.12" should beat "latest").
 	numericBonus := 0
-	if len(tag) > 0 && tag[0] >= '0' && tag[0] <= '9' {
+	if len(versionTag) > 0 && versionTag[0] >= '0' && versionTag[0] <= '9' {
 		numericBonus = 10000
 	}
 
 	// Extract the leading version portion (before any '-' suffix like "-nonroot").
-	versionPart := tag
-	if idx := strings.IndexByte(tag, '-'); idx > 0 {
-		versionPart = tag[:idx]
+	versionPart := versionTag
+	if idx := strings.IndexByte(versionTag, '-'); idx > 0 {
+		versionPart = versionTag[:idx]
 	}
 
 	segments := strings.Count(versionPart, ".") + 1
 
-	// Use numericBonus + segments * 1000 + tag length for tie-breaking.
+	// Use numericBonus + segments * 1000 + original tag length for tie-breaking.
 	return numericBonus + segments*1000 + len(tag)
 }
 
