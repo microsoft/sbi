@@ -1,6 +1,6 @@
 # Daily Recommended Images by Language
 
-_Generated: 2026-08-06T03:11:54Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
+_Generated: 2026-08-07T03:10:43Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
 
 **Note:** Image sizes are based on Linux amd64 platform as reported by `docker images` on GitHub runners. Actual sizes may vary significantly on other platforms (macOS, Windows, etc.).
 
@@ -89,7 +89,7 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
 | 1 | `mcr.microsoft.com/dotnet/runtime:8.0` | 8.0.29 | - | 5 | 17 | 166 | 193.0 MB | 2026-08-05 | `sha256:794b603ad8cf` | `mcr.microsoft.com/dotnet/runtime:8.0@sha256:794b603ad8cf882df3a37dcb124eccdcd688c367864cd66e93e921cda9caba76` |
 | 2 | `mcr.microsoft.com/dotnet/aspnet:8.0` | 8.0.29 | - | 5 | 17 | 166 | 218.0 MB | 2026-08-05 | `sha256:fd7596eaea7a` | `mcr.microsoft.com/dotnet/aspnet:8.0@sha256:fd7596eaea7ad453fe7ac16724a3c9ae36edcda894ba13743d6a5c83d6a3b36d` |
-| 3 | `mcr.microsoft.com/dotnet/sdk:8.0` | 8.0.423 | - | 17 | 67 | 372 | 850.0 MB | 2026-08-05 | `sha256:e2f26f26169f` | `mcr.microsoft.com/dotnet/sdk:8.0@sha256:e2f26f26169fd10d6f1b426e01c97397717b32e9d5ab4ee4a7d5497ed9403007` |
+| 3 | `mcr.microsoft.com/dotnet/sdk:8.0` | 8.0.423 | - | 17 | 70 | 372 | 850.0 MB | 2026-08-05 | `sha256:e2f26f26169f` | `mcr.microsoft.com/dotnet/sdk:8.0@sha256:e2f26f26169fd10d6f1b426e01c97397717b32e9d5ab4ee4a7d5497ed9403007` |
 
 ### Ubuntu
 
