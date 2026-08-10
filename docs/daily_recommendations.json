@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T02:54:48Z",
+  "generatedAt": "2026-08-10T02:56:14Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -208,7 +208,7 @@
       "version": "8.0.29",
       "criticalVulnerabilities": 5,
       "highVulnerabilities": 17,
-      "totalVulnerabilities": 167,
+      "totalVulnerabilities": 169,
       "sizeBytes": 202375168,
       "sizeHuman": "193.0 MB",
       "createdDate": "2026-08-05T01:43:34.903874502Z",
@@ -225,7 +225,7 @@
       "version": "8.0.29",
       "criticalVulnerabilities": 5,
       "highVulnerabilities": 17,
-      "totalVulnerabilities": 167,
+      "totalVulnerabilities": 169,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
       "createdDate": "2026-08-05T01:43:39.944720596Z",
@@ -241,8 +241,8 @@
       "name": "mcr.microsoft.com/dotnet/sdk:8.0",
       "version": "8.0.423",
       "criticalVulnerabilities": 17,
-      "highVulnerabilities": 70,
-      "totalVulnerabilities": 373,
+      "highVulnerabilities": 68,
+      "totalVulnerabilities": 374,
       "sizeBytes": 891289600,
       "sizeHuman": "850.0 MB",
       "createdDate": "2026-08-05T01:44:17.503514525Z",
