@@ -18,7 +18,7 @@ body:
       placeholder: |
         sbi version: (output of `sbi --version` or commit SHA)
         OS: macOS 15 / Ubuntu 24.04 / etc.
-        Go: 1.26
+        Go: 1.27
     validations:
       required: true
   - type: textarea

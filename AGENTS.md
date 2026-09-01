@@ -5,7 +5,7 @@
 ## Project Overview
 
 - **Module:** `github.com/microsoft/sbi`
-- **Language:** Go 1.26, built with `task build`
+- **Language:** Go 1.27, built with `task build`
 - **CLI framework:** Cobra (`github.com/spf13/cobra`)
 - **Database:** SQLite via `modernc.org/sqlite` (pure Go, no CGO)
 - **Binary name:** `sbi`
