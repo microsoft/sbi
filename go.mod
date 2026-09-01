@@ -1,6 +1,6 @@
 module github.com/microsoft/sbi
 
-go 1.27.0
+go 1.26.6
 
 require (
 	github.com/sirupsen/logrus v1.9.4

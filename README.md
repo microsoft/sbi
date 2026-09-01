@@ -37,7 +37,7 @@ Image sources and tag filtering rules are configured in [`config/repositories.js
 
 ### Prerequisites
 
-- **Go** 1.27+, **Docker**, **[Syft](https://github.com/anchore/syft#installation)**, **[Trivy](https://github.com/aquasecurity/trivy#get-trivy)**
+- **Go** 1.26+, **Docker**, **[Syft](https://github.com/anchore/syft#installation)**, **[Trivy](https://github.com/aquasecurity/trivy#get-trivy)**
 
 ### Quick Start
 
