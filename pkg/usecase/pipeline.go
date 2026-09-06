@@ -85,6 +85,18 @@ func (s *scanStats) result() error {
 	return nil
 }
 
+// record counts a real scan attempt. Images skipped because they already
+// exist and --update-existing is unset are not attempts.
+func (s *scanStats) record(skipped bool, err error) {
+	if skipped {
+		return
+	}
+	s.attempted++
+	if err != nil {
+		s.failed++
+	}
+}
+
 // ScanAll loads repositories from config, discovers tags, and scans all images.
 // Individual image failures are logged and scanning continues. Returns an error
 // only when every scan attempt failed (total outage), so partial success still
@@ -101,9 +113,9 @@ func (p *Pipeline) ScanAll() error {
 		}
 
 		for _, img := range singleImages {
-			stats.attempted++
-			if err := p.scanSingleImage(img, group.Category); err != nil {
-				stats.failed++
+			skipped, err := p.scanSingleImage(img, group.Category)
+			stats.record(skipped, err)
+			if err != nil {
 				log.Errorf("Error scanning image %s: %v", img, err)
 			}
 		}
@@ -123,7 +135,8 @@ func (p *Pipeline) ScanAll() error {
 
 // ScanImage scans a single image by name.
 func (p *Pipeline) ScanImage(imageName string) error {
-	return p.scanSingleImage(imageName, "")
+	_, err := p.scanSingleImage(imageName, "")
+	return err
 }
 
 // GenerateReport generates both the markdown and JSON recommendations reports.
@@ -153,8 +166,7 @@ func (p *Pipeline) scanRepository(repo string, category string, stats *scanStats
 	tags, err := p.registry.GetTags(repo)
 	if err != nil {
 		// Count tag discovery failure as a single failed attempt for this repo.
-		stats.attempted++
-		stats.failed++
+		stats.record(false, err)
 		log.Errorf("Error scanning repository %s: getting tags: %v", repo, err)
 		return
 	}
@@ -167,30 +179,30 @@ func (p *Pipeline) scanRepository(repo string, category string, stats *scanStats
 	defaultRegistry := p.repoCfg.Defaults.Registry
 	for _, tag := range limited {
 		imageName := scanner.BuildFullImageName(defaultRegistry, repo, tag)
-		stats.attempted++
-		if err := p.scanSingleImage(imageName, category); err != nil {
-			stats.failed++
+		skipped, err := p.scanSingleImage(imageName, category)
+		stats.record(skipped, err)
+		if err != nil {
 			log.Errorf("Error scanning %s: %v", imageName, err)
 		}
 	}
 }
 
-func (p *Pipeline) scanSingleImage(imageName string, category string) error {
+func (p *Pipeline) scanSingleImage(imageName string, category string) (skipped bool, err error) {
 	if !p.config.UpdateExisting {
 		exists, err := p.repo.ImageExists(imageName)
 		if err != nil {
-			return fmt.Errorf("checking image existence: %w", err)
+			return false, fmt.Errorf("checking image existence: %w", err)
 		}
 
 		if exists {
 			log.Infof("Skipping existing image: %s", imageName)
-			return nil
+			return true, nil
 		}
 	}
 
 	analysis, err := p.analyzer.Analyze(imageName)
 	if err != nil {
-		return fmt.Errorf("analyzing %s: %w", imageName, err)
+		return false, fmt.Errorf("analyzing %s: %w", imageName, err)
 	}
 
 	if category == "base" && len(analysis.Image.Languages) == 0 {
@@ -204,12 +216,12 @@ func (p *Pipeline) scanSingleImage(imageName string, category string) error {
 	}
 
 	if err := p.repo.InsertImage(&analysis.Image); err != nil {
-		return fmt.Errorf("inserting %s: %w", imageName, err)
+		return false, fmt.Errorf("inserting %s: %w", imageName, err)
 	}
 
 	log.Infof("Successfully scanned and stored: %s", imageName)
 
-	return nil
+	return false, nil
 }
 
 // LoadRepositoryConfig reads the JSON config from the config directory.

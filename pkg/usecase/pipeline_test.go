@@ -23,6 +23,7 @@
 package usecase
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,4 +57,25 @@ func TestScanStatsResult(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestScanStatsRecord_SkipsAreNotAttempts(t *testing.T) {
+	s := &scanStats{}
+
+	s.record(true, nil)
+	assert.Equal(t, 0, s.attempted)
+	assert.Equal(t, 0, s.failed)
+	assert.NoError(t, s.result())
+
+	// One skipped image plus every real scan failing is a total outage.
+	s.record(false, errors.New("pull failed"))
+	s.record(true, nil)
+	s.record(false, errors.New("analyze failed"))
+	assert.Equal(t, 2, s.attempted)
+	assert.Equal(t, 2, s.failed)
+	require.Error(t, s.result())
+	assert.Contains(t, s.result().Error(), "all 2 scan operations failed")
+
+	s.record(false, nil)
+	assert.NoError(t, s.result(), "a real success after failures is partial, not total")
 }
