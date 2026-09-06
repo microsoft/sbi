@@ -39,6 +39,10 @@ import (
 // tagsPageSize is the per-request page size for registry tags/list pagination.
 const tagsPageSize = 100
 
+// maxTagPages caps GetTags pagination so a cyclic or unbounded Link header
+// cannot loop forever. The HTTP client timeout applies per request only.
+var maxTagPages = 100
+
 // DefaultTagFilter returns the default tag filter configuration.
 func DefaultTagFilter() domain.TagFilterConfig {
 	return domain.TagFilterConfig{
@@ -72,46 +76,64 @@ func NewRegistryScanner(defaultRegistry string) *RegistryScanner {
 func (s *RegistryScanner) GetTags(repo string) ([]string, error) {
 	next := fmt.Sprintf("%s/v2/%s/tags/list?n=%d", s.registryURL, repo, tagsPageSize)
 	var all []string
+	seen := make(map[string]struct{})
 
-	for next != "" {
-		log.Debugf("Fetching tags from: %s", next)
+	for page := 0; next != ""; page++ {
+		if page >= maxTagPages {
+			return nil, fmt.Errorf("tag pagination exceeded %d pages for %s", maxTagPages, repo)
+		}
+		if _, ok := seen[next]; ok {
+			log.Warnf("tag pagination cycle detected for %s at %s", repo, next)
+			break
+		}
+		seen[next] = struct{}{}
 
-		req, err := http.NewRequest(http.MethodGet, next, nil)
+		tags, linkHeader, err := s.fetchTagPage(next, repo)
 		if err != nil {
-			return nil, fmt.Errorf("creating tags request for %s: %w", repo, err)
+			return nil, err
 		}
-
-		resp, err := s.client.Do(req)
-		if err != nil {
-			return nil, fmt.Errorf("fetching tags for %s: %w", repo, err)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			_ = resp.Body.Close()
-			return nil, fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
-		}
-
-		var tagsResp domain.TagsResponse
-		if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
-			_ = resp.Body.Close()
-			return nil, fmt.Errorf("decoding tags response: %w", err)
-		}
-		_ = resp.Body.Close()
-
-		all = append(all, tagsResp.Tags...)
+		all = append(all, tags...)
 
 		base, err := url.Parse(next)
 		if err != nil {
 			return nil, fmt.Errorf("parsing tags URL for %s: %w", repo, err)
 		}
-		next = nextPageFromLink(base, resp.Header.Get("Link"))
+		next = nextPageFromLink(base, linkHeader)
 	}
 
 	return all, nil
 }
 
+func (s *RegistryScanner) fetchTagPage(pageURL, repo string) ([]string, string, error) {
+	log.Debugf("Fetching tags from: %s", pageURL)
+
+	req, err := http.NewRequest(http.MethodGet, pageURL, nil)
+	if err != nil {
+		return nil, "", fmt.Errorf("creating tags request for %s: %w", repo, err)
+	}
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, "", fmt.Errorf("fetching tags for %s: %w", repo, err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, "", fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
+	}
+
+	var tagsResp domain.TagsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
+		return nil, "", fmt.Errorf("decoding tags response: %w", err)
+	}
+
+	return tagsResp.Tags, resp.Header.Get("Link"), nil
+}
+
 // nextPageFromLink returns the absolute URL for rel="next" from an RFC 5988
-// Link header, or "" when there is no next page.
+// Link header, or "" when there is no next page. Only the parameter list
+// after ">" is inspected, so a URL that happens to contain "rel=next" is
+// not treated as a next link.
 func nextPageFromLink(base *url.URL, linkHeader string) string {
 	if linkHeader == "" || base == nil {
 		return ""
@@ -119,17 +141,12 @@ func nextPageFromLink(base *url.URL, linkHeader string) string {
 
 	for _, part := range strings.Split(linkHeader, ",") {
 		part = strings.TrimSpace(part)
-		lower := strings.ToLower(part)
-		// Accept rel="next" / rel=next / rel='next'
-		if !strings.Contains(lower, `rel="next"`) &&
-			!strings.Contains(lower, `rel='next'`) &&
-			!strings.Contains(lower, `rel=next`) {
-			continue
-		}
-
 		start := strings.Index(part, "<")
 		end := strings.Index(part, ">")
 		if start < 0 || end <= start {
+			continue
+		}
+		if !linkRelIsNext(part[end+1:]) {
 			continue
 		}
 
@@ -144,6 +161,23 @@ func nextPageFromLink(base *url.URL, linkHeader string) string {
 	}
 
 	return ""
+}
+
+func linkRelIsNext(params string) bool {
+	for _, p := range strings.Split(params, ";") {
+		p = strings.TrimSpace(p)
+		key, val, ok := strings.Cut(p, "=")
+		if !ok || !strings.EqualFold(strings.TrimSpace(key), "rel") {
+			continue
+		}
+		val = strings.Trim(strings.TrimSpace(val), `"'`)
+		for _, token := range strings.Fields(val) {
+			if strings.EqualFold(token, "next") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // FilterTags removes pre-release, arch-specific, and unwanted tags based on the provided config.

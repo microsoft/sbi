@@ -24,6 +24,7 @@ package scanner
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -48,6 +49,9 @@ func TestNextPageFromLink(t *testing.T) {
 		{"prev only", `</v2/repo/tags/list?n=100>; rel="prev"`, ""},
 		{"mixed", `</v2/repo/tags/list?n=100&last=a>; rel="prev", </v2/repo/tags/list?n=100&last=b>; rel="next"`, "https://mcr.microsoft.com/v2/repo/tags/list?n=100&last=b"},
 		{"rel without quotes", `</v2/repo/tags/list?n=100&last=c>; rel=next`, "https://mcr.microsoft.com/v2/repo/tags/list?n=100&last=c"},
+		{"rel single quotes", `</v2/repo/tags/list?n=100&last=d>; rel='next'`, "https://mcr.microsoft.com/v2/repo/tags/list?n=100&last=d"},
+		{"rel next prefetch", `</v2/repo/tags/list?n=100&last=e>; rel="next prefetch"`, "https://mcr.microsoft.com/v2/repo/tags/list?n=100&last=e"},
+		{"url contains rel=next", `</v2/repo/tags/list?rel=next>; rel="prev"`, ""},
 	}
 
 	for _, tt := range tests {
@@ -119,4 +123,47 @@ func TestGetTags_NonOKStatus(t *testing.T) {
 	_, err := s.GetTags("missing")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "404")
+}
+
+func TestGetTags_StopsOnCycle(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		// Self-referencing next link would loop forever without cycle detection.
+		w.Header().Set("Link", `</v2/repo/tags/list?n=100>; rel="next"`)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"name": "repo",
+			"tags": []string{"1.0"},
+		})
+	}))
+	defer srv.Close()
+
+	s := &RegistryScanner{client: srv.Client(), registryURL: srv.URL}
+	tags, err := s.GetTags("repo")
+	require.NoError(t, err)
+	assert.Equal(t, 1, hits, "cyclic next link must not be followed")
+	assert.Equal(t, []string{"1.0"}, tags)
+}
+
+func TestGetTags_MaxPages(t *testing.T) {
+	orig := maxTagPages
+	maxTagPages = 3
+	t.Cleanup(func() { maxTagPages = orig })
+
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		w.Header().Set("Link", fmt.Sprintf(`</v2/repo/tags/list?n=100&last=%d>; rel="next"`, hits))
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"name": "repo",
+			"tags": []string{fmt.Sprintf("t%d", hits)},
+		})
+	}))
+	defer srv.Close()
+
+	s := &RegistryScanner{client: srv.Client(), registryURL: srv.URL}
+	_, err := s.GetTags("repo")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "exceeded 3 pages")
+	assert.Equal(t, 3, hits)
 }
