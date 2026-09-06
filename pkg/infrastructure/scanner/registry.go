@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -34,6 +35,13 @@ import (
 	"github.com/microsoft/sbi/pkg/domain"
 	log "github.com/sirupsen/logrus"
 )
+
+// tagsPageSize is the per-request page size for registry tags/list pagination.
+const tagsPageSize = 100
+
+// maxTagPages caps GetTags pagination so a cyclic or unbounded Link header
+// cannot loop forever. The HTTP client timeout applies per request only.
+var maxTagPages = 100
 
 // DefaultTagFilter returns the default tag filter configuration.
 func DefaultTagFilter() domain.TagFilterConfig {
@@ -63,27 +71,113 @@ func NewRegistryScanner(defaultRegistry string) *RegistryScanner {
 	}
 }
 
-// GetTags fetches available tags for an MCR repository.
+// GetTags fetches available tags for a repository, following Registry API
+// pagination via the Link response header (rel="next").
 func (s *RegistryScanner) GetTags(repo string) ([]string, error) {
-	url := fmt.Sprintf("%s/v2/%s/tags/list", s.registryURL, repo)
-	log.Debugf("Fetching tags from: %s", url)
+	next := fmt.Sprintf("%s/v2/%s/tags/list?n=%d", s.registryURL, repo, tagsPageSize)
+	var all []string
+	seen := make(map[string]struct{})
 
-	resp, err := s.client.Get(url)
+	for page := 0; next != ""; page++ {
+		if page >= maxTagPages {
+			return nil, fmt.Errorf("tag pagination exceeded %d pages for %s", maxTagPages, repo)
+		}
+		if _, ok := seen[next]; ok {
+			log.Warnf("tag pagination cycle detected for %s at %s", repo, next)
+			break
+		}
+		seen[next] = struct{}{}
+
+		tags, linkHeader, err := s.fetchTagPage(next, repo)
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, tags...)
+
+		base, err := url.Parse(next)
+		if err != nil {
+			return nil, fmt.Errorf("parsing tags URL for %s: %w", repo, err)
+		}
+		next = nextPageFromLink(base, linkHeader)
+	}
+
+	return all, nil
+}
+
+func (s *RegistryScanner) fetchTagPage(pageURL, repo string) ([]string, string, error) {
+	log.Debugf("Fetching tags from: %s", pageURL)
+
+	req, err := http.NewRequest(http.MethodGet, pageURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("fetching tags for %s: %w", repo, err)
+		return nil, "", fmt.Errorf("creating tags request for %s: %w", repo, err)
+	}
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, "", fmt.Errorf("fetching tags for %s: %w", repo, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
+		return nil, "", fmt.Errorf("unexpected status %d for %s", resp.StatusCode, repo)
 	}
 
 	var tagsResp domain.TagsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
-		return nil, fmt.Errorf("decoding tags response: %w", err)
+		return nil, "", fmt.Errorf("decoding tags response: %w", err)
 	}
 
-	return tagsResp.Tags, nil
+	return tagsResp.Tags, resp.Header.Get("Link"), nil
+}
+
+// nextPageFromLink returns the absolute URL for rel="next" from an RFC 5988
+// Link header, or "" when there is no next page. Only the parameter list
+// after ">" is inspected, so a URL that happens to contain "rel=next" is
+// not treated as a next link.
+func nextPageFromLink(base *url.URL, linkHeader string) string {
+	if linkHeader == "" || base == nil {
+		return ""
+	}
+
+	for _, part := range strings.Split(linkHeader, ",") {
+		part = strings.TrimSpace(part)
+		start := strings.Index(part, "<")
+		end := strings.Index(part, ">")
+		if start < 0 || end <= start {
+			continue
+		}
+		if !linkRelIsNext(part[end+1:]) {
+			continue
+		}
+
+		ref := strings.TrimSpace(part[start+1 : end])
+		resolved, err := base.Parse(ref)
+		if err != nil {
+			log.Warnf("Invalid pagination Link URL %q: %v", ref, err)
+			return ""
+		}
+
+		return resolved.String()
+	}
+
+	return ""
+}
+
+func linkRelIsNext(params string) bool {
+	for _, p := range strings.Split(params, ";") {
+		p = strings.TrimSpace(p)
+		key, val, ok := strings.Cut(p, "=")
+		if !ok || !strings.EqualFold(strings.TrimSpace(key), "rel") {
+			continue
+		}
+		val = strings.Trim(strings.TrimSpace(val), `"'`)
+		for _, token := range strings.Fields(val) {
+			if strings.EqualFold(token, "next") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // FilterTags removes pre-release, arch-specific, and unwanted tags based on the provided config.
@@ -296,24 +390,42 @@ func BuildFullImageName(defaultRegistry, repo, tag string) string {
 }
 
 // ExtractRegistryAndRepo splits a full image name into registry, repository, and tag.
+// Digest suffixes (@sha256:...) are stripped before parsing. Tags are taken from the
+// last ":" after the last "/", so host:port registries (e.g. localhost:5000) work.
 func ExtractRegistryAndRepo(imageName string) (registry, repository, tag string) {
-	// Split off the tag
-	parts := strings.SplitN(imageName, ":", 2)
-	nameWithoutTag := parts[0]
-	if len(parts) == 2 {
-		tag = parts[1]
+	name := imageName
+
+	// Strip @digest first — digests contain ":" (e.g. sha256:abc) and must not
+	// be mistaken for tags.
+	if at := strings.Index(name, "@"); at >= 0 {
+		name = name[:at]
 	}
 
-	// Split into registry and repository
+	// Tag separator is the last ":" after the last "/".
+	lastSlash := strings.LastIndex(name, "/")
+	lastColon := strings.LastIndex(name, ":")
+	nameWithoutTag := name
+	if lastColon > lastSlash {
+		tag = name[lastColon+1:]
+		nameWithoutTag = name[:lastColon]
+	}
+
+	// Registry is the first path segment when it looks like a host.
 	segments := strings.SplitN(nameWithoutTag, "/", 2)
-	if len(segments) == 2 && strings.Contains(segments[0], ".") {
+	if len(segments) == 2 && looksLikeRegistryHost(segments[0]) {
 		registry = segments[0]
 		repository = segments[1]
 	} else {
-		// Default to MCR
+		// Default to MCR for short names like "azurelinux/base/python:3.12"
 		registry = "mcr.microsoft.com"
 		repository = nameWithoutTag
 	}
 
 	return registry, repository, tag
+}
+
+// looksLikeRegistryHost reports whether s is a registry host (domain, host:port,
+// or localhost) rather than a repository path segment.
+func looksLikeRegistryHost(s string) bool {
+	return strings.Contains(s, ".") || strings.Contains(s, ":") || strings.EqualFold(s, "localhost")
 }
