@@ -35,13 +35,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type imageAnalyzer interface {
+	Analyze(imageName string) (*domain.ImageAnalysis, error)
+}
+
+type tagDiscoverer interface {
+	GetTags(repo string) ([]string, error)
+}
+
 // Pipeline orchestrates the full scan and report generation workflow.
 type Pipeline struct {
 	config   domain.ScanConfig
 	repoCfg  domain.RepositoryConfig
 	repo     *database.Repository
-	analyzer *scanner.ImageAnalyzer
-	registry *scanner.RegistryScanner
+	analyzer imageAnalyzer
+	registry tagDiscoverer
 }
 
 // NewPipeline creates a new Pipeline.
@@ -85,10 +93,11 @@ func (s *scanStats) result() error {
 	return nil
 }
 
-// record counts a real scan attempt. Images skipped because they already
-// exist and --update-existing is unset are not attempts.
+// record counts a real scan attempt. A clean skip (already in the DB,
+// --update-existing unset) is not an attempt. A skip paired with an error
+// is treated as a failed attempt so a caller cannot hide a failure.
 func (s *scanStats) record(skipped bool, err error) {
-	if skipped {
+	if skipped && err == nil {
 		return
 	}
 	s.attempted++
@@ -187,7 +196,7 @@ func (p *Pipeline) scanRepository(repo string, category string, stats *scanStats
 	}
 }
 
-func (p *Pipeline) scanSingleImage(imageName string, category string) (skipped bool, err error) {
+func (p *Pipeline) scanSingleImage(imageName string, category string) (bool, error) {
 	if !p.config.UpdateExisting {
 		exists, err := p.repo.ImageExists(imageName)
 		if err != nil {
