@@ -502,12 +502,13 @@ func TestParseTrivyResult_SecretsAndMisconfigs(t *testing.T) {
 	output := &trivyOutput{
 		Results: []trivyResult{
 			{
+				Target: "/app/.env",
 				Secrets: []trivySecret{
-					{RuleID: "aws-secret-key", Severity: "CRITICAL", Title: "AWS secret key"},
-					{RuleID: "generic-api-key", Severity: "HIGH", Title: "API key"},
+					{RuleID: "aws-secret-key", Severity: "CRITICAL", Title: "AWS secret key", Category: "AWS", Match: "AKIAIOSFODNN7EXAMPLE"},
+					{RuleID: "generic-api-key", Severity: "HIGH", Title: "API key", Category: "token", Match: "line with api_key=supersecret value"},
 				},
 				Misconfigs: []trivyMisconfig{
-					{ID: "DS001", Severity: "HIGH", Title: "root user"},
+					{ID: "DS001", Severity: "HIGH", Title: "root user", Message: "Dockerfile runs as root"},
 				},
 				Licenses: []trivyLicense{
 					{Name: "GPL-3.0", Severity: "HIGH"},
@@ -527,11 +528,23 @@ func TestParseTrivyResult_SecretsAndMisconfigs(t *testing.T) {
 	assert.Equal(t, "secret", result.SecurityFindings[0].FindingType)
 	assert.Equal(t, "aws-secret-key", result.SecurityFindings[0].RuleID)
 	assert.Equal(t, "CRITICAL", result.SecurityFindings[0].Severity)
+	assert.Equal(t, "AWS", result.SecurityFindings[0].Category)
+	assert.Equal(t, "/app/.env", result.SecurityFindings[0].FilePath)
+	assert.Empty(t, result.SecurityFindings[0].Description, "secret Match must not be persisted")
+	assert.NotContains(t, result.SecurityFindings[0].Description, "AKIA")
+	assert.NotContains(t, result.SecurityFindings[0].Title, "AKIA")
+
 	assert.Equal(t, "secret", result.SecurityFindings[1].FindingType)
 	assert.Equal(t, "generic-api-key", result.SecurityFindings[1].RuleID)
+	assert.Empty(t, result.SecurityFindings[1].Description)
+	assert.NotContains(t, result.SecurityFindings[1].Description, "supersecret")
+	assert.NotContains(t, result.SecurityFindings[1].Message, "supersecret")
+
 	assert.Equal(t, "misconfiguration", result.SecurityFindings[2].FindingType)
 	assert.Equal(t, "DS001", result.SecurityFindings[2].RuleID)
 	assert.Equal(t, "root user", result.SecurityFindings[2].Title)
+	assert.Equal(t, "Dockerfile runs as root", result.SecurityFindings[2].Message)
+	assert.Equal(t, "/app/.env", result.SecurityFindings[2].FilePath)
 }
 
 // ============================================================================

@@ -173,7 +173,10 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 			})
 		}
 
-		// Process secrets (counts + detailed findings for persistence)
+		// Process secrets (counts + detailed findings for persistence).
+		// Do not persist Match: nightly commits the detailed JSON to a public
+		// repo, and Match can include surrounding source-line text even when
+		// Trivy masks the secret span.
 		for _, s := range r.Secrets {
 			result.SecretsFound++
 			result.SecurityFindings = append(result.SecurityFindings, domain.SecurityFinding{
@@ -181,7 +184,7 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 				Severity:    s.Severity,
 				RuleID:      s.RuleID,
 				Title:       s.Title,
-				Description: truncateString(s.Match, 500),
+				FilePath:    r.Target,
 				Category:    s.Category,
 			})
 		}
@@ -194,6 +197,7 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 				Severity:    m.Severity,
 				RuleID:      m.ID,
 				Title:       m.Title,
+				FilePath:    r.Target,
 				Message:     m.Message,
 			})
 		}

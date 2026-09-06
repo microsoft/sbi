@@ -421,8 +421,8 @@ func TestInsertAndQuerySecurityFindingsAndCapabilities(t *testing.T) {
 				Severity:    "CRITICAL",
 				RuleID:      "aws-secret-key",
 				Title:       "AWS secret key",
-				Description: "AKIA...",
 				Category:    "AWS",
+				FilePath:    "/app/.env",
 			},
 			{
 				FindingType: "misconfiguration",
@@ -443,6 +443,8 @@ func TestInsertAndQuerySecurityFindingsAndCapabilities(t *testing.T) {
 	require.Len(t, got.SecurityFindings, 2)
 	assert.Equal(t, "secret", got.SecurityFindings[0].FindingType)
 	assert.Equal(t, "aws-secret-key", got.SecurityFindings[0].RuleID)
+	assert.Equal(t, "/app/.env", got.SecurityFindings[0].FilePath)
+	assert.Empty(t, got.SecurityFindings[0].Description)
 	assert.Equal(t, "misconfiguration", got.SecurityFindings[1].FindingType)
 	assert.Equal(t, "DS001", got.SecurityFindings[1].RuleID)
 
