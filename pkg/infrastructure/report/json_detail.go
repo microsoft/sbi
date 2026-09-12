@@ -59,6 +59,8 @@ type DetailImageEntry struct {
 	Vulnerabilities      []DetailVulnEntry       `json:"vulnerabilities"`
 	SystemPackages       []DetailSystemPkgEntry  `json:"systemPackages"`
 	PackageManagers      []DetailPkgManagerEntry `json:"packageManagers"`
+	SecurityFindings     []DetailSecurityFinding `json:"securityFindings"`
+	Capabilities         []string                `json:"capabilities"`
 }
 
 // DetailBaseOS holds the OS information for an image.
@@ -113,6 +115,18 @@ type DetailPkgManagerEntry struct {
 	Language string `json:"language,omitempty"`
 }
 
+// DetailSecurityFinding represents a secret or misconfiguration from comprehensive scans.
+type DetailSecurityFinding struct {
+	FindingType string `json:"findingType"`
+	Severity    string `json:"severity,omitempty"`
+	RuleID      string `json:"ruleId,omitempty"`
+	Title       string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+	FilePath    string `json:"filePath,omitempty"`
+	Category    string `json:"category,omitempty"`
+	Message     string `json:"message,omitempty"`
+}
+
 // GenerateDetailJSONReport produces a detailed JSON report with per-image
 // package inventories, vulnerability breakdowns, and detected languages.
 func GenerateDetailJSONReport(repo *database.Repository, outputPath string) error {
@@ -131,8 +145,8 @@ func GenerateDetailJSONReport(repo *database.Repository, outputPath string) erro
 	report := DetailJSONReport{
 		SchemaVersion: 1,
 		GeneratedAt:   time.Now().UTC().Format(time.RFC3339),
-		ImageCount:  len(images),
-		Images:      make([]DetailImageEntry, 0, len(images)),
+		ImageCount:    len(images),
+		Images:        make([]DetailImageEntry, 0, len(images)),
 	}
 
 	for _, img := range images {
@@ -160,10 +174,12 @@ func GenerateDetailJSONReport(repo *database.Repository, outputPath string) erro
 				Negligible: img.NegligibleVulnerabilities,
 				Unknown:    img.UnknownVulnerabilities,
 			},
-			Languages:       make([]DetailLanguageEntry, 0, len(img.Languages)),
-			Vulnerabilities: make([]DetailVulnEntry, 0, len(img.Vulnerabilities)),
-			SystemPackages:  make([]DetailSystemPkgEntry, 0, len(img.SystemPackages)),
-			PackageManagers: make([]DetailPkgManagerEntry, 0, len(img.PackageManagers)),
+			Languages:        make([]DetailLanguageEntry, 0, len(img.Languages)),
+			Vulnerabilities:  make([]DetailVulnEntry, 0, len(img.Vulnerabilities)),
+			SystemPackages:   make([]DetailSystemPkgEntry, 0, len(img.SystemPackages)),
+			PackageManagers:  make([]DetailPkgManagerEntry, 0, len(img.PackageManagers)),
+			SecurityFindings: make([]DetailSecurityFinding, 0, len(img.SecurityFindings)),
+			Capabilities:     make([]string, 0, len(img.Capabilities)),
 		}
 
 		for _, l := range img.Languages {
@@ -203,6 +219,25 @@ func GenerateDetailJSONReport(repo *database.Repository, outputPath string) erro
 				Version:  pm.Version,
 				Language: pm.Language,
 			})
+		}
+
+		for _, sf := range img.SecurityFindings {
+			entry.SecurityFindings = append(entry.SecurityFindings, DetailSecurityFinding{
+				FindingType: sf.FindingType,
+				Severity:    sf.Severity,
+				RuleID:      sf.RuleID,
+				Title:       sf.Title,
+				Description: sf.Description,
+				FilePath:    sf.FilePath,
+				Category:    sf.Category,
+				Message:     sf.Message,
+			})
+		}
+
+		for _, c := range img.Capabilities {
+			if c.Capability != "" {
+				entry.Capabilities = append(entry.Capabilities, c.Capability)
+			}
 		}
 
 		report.Images = append(report.Images, entry)

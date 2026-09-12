@@ -58,9 +58,9 @@ var versionPatterns = map[string]*regexp.Regexp{
 
 // ImageAnalyzer orchestrates the full analysis of a container image.
 type ImageAnalyzer struct {
-	docker          *DockerClient
-	comprehensive   bool
-	cleanupImages   bool
+	docker        *DockerClient
+	comprehensive bool
+	cleanupImages bool
 }
 
 // NewImageAnalyzer creates a new ImageAnalyzer.
@@ -136,33 +136,34 @@ func (a *ImageAnalyzer) Analyze(imageName string) (*domain.ImageAnalysis, error)
 		TrivyResult:     *trivyResult,
 		RuntimeVersions: runtimeVersions,
 		Image: domain.ImageRecord{
-			Name:                        imageName,
-			Registry:                    registry,
-			Repository:                  repository,
-			Tag:                         tag,
-			Digest:                      inspectResult.Digest,
-			SizeBytes:                   imageSize,
-			Layers:                      inspectResult.Layers,
-			CreatedDate:                 inspectResult.Created,
-			BaseOSName:                  trivyResult.BaseOSFamily,
-			BaseOSVersion:               trivyResult.BaseOSVersion,
-			TotalVulnerabilities:        trivyResult.TotalVulnerabilities,
-			CriticalVulnerabilities:     trivyResult.CriticalVulnerabilities,
-			HighVulnerabilities:         trivyResult.HighVulnerabilities,
-			MediumVulnerabilities:       trivyResult.MediumVulnerabilities,
-			LowVulnerabilities:          trivyResult.LowVulnerabilities,
-			NegligibleVulnerabilities:   trivyResult.NegligibleVulnerabilities,
-			UnknownVulnerabilities:      trivyResult.UnknownVulnerabilities,
-			VulnerabilityScanTimestamp:  time.Now().UTC().Format(time.RFC3339),
-			VulnerabilityScanner:        "trivy",
-			SecretsFound:                trivyResult.SecretsFound,
-			ConfigIssues:                trivyResult.ConfigIssues,
-			LicenseIssues:               trivyResult.LicenseIssues,
-			Languages:                   languages,
-			Vulnerabilities:             trivyResult.Vulnerabilities,
-			PackageManagers:             syftResult.PackageManagers,
-			Capabilities:                syftResult.Capabilities,
-			SystemPackages:              syftResult.SystemPackages,
+			Name:                       imageName,
+			Registry:                   registry,
+			Repository:                 repository,
+			Tag:                        tag,
+			Digest:                     inspectResult.Digest,
+			SizeBytes:                  imageSize,
+			Layers:                     inspectResult.Layers,
+			CreatedDate:                inspectResult.Created,
+			BaseOSName:                 trivyResult.BaseOSFamily,
+			BaseOSVersion:              trivyResult.BaseOSVersion,
+			TotalVulnerabilities:       trivyResult.TotalVulnerabilities,
+			CriticalVulnerabilities:    trivyResult.CriticalVulnerabilities,
+			HighVulnerabilities:        trivyResult.HighVulnerabilities,
+			MediumVulnerabilities:      trivyResult.MediumVulnerabilities,
+			LowVulnerabilities:         trivyResult.LowVulnerabilities,
+			NegligibleVulnerabilities:  trivyResult.NegligibleVulnerabilities,
+			UnknownVulnerabilities:     trivyResult.UnknownVulnerabilities,
+			VulnerabilityScanTimestamp: time.Now().UTC().Format(time.RFC3339),
+			VulnerabilityScanner:       "trivy",
+			SecretsFound:               trivyResult.SecretsFound,
+			ConfigIssues:               trivyResult.ConfigIssues,
+			LicenseIssues:              trivyResult.LicenseIssues,
+			Languages:                  languages,
+			Vulnerabilities:            trivyResult.Vulnerabilities,
+			PackageManagers:            syftResult.PackageManagers,
+			Capabilities:               syftResult.Capabilities,
+			SystemPackages:             syftResult.SystemPackages,
+			SecurityFindings:           trivyResult.SecurityFindings,
 		},
 	}
 

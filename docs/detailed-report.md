@@ -52,15 +52,20 @@ The detailed report is written alongside the other reports as `docs/daily_recomm
       ],
       "packageManagers": [
         { "name": "pip", "version": "24.0", "language": "python" }
-      ]
+      ],
+      "securityFindings": [
+        { "findingType": "secret", "severity": "HIGH", "ruleId": "generic-api-key",
+          "title": "API key", "category": "token" }
+      ],
+      "capabilities": ["ssl", "http_client"]
     }
   ]
 }
 ```
 
-> **Optional fields:** Some fields are omitted when empty or unknown, including `registry`, `repository`, `tag`, `digest`, `scanTimestamp`, `baseOS.version`, `languages[].majorMinor`, `languages[].packageName`, `languages[].packageType`, `vulnerabilities[].fixedVersion`, and `vulnerabilities[].description`. Array fields (`languages`, `vulnerabilities`, `systemPackages`, `packageManagers`) are always present as empty arrays `[]`, never null.
+> **Optional fields:** Some fields are omitted when empty or unknown, including `registry`, `repository`, `tag`, `digest`, `scanTimestamp`, `baseOS.version`, `languages[].majorMinor`, `languages[].packageName`, `languages[].packageType`, `vulnerabilities[].fixedVersion`, `vulnerabilities[].description`, and most `securityFindings[]` fields when empty. Array fields (`languages`, `vulnerabilities`, `systemPackages`, `packageManagers`, `securityFindings`, `capabilities`) are always present as empty arrays `[]`, never null.
 >
-> **Scope:** The current detailed report includes system packages, package managers, detected languages, and CVE vulnerabilities. Comprehensive scan findings (secrets, misconfigurations) and capabilities are not included.
+> **Scope:** The detailed report includes system packages, package managers, detected languages, CVE vulnerabilities, capabilities, and comprehensive scan findings (secrets and misconfigurations when present in the database).
 
 ## Querying with jq
 

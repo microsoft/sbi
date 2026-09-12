@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/microsoft/sbi/pkg/domain"
 	log "github.com/sirupsen/logrus"
@@ -49,13 +50,13 @@ type trivyOS struct {
 }
 
 type trivyResult struct {
-	Target          string             `json:"Target"`
-	Class           string             `json:"Class"`
-	Type            string             `json:"Type"`
-	Vulnerabilities []trivyVuln        `json:"Vulnerabilities"`
-	Secrets         []trivySecret      `json:"Secrets"`
-	Misconfigs      []trivyMisconfig   `json:"Misconfigurations"`
-	Licenses        []trivyLicense     `json:"Licenses"`
+	Target          string           `json:"Target"`
+	Class           string           `json:"Class"`
+	Type            string           `json:"Type"`
+	Vulnerabilities []trivyVuln      `json:"Vulnerabilities"`
+	Secrets         []trivySecret    `json:"Secrets"`
+	Misconfigs      []trivyMisconfig `json:"Misconfigurations"`
+	Licenses        []trivyLicense   `json:"Licenses"`
 }
 
 type trivyCVSS struct {
@@ -96,14 +97,16 @@ type trivyLicense struct {
 func RunTrivy(imageName string, comprehensive bool) (*domain.TrivyResult, error) {
 	log.Infof("Running Trivy on: %s (comprehensive=%v)", imageName, comprehensive)
 
-	securityChecks := "vuln"
+	// Prefer --scanners (Trivy renamed --security-checks). Use "misconfig"
+	// rather than the deprecated "config" scanner name.
+	scanners := "vuln"
 	if comprehensive {
-		securityChecks = "vuln,secret,config"
+		scanners = "vuln,secret,misconfig"
 	}
 
 	cmd := exec.Command("trivy", "image",
 		"--format", "json",
-		"--security-checks", securityChecks,
+		"--scanners", scanners,
 		imageName,
 	)
 
@@ -170,23 +173,75 @@ func parseTrivyResult(output *trivyOutput) *domain.TrivyResult {
 			})
 		}
 
-		// Process secrets
-		result.SecretsFound += len(r.Secrets)
+		// Process secrets (counts + detailed findings for persistence).
+		// Do not persist Match: nightly commits the detailed JSON to a public
+		// repo, and Match can include surrounding source-line text even when
+		// Trivy masks the secret span.
+		for _, s := range r.Secrets {
+			result.SecretsFound++
+			result.SecurityFindings = append(result.SecurityFindings, domain.SecurityFinding{
+				FindingType: "secret",
+				Severity:    s.Severity,
+				RuleID:      s.RuleID,
+				Title:       s.Title,
+				FilePath:    r.Target,
+				Category:    s.Category,
+			})
+		}
 
 		// Process misconfigurations
-		result.ConfigIssues += len(r.Misconfigs)
+		for _, m := range r.Misconfigs {
+			result.ConfigIssues++
+			result.SecurityFindings = append(result.SecurityFindings, domain.SecurityFinding{
+				FindingType: "misconfiguration",
+				Severity:    m.Severity,
+				RuleID:      m.ID,
+				Title:       m.Title,
+				FilePath:    r.Target,
+				Message:     m.Message,
+			})
+		}
 
-		// Process licenses
+		// Process licenses (counts only — not stored as security_findings rows)
 		result.LicenseIssues += len(r.Licenses)
 	}
 
 	return result
 }
 
+// truncateString shortens s to at most maxLen bytes, never splitting a UTF-8
+// rune. When truncation is needed, the result ends with "..." (included in
+// maxLen). maxLen <= 0 yields ""; maxLen < 4 yields a pure rune prefix with
+// no ellipsis when the string does not already fit.
 func truncateString(s string, maxLen int) string {
+	if maxLen <= 0 {
+		return ""
+	}
 	if len(s) <= maxLen {
 		return s
 	}
 
-	return s[:maxLen-3] + "..."
+	// Reserve room for "..." when possible; otherwise keep a pure prefix.
+	ellipsis := "..."
+	budget := maxLen
+	if maxLen >= len(ellipsis) {
+		budget = maxLen - len(ellipsis)
+	} else {
+		ellipsis = ""
+	}
+
+	var b strings.Builder
+	b.Grow(budget)
+	for _, r := range s {
+		rl := utf8.RuneLen(r)
+		if rl < 0 {
+			rl = 1
+		}
+		if b.Len()+rl > budget {
+			break
+		}
+		b.WriteRune(r)
+	}
+
+	return b.String() + ellipsis
 }

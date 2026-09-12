@@ -215,8 +215,9 @@ type TrivyResult struct {
 	SecretsFound              int
 	ConfigIssues              int
 	LicenseIssues             int
-	BaseOSFamily              string // e.g. "azurelinux", "ubuntu", "debian"
-	BaseOSVersion             string // e.g. "3.0", "22.04", "12.13"
+	SecurityFindings          []SecurityFinding // secrets + misconfigurations
+	BaseOSFamily              string            // e.g. "azurelinux", "ubuntu", "debian"
+	BaseOSVersion             string            // e.g. "3.0", "22.04", "12.13"
 }
 
 // RecommendedImage holds a ranked image for the report output.
