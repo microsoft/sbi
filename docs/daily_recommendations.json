@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-12T02:17:44Z",
+  "generatedAt": "2026-09-13T02:16:10Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -92,11 +92,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 113246208,
       "sizeHuman": "108.0 MB",
-      "createdDate": "2026-09-04T19:54:50.613854883Z",
-      "digest": "sha256:0aca4c2e1c2435a74be5254599b6436773483c649acc764aa5bf2898d91025f8",
-      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless@sha256:0aca4c2e1c2435a74be5254599b6436773483c649acc764aa5bf2898d91025f8",
+      "createdDate": "2026-09-12T04:33:22.193508031Z",
+      "digest": "sha256:e5d3046590bf050a78776f350fb3eff963742719e8a3bf50ff167a73981bbd91",
+      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless@sha256:e5d3046590bf050a78776f350fb3eff963742719e8a3bf50ff167a73981bbd91",
       "stableTag": "mcr.microsoft.com/dotnet/runtime:9.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless@sha256:0aca4c2e1c2435a74be5254599b6436773483c649acc764aa5bf2898d91025f8"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless@sha256:e5d3046590bf050a78776f350fb3eff963742719e8a3bf50ff167a73981bbd91"
     },
     {
       "rank": 2,
@@ -109,11 +109,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 117440512,
       "sizeHuman": "112.0 MB",
-      "createdDate": "2026-09-04T19:49:14.812390847Z",
-      "digest": "sha256:f1981f8923ee8ecd967f002df6100b556c2ed8f7ab29df932d4625f206badb6f",
-      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless@sha256:f1981f8923ee8ecd967f002df6100b556c2ed8f7ab29df932d4625f206badb6f",
+      "createdDate": "2026-09-12T04:33:36.068900435Z",
+      "digest": "sha256:cb5995f1878da8b87c7496ebae6e4a0c3f5d3262ca48977f330a6b334af3f783",
+      "pinnedReference": "mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless@sha256:cb5995f1878da8b87c7496ebae6e4a0c3f5d3262ca48977f330a6b334af3f783",
       "stableTag": "mcr.microsoft.com/dotnet/runtime:10.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless@sha256:f1981f8923ee8ecd967f002df6100b556c2ed8f7ab29df932d4625f206badb6f"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless@sha256:cb5995f1878da8b87c7496ebae6e4a0c3f5d3262ca48977f330a6b334af3f783"
     },
     {
       "rank": 3,
@@ -126,11 +126,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 132120576,
       "sizeHuman": "126.0 MB",
-      "createdDate": "2026-09-04T19:55:45.544008578Z",
-      "digest": "sha256:8f0aabeb4e7d3accdb42a69db6344962c5844dcfcdb50009a4b5b1927df5f146",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless@sha256:8f0aabeb4e7d3accdb42a69db6344962c5844dcfcdb50009a4b5b1927df5f146",
+      "createdDate": "2026-09-12T04:34:32.161751687Z",
+      "digest": "sha256:1e1aa734db68ba3c21b22a5acada92adde68f28674ee687df9b6c29ae08f7a96",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless@sha256:1e1aa734db68ba3c21b22a5acada92adde68f28674ee687df9b6c29ae08f7a96",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:8.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless@sha256:8f0aabeb4e7d3accdb42a69db6344962c5844dcfcdb50009a4b5b1927df5f146"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless@sha256:1e1aa734db68ba3c21b22a5acada92adde68f28674ee687df9b6c29ae08f7a96"
     },
     {
       "rank": 4,
@@ -143,11 +143,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 138412032,
       "sizeHuman": "132.0 MB",
-      "createdDate": "2026-09-04T19:55:32.435537898Z",
-      "digest": "sha256:04acc008da2bb706efc2158ac1ab4f3f7f3015cfb0ad3d602eb0f996025e8e59",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless@sha256:04acc008da2bb706efc2158ac1ab4f3f7f3015cfb0ad3d602eb0f996025e8e59",
+      "createdDate": "2026-09-12T04:34:02.892896729Z",
+      "digest": "sha256:dd3762bcb3b6c70a1bb970f3a29ac171610af8508dce23147c6d1448804bfe48",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless@sha256:dd3762bcb3b6c70a1bb970f3a29ac171610af8508dce23147c6d1448804bfe48",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:9.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless@sha256:04acc008da2bb706efc2158ac1ab4f3f7f3015cfb0ad3d602eb0f996025e8e59"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless@sha256:dd3762bcb3b6c70a1bb970f3a29ac171610af8508dce23147c6d1448804bfe48"
     },
     {
       "rank": 5,
@@ -160,11 +160,11 @@
       "totalVulnerabilities": 0,
       "sizeBytes": 145752064,
       "sizeHuman": "139.0 MB",
-      "createdDate": "2026-09-04T19:49:55.66657835Z",
-      "digest": "sha256:9fd8a9a09ba5c0c5cb6d95c8200447de9bc46751ff77b8caa141725a29a1178c",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless@sha256:9fd8a9a09ba5c0c5cb6d95c8200447de9bc46751ff77b8caa141725a29a1178c",
+      "createdDate": "2026-09-12T04:34:17.228114254Z",
+      "digest": "sha256:42e74b1e732f4b17c6a292c189f2110d3501b6caa96bb59edda698eb059ecc9b",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless@sha256:42e74b1e732f4b17c6a292c189f2110d3501b6caa96bb59edda698eb059ecc9b",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:10.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless@sha256:9fd8a9a09ba5c0c5cb6d95c8200447de9bc46751ff77b8caa141725a29a1178c"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless@sha256:42e74b1e732f4b17c6a292c189f2110d3501b6caa96bb59edda698eb059ecc9b"
     },
     {
       "rank": 6,
@@ -174,14 +174,14 @@
       "version": "10.0.401",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 70,
-      "sizeBytes": 1007681536,
-      "sizeHuman": "961.0 MB",
-      "createdDate": "2026-09-04T19:51:23.467280631Z",
-      "digest": "sha256:40195d80f8c217195a16f65c1be7e8acad646317e9bda2801d91df681c60b3f4",
-      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:40195d80f8c217195a16f65c1be7e8acad646317e9bda2801d91df681c60b3f4",
+      "totalVulnerabilities": 0,
+      "sizeBytes": 1008730112,
+      "sizeHuman": "962.0 MB",
+      "createdDate": "2026-09-12T04:35:43.118501295Z",
+      "digest": "sha256:01bb0a1008dd2b753ff059c9c18ec7e728b3d98d0024fa6e8c84905cdb86ae4e",
+      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:01bb0a1008dd2b753ff059c9c18ec7e728b3d98d0024fa6e8c84905cdb86ae4e",
       "stableTag": "mcr.microsoft.com/dotnet/sdk:10.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:40195d80f8c217195a16f65c1be7e8acad646317e9bda2801d91df681c60b3f4"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:01bb0a1008dd2b753ff059c9c18ec7e728b3d98d0024fa6e8c84905cdb86ae4e"
     },
     {
       "rank": 7,
@@ -191,14 +191,14 @@
       "version": "9.0.318",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 80,
-      "sizeBytes": 942669824,
-      "sizeHuman": "899.0 MB",
-      "createdDate": "2026-09-04T19:56:57.019797459Z",
-      "digest": "sha256:49e105cb9e208a4562c904605afb28ea2377d6a83110c8c29fd745d446bc81dd",
-      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:49e105cb9e208a4562c904605afb28ea2377d6a83110c8c29fd745d446bc81dd",
+      "totalVulnerabilities": 10,
+      "sizeBytes": 943718400,
+      "sizeHuman": "900.0 MB",
+      "createdDate": "2026-09-12T04:35:26.061025929Z",
+      "digest": "sha256:20455bfb45bca8a6a6ae7f6df54af1c67f96a1a685e810fca2f09c8e7967c52c",
+      "pinnedReference": "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:20455bfb45bca8a6a6ae7f6df54af1c67f96a1a685e810fca2f09c8e7967c52c",
       "stableTag": "mcr.microsoft.com/dotnet/sdk:9.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:49e105cb9e208a4562c904605afb28ea2377d6a83110c8c29fd745d446bc81dd"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:20455bfb45bca8a6a6ae7f6df54af1c67f96a1a685e810fca2f09c8e7967c52c"
     },
     {
       "rank": 1,
@@ -207,7 +207,7 @@
       "name": "mcr.microsoft.com/dotnet/runtime:8.0",
       "version": "8.0.31",
       "criticalVulnerabilities": 4,
-      "highVulnerabilities": 52,
+      "highVulnerabilities": 54,
       "totalVulnerabilities": 239,
       "sizeBytes": 202375168,
       "sizeHuman": "193.0 MB",
@@ -224,7 +224,7 @@
       "name": "mcr.microsoft.com/dotnet/aspnet:8.0",
       "version": "8.0.31",
       "criticalVulnerabilities": 4,
-      "highVulnerabilities": 52,
+      "highVulnerabilities": 54,
       "totalVulnerabilities": 239,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
@@ -241,7 +241,7 @@
       "name": "mcr.microsoft.com/dotnet/sdk:8.0",
       "version": "8.0.425",
       "criticalVulnerabilities": 13,
-      "highVulnerabilities": 101,
+      "highVulnerabilities": 103,
       "totalVulnerabilities": 449,
       "sizeBytes": 909115392,
       "sizeHuman": "867.0 MB",
