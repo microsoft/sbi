@@ -42,7 +42,7 @@ func TestGenerateDetailJSONReport_FullImage(t *testing.T) {
 		Repository: "azurelinux/base/python", Tag: "3.12",
 		BaseOSName: "azurelinux", BaseOSVersion: "3.0",
 		Digest: "sha256:abc123", SizeBytes: 85000000, Layers: 5,
-		CreatedDate: "2025-04-15T08:30:00Z",
+		CreatedDate:          "2025-04-15T08:30:00Z",
 		TotalVulnerabilities: 3, CriticalVulnerabilities: 1, HighVulnerabilities: 1,
 		MediumVulnerabilities: 1,
 		Languages: []domain.Language{
@@ -59,6 +59,12 @@ func TestGenerateDetailJSONReport_FullImage(t *testing.T) {
 		},
 		PackageManagers: []domain.PackageManager{
 			{Name: "pip", Version: "24.0", Language: "python"},
+		},
+		Capabilities: []domain.Capability{
+			{Capability: "ssl"},
+		},
+		SecurityFindings: []domain.SecurityFinding{
+			{FindingType: "secret", Severity: "HIGH", RuleID: "generic-api-key", Title: "API key", Category: "token"},
 		},
 	}
 	require.NoError(t, repo.InsertImage(img))
@@ -111,6 +117,14 @@ func TestGenerateDetailJSONReport_FullImage(t *testing.T) {
 
 	require.Len(t, entry.PackageManagers, 1)
 	assert.Equal(t, "pip", entry.PackageManagers[0].Name)
+
+	require.Len(t, entry.SecurityFindings, 1)
+	assert.Equal(t, "secret", entry.SecurityFindings[0].FindingType)
+	assert.Equal(t, "generic-api-key", entry.SecurityFindings[0].RuleID)
+	assert.Equal(t, "HIGH", entry.SecurityFindings[0].Severity)
+
+	require.Len(t, entry.Capabilities, 1)
+	assert.Equal(t, "ssl", entry.Capabilities[0])
 }
 
 func TestGenerateDetailJSONReport_EmptyDB(t *testing.T) {
@@ -155,7 +169,7 @@ func TestGenerateDetailJSONReport_MultipleImages(t *testing.T) {
 		{
 			Name: "go-img:1.21", Registry: "r", Repository: "repo2", Tag: "1.21",
 			BaseOSName: "azurelinux", TotalVulnerabilities: 0,
-			Languages:  []domain.Language{{Language: "go", Version: "1.21.0"}},
+			Languages: []domain.Language{{Language: "go", Version: "1.21.0"}},
 		},
 	}
 
@@ -197,7 +211,7 @@ func TestGenerateDetailJSONReport_VulnSummaryCounts(t *testing.T) {
 		TotalVulnerabilities: 6, CriticalVulnerabilities: 1, HighVulnerabilities: 2,
 		MediumVulnerabilities: 1, LowVulnerabilities: 1, NegligibleVulnerabilities: 0,
 		UnknownVulnerabilities: 1,
-		Languages: []domain.Language{{Language: "python", Version: "3.12"}},
+		Languages:              []domain.Language{{Language: "python", Version: "3.12"}},
 	}
 	require.NoError(t, repo.InsertImage(img))
 

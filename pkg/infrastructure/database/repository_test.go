@@ -397,6 +397,79 @@ func TestQueryLanguages_BaseSortsLast(t *testing.T) {
 	assert.Equal(t, "base", languages[2])
 }
 
+func TestInsertAndQuerySecurityFindingsAndCapabilities(t *testing.T) {
+	db, repo := setupTestDB(t)
+	defer func() { _ = db.Close() }()
+
+	img := &domain.ImageRecord{
+		Name:         "mcr.microsoft.com/example:1.0",
+		Registry:     "mcr.microsoft.com",
+		Repository:   "example",
+		Tag:          "1.0",
+		SecretsFound: 1,
+		ConfigIssues: 1,
+		Languages: []domain.Language{
+			{Language: "python", Version: "3.12"},
+		},
+		Capabilities: []domain.Capability{
+			{Capability: "ssl"},
+			{Capability: "http_client"},
+		},
+		SecurityFindings: []domain.SecurityFinding{
+			{
+				FindingType: "secret",
+				Severity:    "CRITICAL",
+				RuleID:      "aws-secret-key",
+				Title:       "AWS secret key",
+				Category:    "AWS",
+				FilePath:    "/app/.env",
+			},
+			{
+				FindingType: "misconfiguration",
+				Severity:    "HIGH",
+				RuleID:      "DS001",
+				Title:       "root user",
+				Message:     "Dockerfile runs as root",
+			},
+		},
+	}
+	require.NoError(t, repo.InsertImage(img))
+
+	details, err := repo.QueryAllImageDetails()
+	require.NoError(t, err)
+	require.Len(t, details, 1)
+
+	got := details[0]
+	require.Len(t, got.SecurityFindings, 2)
+	assert.Equal(t, "secret", got.SecurityFindings[0].FindingType)
+	assert.Equal(t, "aws-secret-key", got.SecurityFindings[0].RuleID)
+	assert.Equal(t, "/app/.env", got.SecurityFindings[0].FilePath)
+	assert.Empty(t, got.SecurityFindings[0].Description)
+	assert.Equal(t, "misconfiguration", got.SecurityFindings[1].FindingType)
+	assert.Equal(t, "DS001", got.SecurityFindings[1].RuleID)
+
+	require.Len(t, got.Capabilities, 2)
+	assert.Equal(t, "ssl", got.Capabilities[0].Capability)
+	assert.Equal(t, "http_client", got.Capabilities[1].Capability)
+
+	// Upsert clears and rewrites related rows
+	img.SecurityFindings = []domain.SecurityFinding{
+		{FindingType: "secret", Severity: "LOW", RuleID: "generic-api-key", Title: "API key"},
+	}
+	img.Capabilities = []domain.Capability{{Capability: "compression"}}
+	img.SecretsFound = 1
+	img.ConfigIssues = 0
+	require.NoError(t, repo.InsertImage(img))
+
+	details, err = repo.QueryAllImageDetails()
+	require.NoError(t, err)
+	require.Len(t, details, 1)
+	require.Len(t, details[0].SecurityFindings, 1)
+	assert.Equal(t, "generic-api-key", details[0].SecurityFindings[0].RuleID)
+	require.Len(t, details[0].Capabilities, 1)
+	assert.Equal(t, "compression", details[0].Capabilities[0].Capability)
+}
+
 // TestInsertImage_RollbackOnClearFailure ensures a failure while clearing
 // related tables rolls back the whole upsert and releases the connection.
 //

@@ -23,7 +23,9 @@
 package scanner
 
 import (
+	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -365,13 +367,13 @@ func TestParseTrivyResult_VulnerabilityDetails(t *testing.T) {
 	// Find the CRITICAL vuln
 	var critVuln *struct {
 		id, severity, pkg, pkgVer, fixedVer, desc string
-		cvss                                       float64
+		cvss                                      float64
 	}
 	for _, v := range result.Vulnerabilities {
 		if v.Severity == "CRITICAL" {
 			critVuln = &struct {
 				id, severity, pkg, pkgVer, fixedVer, desc string
-				cvss                                       float64
+				cvss                                      float64
 			}{v.VulnerabilityID, v.Severity, v.PackageName, v.PackageVersion, v.FixedVersion, v.Description, v.CVSSScore}
 			break
 		}
@@ -403,8 +405,50 @@ func TestParseTrivyResult_DescriptionTruncation(t *testing.T) {
 
 	result := parseTrivyResult(output)
 	require.Len(t, result.Vulnerabilities, 1)
-	assert.Len(t, result.Vulnerabilities[0].Description, 500, "description should be truncated to 500 chars")
+	assert.Len(t, result.Vulnerabilities[0].Description, 500, "description should be truncated to 500 bytes")
 	assert.Equal(t, "...", result.Vulnerabilities[0].Description[497:], "should end with ...")
+	assert.True(t, utf8.ValidString(result.Vulnerabilities[0].Description))
+}
+
+func TestTruncateString_UTF8Safe(t *testing.T) {
+	// Multi-byte examples use Unicode escapes so the test file stays ASCII-safe
+	// and does not depend on source-file encoding. U+00E9 (é) is 2 bytes; U+1F6A8
+	// (emergency siren emoji) is 4 bytes — both used to catch mid-rune cuts.
+	accented := "caf\u00e9 overflow detail " + strings.Repeat("x", 40) // café...
+	emojiPrefix := "\U0001f6a8CRITICAL vulnerability description"     // 🚨...
+	emojiOnly := "\U0001f6a8\U0001f6a8\U0001f6a8\U0001f6a8\U0001f6a8"
+
+	tests := []struct {
+		name   string
+		input  string
+		maxLen int
+	}{
+		{"ascii short", "hello", 10},
+		{"ascii exact", "hello", 5},
+		{"ascii truncate", "hello world", 8},
+		{"accented mid-rune budget", accented, 6},
+		{"accented longer", accented, 50},
+		{"emoji prefix", emojiPrefix, 10},
+		{"emoji mid-code-unit", emojiOnly, 5},
+		{"empty", "", 10},
+		{"max zero", "abc", 0},
+		{"max three", "abcdef", 3},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			out := truncateString(tt.input, tt.maxLen)
+			assert.True(t, utf8.ValidString(out), "output must be valid UTF-8: %q", out)
+			if tt.maxLen > 0 {
+				assert.LessOrEqual(t, len(out), tt.maxLen)
+			} else {
+				assert.Empty(t, out)
+			}
+			if len(tt.input) <= tt.maxLen {
+				assert.Equal(t, tt.input, out)
+			}
+		})
+	}
 }
 
 // ============================================================================
@@ -458,12 +502,13 @@ func TestParseTrivyResult_SecretsAndMisconfigs(t *testing.T) {
 	output := &trivyOutput{
 		Results: []trivyResult{
 			{
+				Target: "/app/.env",
 				Secrets: []trivySecret{
-					{RuleID: "aws-secret-key", Severity: "CRITICAL", Title: "AWS secret key"},
-					{RuleID: "generic-api-key", Severity: "HIGH", Title: "API key"},
+					{RuleID: "aws-secret-key", Severity: "CRITICAL", Title: "AWS secret key", Category: "AWS", Match: "AKIAIOSFODNN7EXAMPLE"},
+					{RuleID: "generic-api-key", Severity: "HIGH", Title: "API key", Category: "token", Match: "line with api_key=supersecret value"},
 				},
 				Misconfigs: []trivyMisconfig{
-					{ID: "DS001", Severity: "HIGH", Title: "root user"},
+					{ID: "DS001", Severity: "HIGH", Title: "root user", Message: "Dockerfile runs as root"},
 				},
 				Licenses: []trivyLicense{
 					{Name: "GPL-3.0", Severity: "HIGH"},
@@ -478,6 +523,28 @@ func TestParseTrivyResult_SecretsAndMisconfigs(t *testing.T) {
 	assert.Equal(t, 1, result.ConfigIssues)
 	assert.Equal(t, 2, result.LicenseIssues)
 	assert.Equal(t, 0, result.TotalVulnerabilities, "secrets/misconfigs/licenses don't count as vulns")
+
+	require.Len(t, result.SecurityFindings, 3)
+	assert.Equal(t, "secret", result.SecurityFindings[0].FindingType)
+	assert.Equal(t, "aws-secret-key", result.SecurityFindings[0].RuleID)
+	assert.Equal(t, "CRITICAL", result.SecurityFindings[0].Severity)
+	assert.Equal(t, "AWS", result.SecurityFindings[0].Category)
+	assert.Equal(t, "/app/.env", result.SecurityFindings[0].FilePath)
+	assert.Empty(t, result.SecurityFindings[0].Description, "secret Match must not be persisted")
+	assert.NotContains(t, result.SecurityFindings[0].Description, "AKIA")
+	assert.NotContains(t, result.SecurityFindings[0].Title, "AKIA")
+
+	assert.Equal(t, "secret", result.SecurityFindings[1].FindingType)
+	assert.Equal(t, "generic-api-key", result.SecurityFindings[1].RuleID)
+	assert.Empty(t, result.SecurityFindings[1].Description)
+	assert.NotContains(t, result.SecurityFindings[1].Description, "supersecret")
+	assert.NotContains(t, result.SecurityFindings[1].Message, "supersecret")
+
+	assert.Equal(t, "misconfiguration", result.SecurityFindings[2].FindingType)
+	assert.Equal(t, "DS001", result.SecurityFindings[2].RuleID)
+	assert.Equal(t, "root user", result.SecurityFindings[2].Title)
+	assert.Equal(t, "Dockerfile runs as root", result.SecurityFindings[2].Message)
+	assert.Equal(t, "/app/.env", result.SecurityFindings[2].FilePath)
 }
 
 // ============================================================================
@@ -604,5 +671,3 @@ func TestParseTrivyResult_OSMetadata_AllOSFamilies(t *testing.T) {
 		})
 	}
 }
-
-
