@@ -1,6 +1,6 @@
 # Daily Recommended Images by Language
 
-_Generated: 2026-10-07T02:28:17Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
+_Generated: 2026-10-08T02:27:44Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
 
 **Note:** Image sizes are based on Linux amd64 platform as reported by `docker images` on GitHub runners. Actual sizes may vary significantly on other platforms (macOS, Windows, etc.).
 
@@ -109,7 +109,7 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0` | 1.26.8 | - | 0 | 0 | 0 | 843.0 MB | 2026-10-05 | `sha256:6d7f2970247a` | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:6d7f2970247a545efc23dd4c459a2f5c686f562ca04407ec4574d2f211b6efdd` |
+| 1 | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0` | 1.26.8 | - | 0 | 0 | 0 | 843.0 MB | 2026-10-07 | `sha256:6ff8558f06dd` | `mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:6ff8558f06ddcb8673c73629f1500ac7238cc00d8c714b1884baa821e212ad6e` |
 | 2 | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0` | 1.25.14 | - | 0 | 20 | 162 | 810.0 MB | 2026-08-20 | `sha256:8d9cba1312f5` | `mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0@sha256:8d9cba1312f5dc497d59b5e3d67b065025f548b10e9dbb439bf9fb170048612b` |
 
 ## Java
@@ -118,20 +118,20 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/openjdk/jdk:11-distroless` | 11.0.32.1 | - | 0 | 0 | 0 | 323.0 MB | 2026-10-05 | `sha256:55e2222737f0` | `mcr.microsoft.com/openjdk/jdk:11-distroless@sha256:55e2222737f00cd15c7df06b65ad6676463d61923503af634f5da31bf1b61055` |
-| 2 | `mcr.microsoft.com/openjdk/jdk:17-distroless` | 17.0.20.1 | - | 0 | 0 | 0 | 327.0 MB | 2026-10-05 | `sha256:f1f15731731c` | `mcr.microsoft.com/openjdk/jdk:17-distroless@sha256:f1f15731731c710a63f87590552e5c26ad6f0a20d7140f80b03737521ba6167f` |
-| 3 | `mcr.microsoft.com/openjdk/jdk:21-distroless` | 21.0.12.1 | - | 0 | 0 | 0 | 354.0 MB | 2026-10-05 | `sha256:34ecc5b5a883` | `mcr.microsoft.com/openjdk/jdk:21-distroless@sha256:34ecc5b5a8835139fbefd78a606407e7192a945cb55a966964331c36fc9e2224` |
-| 4 | `mcr.microsoft.com/openjdk/jdk:25-distroless` | 25.0.4.1 | - | 0 | 0 | 0 | 399.0 MB | 2026-10-05 | `sha256:ccf4a64ba020` | `mcr.microsoft.com/openjdk/jdk:25-distroless@sha256:ccf4a64ba020eb485a9b970668329372faf5208f0126bce035fcb6d189f3d075` |
-| 5 | `mcr.microsoft.com/openjdk/jdk:21-azurelinux` | 21.0.12.1 | - | 0 | 0 | 0 | 479.0 MB | 2026-10-05 | `sha256:7c2604d76fea` | `mcr.microsoft.com/openjdk/jdk:21-azurelinux@sha256:7c2604d76fea7ad2563e994a5f0bf53a4b082e9348b957690677108a3fb7ee1e` |
-| 6 | `mcr.microsoft.com/openjdk/jdk:25-azurelinux` | 25.0.4.1 | - | 0 | 0 | 0 | 523.0 MB | 2026-10-05 | `sha256:a9c2ceb26dc0` | `mcr.microsoft.com/openjdk/jdk:25-azurelinux@sha256:a9c2ceb26dc0cad5c661173216c27063ddeeec1ceebaf5ebf52cfc910470b08f` |
+| 1 | `mcr.microsoft.com/openjdk/jdk:11-distroless` | 11.0.32.1 | - | 0 | 0 | 0 | 323.0 MB | 2026-10-07 | `sha256:838328420277` | `mcr.microsoft.com/openjdk/jdk:11-distroless@sha256:838328420277c5fb439ca7e3cf9f694124a733d3f0b3d120edd8f2b2b88f5cc4` |
+| 2 | `mcr.microsoft.com/openjdk/jdk:17-distroless` | 17.0.20.1 | - | 0 | 0 | 0 | 327.0 MB | 2026-10-07 | `sha256:8074a0fe16b1` | `mcr.microsoft.com/openjdk/jdk:17-distroless@sha256:8074a0fe16b12da6ab804381cc86ebd201c403335d075740ec68f612bc0c0f94` |
+| 3 | `mcr.microsoft.com/openjdk/jdk:21-distroless` | 21.0.12.1 | - | 0 | 0 | 0 | 354.0 MB | 2026-10-07 | `sha256:7fc30c462f62` | `mcr.microsoft.com/openjdk/jdk:21-distroless@sha256:7fc30c462f6227640b522b7323d8fcfd147e96dee9a2dda7379e010397521eae` |
+| 4 | `mcr.microsoft.com/openjdk/jdk:25-distroless` | 25.0.4.1 | - | 0 | 0 | 0 | 399.0 MB | 2026-10-07 | `sha256:6fb36103f5d1` | `mcr.microsoft.com/openjdk/jdk:25-distroless@sha256:6fb36103f5d1904f46486622e77886aa0389d57467f78ddff72b1fd3aeaa3fb3` |
+| 5 | `mcr.microsoft.com/openjdk/jdk:21-azurelinux` | 21.0.12.1 | - | 0 | 0 | 0 | 479.0 MB | 2026-10-07 | `sha256:deacce81f1a2` | `mcr.microsoft.com/openjdk/jdk:21-azurelinux@sha256:deacce81f1a2173690cf674b2377c6a23cdbab04a6eddde50501e968d1918f5c` |
+| 6 | `mcr.microsoft.com/openjdk/jdk:25-azurelinux` | 25.0.4.1 | - | 0 | 0 | 0 | 523.0 MB | 2026-10-07 | `sha256:904ce51ad4aa` | `mcr.microsoft.com/openjdk/jdk:25-azurelinux@sha256:904ce51ad4aa632ecc232a4715201019ff040a79932f59baa94bb1294b98d586` |
 
 ### Ubuntu
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.20.1 | - | 0 | 0 | 79 | 435.0 MB | 2026-10-05 | `sha256:b0f1fbffe071` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:b0f1fbffe071b0c58b5d993b7ef1c26b3f675d9f5157007474db7c70e32ac955` |
-| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.12.1 | - | 0 | 0 | 79 | 463.0 MB | 2026-10-05 | `sha256:b88b488996c6` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:b88b488996c60fe6290933d551e202cd4ac2c8ae08a90e52772afc50df8e87c0` |
-| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.4.1 | - | 0 | 0 | 79 | 507.0 MB | 2026-10-05 | `sha256:1bea271f0304` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:1bea271f0304141eb1a82b31e50fe7e90239976000dabadb85b5fc16898486d6` |
+| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.20.1 | - | 0 | 0 | 78 | 435.0 MB | 2026-10-07 | `sha256:594087a43a0a` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:594087a43a0a795184ce759b3f2f489a3f4b14302eaf7471d3abb6b4cf388d49` |
+| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.12.1 | - | 0 | 0 | 78 | 463.0 MB | 2026-10-07 | `sha256:fbfd4fa69a3f` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:fbfd4fa69a3fb1396baf319a59750dc29a78b358342e6afabf818d6622736e27` |
+| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.4.1 | - | 0 | 0 | 78 | 507.0 MB | 2026-10-07 | `sha256:f181a5a6dbee` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:f181a5a6dbee409127fc054e2a9fe443594d69465a88a0c4a8cc6cf46184b444` |
 
 ## Node
 
