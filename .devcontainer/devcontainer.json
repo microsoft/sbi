@@ -2,10 +2,10 @@
   "name": "Secure Base Image",
   "image": "mcr.microsoft.com/devcontainers/go:1.27-trixie",
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {
+    "ghcr.io/devcontainers/features/common-utils:2.7.1": {
       "configureZshAsDefaultShell": false
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:4.1.3": {},
     "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
     "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
       "jqVersion": "1.8.2",
