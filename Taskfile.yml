@@ -89,7 +89,7 @@ tasks:
   vulncheck:
     desc: Run Go vulnerability check
     cmds:
-      - govulncheck -test -show verbose ./...
+      - go tool govulncheck -test -show verbose ./...
 
   clean:
     desc: Clean build artifacts

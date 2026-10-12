@@ -43,14 +43,11 @@ jobs:
       - name: 🚧 Setup Task
         uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
 
-      - name: 🔒 Install govulncheck
-        run: go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
-
       - name: 🔍 Run govulncheck
         id: vulncheck
         run: |
           set +e
-          govulncheck -test -json ./... | tee govulncheck.json
+          go tool govulncheck -test -json ./... | tee govulncheck.json
           status=${PIPESTATUS[0]}
           set -e
 
@@ -84,7 +81,7 @@ jobs:
             echo ''
             echo '1. Open the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to review vulnerability details'
             echo '2. Update affected dependencies to their fixed versions'
-            echo '3. Run `go mod tidy` and verify with `govulncheck -test ./...`'
+            echo '3. Run `go mod tidy` and verify with `go tool govulncheck -test ./...`'
             echo ''
             echo '> This issue is automatically created and updated by the [GoVulnCheck workflow](https://github.com/${{ github.repository }}/actions/workflows/govulncheck.yml).'
           } > govulncheck-issue-body.md
