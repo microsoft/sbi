@@ -6,8 +6,11 @@
       "configureZshAsDefaultShell": false
     },
     "ghcr.io/devcontainers/features/docker-in-docker:4.1.3": {},
-    "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
-    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
+    "ghcr.io/devcontainers/features/node:2.1.1": {
+      "version": "24"
+    },
+    "ghcr.io/eitsupi/devcontainer-features/go-task:1.0.4": {},
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2.1.1": {
       "jqVersion": "1.8.2",
       "yqVersion": "4.54.1"
     }
@@ -29,7 +32,7 @@
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "go.lintTool": "golangci-lint",
-        "go.lintFlags": ["--fast"]
+        "go.lintFlags": []
       },
       "extensions": [
         "golang.go",
