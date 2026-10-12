@@ -1,6 +1,6 @@
 {
-  "name": "Secure Base Image Daily Recommendations",
-  "image": "mcr.microsoft.com/devcontainers/go:1.26-bookworm",
+  "name": "Secure Base Image",
+  "image": "mcr.microsoft.com/devcontainers/go:1.27-trixie",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": false
@@ -8,8 +8,8 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
     "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
-      "jqVersion": "1.8.1",
-      "yqVersion": "v4.53.2"
+      "jqVersion": "1.8.2",
+      "yqVersion": "4.54.1"
     }
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
