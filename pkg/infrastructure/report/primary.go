@@ -51,9 +51,9 @@ var primaryLanguageSegments = map[string]string{
 // or "" if no primary language can be determined.
 func InferPrimaryLanguage(imageName string) string {
 	repo := imageRepo(imageName)
-	segments := strings.Split(strings.ToLower(repo), "/")
+	segments := strings.SplitSeq(strings.ToLower(repo), "/")
 
-	for _, seg := range segments {
+	for seg := range segments {
 		if lang, ok := primaryLanguageSegments[seg]; ok {
 			return lang
 		}

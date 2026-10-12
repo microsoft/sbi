@@ -40,11 +40,11 @@ type syftOutput struct {
 }
 
 type syftArtifact struct {
-	Name      string                 `json:"name"`
-	Version   string                 `json:"version"`
-	Type      string                 `json:"type"`
-	Language  string                 `json:"language"`
-	Metadata  map[string]interface{} `json:"metadata"`
+	Name      string         `json:"name"`
+	Version   string         `json:"version"`
+	Type      string         `json:"type"`
+	Language  string         `json:"language"`
+	Metadata  map[string]any `json:"metadata"`
 	Locations []struct {
 		Path string `json:"path"`
 	} `json:"locations"`

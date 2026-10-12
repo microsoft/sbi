@@ -175,7 +175,7 @@ func TestGenerateJSONReport_TopNLimit(t *testing.T) {
 	db, repo := setupTestDB(t)
 	defer func() { _ = db.Close() }()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		img := &domain.ImageRecord{
 			Name: "azl-py:" + string(rune('a'+i)), Registry: "r", Repository: "repo", Tag: string(rune('a' + i)),
 			BaseOSName: "azurelinux", TotalVulnerabilities: i,
@@ -201,7 +201,7 @@ func TestGenerateJSONReport_ZeroTopNReturnsAll(t *testing.T) {
 	db, repo := setupTestDB(t)
 	defer func() { _ = db.Close() }()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		img := &domain.ImageRecord{
 			Name: "azl-py:" + string(rune('a'+i)), Registry: "r", Repository: "repo", Tag: string(rune('a' + i)),
 			BaseOSName: "azurelinux", TotalVulnerabilities: i,

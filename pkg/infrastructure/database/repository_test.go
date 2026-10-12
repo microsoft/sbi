@@ -327,7 +327,7 @@ func TestQueryTopImagesByOS_Limit(t *testing.T) {
 	db, repo := setupTestDB(t)
 	defer func() { _ = db.Close() }()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		img := &domain.ImageRecord{
 			Name: fmt.Sprintf("azl-python:%d", i), Registry: "r", Repository: "repo", Tag: fmt.Sprintf("%d", i),
 			BaseOSName: "azurelinux", TotalVulnerabilities: i,
@@ -346,7 +346,7 @@ func TestQueryTopImagesByOS_ZeroMeansUnlimited(t *testing.T) {
 	db, repo := setupTestDB(t)
 	defer func() { _ = db.Close() }()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		img := &domain.ImageRecord{
 			Name: fmt.Sprintf("azl-python:%d", i), Registry: "r", Repository: "repo", Tag: fmt.Sprintf("%d", i),
 			BaseOSName: "azurelinux", TotalVulnerabilities: i,
