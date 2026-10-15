@@ -139,7 +139,7 @@ func nextPageFromLink(base *url.URL, linkHeader string) string {
 		return ""
 	}
 
-	for _, part := range strings.Split(linkHeader, ",") {
+	for part := range strings.SplitSeq(linkHeader, ",") {
 		part = strings.TrimSpace(part)
 		start := strings.Index(part, "<")
 		end := strings.Index(part, ">")
@@ -164,14 +164,14 @@ func nextPageFromLink(base *url.URL, linkHeader string) string {
 }
 
 func linkRelIsNext(params string) bool {
-	for _, p := range strings.Split(params, ";") {
+	for p := range strings.SplitSeq(params, ";") {
 		p = strings.TrimSpace(p)
 		key, val, ok := strings.Cut(p, "=")
 		if !ok || !strings.EqualFold(strings.TrimSpace(key), "rel") {
 			continue
 		}
 		val = strings.Trim(strings.TrimSpace(val), `"'`)
-		for _, token := range strings.Fields(val) {
+		for token := range strings.FieldsSeq(val) {
 			if strings.EqualFold(token, "next") {
 				return true
 			}
@@ -279,10 +279,7 @@ func tagVersionLess(a, b string) bool {
 		return false
 	}
 
-	n := len(aSegs)
-	if len(bSegs) > n {
-		n = len(bSegs)
-	}
+	n := max(len(bSegs), len(aSegs))
 
 	for i := 0; i < n; i++ {
 		av, bv := 0, 0

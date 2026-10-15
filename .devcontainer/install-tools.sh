@@ -53,7 +53,7 @@ curl -sSfL "https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_INSTALL
 
 # golangci-lint
 echo "Installing golangci-lint..."
-curl -sSfL "https://raw.githubusercontent.com/golangci/golangci-lint/${GOLANGCI_LINT_INSTALLER_SHA}/install.sh" | sudo sh -s -- -b /usr/local/bin "${GOLANGCI_LINT_VERSION}"
+curl -sSfL "https://raw.githubusercontent.com/golangci/golangci-lint/${GOLANGCI_LINT_INSTALLER_SHA}/install.sh" | sudo sh -s -- -b /go/bin "${GOLANGCI_LINT_VERSION}"
 
 echo "=== Tools installed ==="
 gh --version

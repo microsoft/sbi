@@ -73,7 +73,7 @@ func (d *DockerClient) Inspect(imageName string) (domain.DockerInspectResult, er
 func parseInspectOutput(data []byte, imageName string) (domain.DockerInspectResult, error) {
 	var result domain.DockerInspectResult
 
-	var inspectData []map[string]interface{}
+	var inspectData []map[string]any
 	if err := json.Unmarshal(data, &inspectData); err != nil {
 		return result, fmt.Errorf("parsing inspect output: %w", err)
 	}
@@ -93,14 +93,14 @@ func parseInspectOutput(data []byte, imageName string) (domain.DockerInspectResu
 	}
 
 	// Count layers from RootFS
-	if rootFS, ok := data0["RootFS"].(map[string]interface{}); ok {
-		if layers, ok := rootFS["Layers"].([]interface{}); ok {
+	if rootFS, ok := data0["RootFS"].(map[string]any); ok {
+		if layers, ok := rootFS["Layers"].([]any); ok {
 			result.Layers = len(layers)
 		}
 	}
 
 	// Get digest from RepoDigests
-	if digests, ok := data0["RepoDigests"].([]interface{}); ok && len(digests) > 0 {
+	if digests, ok := data0["RepoDigests"].([]any); ok && len(digests) > 0 {
 		if d, ok := digests[0].(string); ok {
 			if parts := strings.SplitN(d, "@", 2); len(parts) == 2 {
 				result.Digest = parts[1]
