@@ -1,6 +1,6 @@
 # Daily Recommended Images by Language
 
-_Generated: 2026-10-16T02:17:12Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
+_Generated: 2026-10-17T02:20:15Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
 
 **Note:** Image sizes are based on Linux amd64 platform as reported by `docker images` on GitHub runners. Actual sizes may vary significantly on other platforms (macOS, Windows, etc.).
 
@@ -80,8 +80,8 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 | 3 | `mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless` | 8.0.32 | - | 0 | 0 | 0 | 126.0 MB | 2026-10-13 | `sha256:42d59c90812c` | `mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless@sha256:42d59c90812ce53255a3102225c4b5a51fbd2471b32e34289fdd5ea10155da4e` |
 | 4 | `mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless` | 9.0.21 | - | 0 | 0 | 0 | 133.0 MB | 2026-10-13 | `sha256:c8fddc889464` | `mcr.microsoft.com/dotnet/aspnet:9.0-azurelinux3.0-distroless@sha256:c8fddc889464be4889e8afbac395983c63a7c9d673475205ca5310e5eb1c777d` |
 | 5 | `mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless` | 10.0.13 | - | 0 | 0 | 0 | 140.0 MB | 2026-10-13 | `sha256:42f3714eaa91` | `mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless@sha256:42f3714eaa91aad7843633f943221f3a36f7894b7d93f512177e9757861c024f` |
-| 6 | `mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0` | 9.0.319 | - | 0 | 0 | 10 | 900.0 MB | 2026-10-13 | `sha256:65e2fd4944e5` | `mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:65e2fd4944e537e4b2ba3a47bca57f14e8e48b341178064e658aa1384e873552` |
-| 7 | `mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0` | 10.0.402 | - | 0 | 4 | 5 | 963.0 MB | 2026-10-13 | `sha256:8ab6697e660d` | `mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:8ab6697e660d600a9981e0b8989e8178fb0c1341abf0c9bdb393c1540ce7b298` |
+| 6 | `mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0` | 9.0.319 | - | 0 | 0 | 10 | 900.0 MB | 2026-10-16 | `sha256:18f5f0f1c8a8` | `mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0@sha256:18f5f0f1c8a81689880383c95816da71d74f4a66757ba85ed9e79cb804fdbb53` |
+| 7 | `mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0` | 10.0.402 | - | 0 | 4 | 5 | 963.0 MB | 2026-10-16 | `sha256:5798415b0662` | `mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0@sha256:5798415b0662aa6443c87d5dfcddb4e7a189431310365442a0246ade7707893d` |
 
 ### Debian
 
@@ -118,28 +118,28 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/openjdk/jdk:11-distroless` | 11.0.32.1 | - | 0 | 0 | 0 | 324.0 MB | 2026-10-14 | `sha256:8780487550a9` | `mcr.microsoft.com/openjdk/jdk:11-distroless@sha256:8780487550a9ed174512f0f42e584470d15cf4aa23e84ec96923061a531356e8` |
-| 2 | `mcr.microsoft.com/openjdk/jdk:17-distroless` | 17.0.20.1 | - | 0 | 0 | 0 | 327.0 MB | 2026-10-14 | `sha256:0edcf6bdcf48` | `mcr.microsoft.com/openjdk/jdk:17-distroless@sha256:0edcf6bdcf483a21fce47b560dca55dba40582a0072c1b87b075f64d83e58d21` |
-| 3 | `mcr.microsoft.com/openjdk/jdk:21-distroless` | 21.0.12.1 | - | 0 | 0 | 0 | 354.0 MB | 2026-10-14 | `sha256:275e80c3dfcf` | `mcr.microsoft.com/openjdk/jdk:21-distroless@sha256:275e80c3dfcf63fdeb230eda2f0dd088d038d66f6d6a245f754ab3840ff089fa` |
-| 4 | `mcr.microsoft.com/openjdk/jdk:25-distroless` | 25.0.4.1 | - | 0 | 0 | 0 | 400.0 MB | 2026-10-14 | `sha256:1c5c1fe15e50` | `mcr.microsoft.com/openjdk/jdk:25-distroless@sha256:1c5c1fe15e50eeafbaff76ce5b0acafb13084160f1126cf234c7b20e4814a200` |
-| 5 | `mcr.microsoft.com/openjdk/jdk:21-azurelinux` | 21.0.12.1 | - | 0 | 0 | 0 | 479.0 MB | 2026-10-14 | `sha256:405a234f1270` | `mcr.microsoft.com/openjdk/jdk:21-azurelinux@sha256:405a234f12703347dcc3ac3c7624fcf4277f6906dd5f1be7d16ca8bdafb7becb` |
-| 6 | `mcr.microsoft.com/openjdk/jdk:25-azurelinux` | 25.0.4.1 | - | 0 | 0 | 0 | 524.0 MB | 2026-10-14 | `sha256:730cf7e4a9e2` | `mcr.microsoft.com/openjdk/jdk:25-azurelinux@sha256:730cf7e4a9e2c0698121604d0f627a283ca17e6184ab745734f971db6e91b26a` |
+| 1 | `mcr.microsoft.com/openjdk/jdk:11-distroless` | 11.0.32.1 | - | 0 | 0 | 0 | 324.0 MB | 2026-10-16 | `sha256:461a519fc064` | `mcr.microsoft.com/openjdk/jdk:11-distroless@sha256:461a519fc064afb0e1d378819a6bdb4ebfaf2fbe6b79f14fdaa90f01b0db0c9f` |
+| 2 | `mcr.microsoft.com/openjdk/jdk:17-distroless` | 17.0.20.1 | - | 0 | 0 | 0 | 327.0 MB | 2026-10-16 | `sha256:40b25af15c93` | `mcr.microsoft.com/openjdk/jdk:17-distroless@sha256:40b25af15c939bd4b30478f72db91b0f9333ad47fb40507485bcff3facee6c9d` |
+| 3 | `mcr.microsoft.com/openjdk/jdk:21-distroless` | 21.0.12.1 | - | 0 | 0 | 0 | 354.0 MB | 2026-10-16 | `sha256:502828e07c69` | `mcr.microsoft.com/openjdk/jdk:21-distroless@sha256:502828e07c6925b2de332f9c9c7dda8c7d939ae39d7eb147cee5115ce6a208bf` |
+| 4 | `mcr.microsoft.com/openjdk/jdk:25-distroless` | 25.0.4.1 | - | 0 | 0 | 0 | 400.0 MB | 2026-10-16 | `sha256:e9adec1bed64` | `mcr.microsoft.com/openjdk/jdk:25-distroless@sha256:e9adec1bed64e18ddecf94a20bdc4ef1e5fe107a4f9dfeb068cc9da7b89c7f5d` |
+| 5 | `mcr.microsoft.com/openjdk/jdk:21-azurelinux` | 21.0.12.1 | - | 0 | 0 | 0 | 479.0 MB | 2026-10-16 | `sha256:e284d4837e3b` | `mcr.microsoft.com/openjdk/jdk:21-azurelinux@sha256:e284d4837e3b46d435f74fc05d83480ba0c42fcf0ecbcf68a4540aa864524f68` |
+| 6 | `mcr.microsoft.com/openjdk/jdk:25-azurelinux` | 25.0.4.1 | - | 0 | 0 | 0 | 524.0 MB | 2026-10-16 | `sha256:7d71f8106021` | `mcr.microsoft.com/openjdk/jdk:25-azurelinux@sha256:7d71f81060212f6ef5b206acbd189e86957649c2b89522c98ce7c7af59a4a5f0` |
 
 ### Ubuntu
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.20.1 | - | 0 | 0 | 90 | 436.0 MB | 2026-10-14 | `sha256:f67114d7ab5f` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:f67114d7ab5f1c29bbd3ae5ce3ad97ad97a933aae4daa4502e1d869e99f3d0f6` |
-| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.12.1 | - | 0 | 0 | 90 | 463.0 MB | 2026-10-14 | `sha256:f5298f5415eb` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:f5298f5415ebfaef85de91b8dc55c88fe6bcc471aca14f428c2cb7b986fa1590` |
-| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.4.1 | - | 0 | 0 | 90 | 508.0 MB | 2026-10-14 | `sha256:145eb4d17509` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:145eb4d175095cb4ecd08d80501b252b79ddd2637f68b6ec8273190e8286bb5f` |
+| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.20.1 | - | 0 | 0 | 90 | 437.0 MB | 2026-10-16 | `sha256:802c01106979` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:802c011069791c6d922d42410e433fcd33b9e5dcdd679fce506b04a4147bfa6b` |
+| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.12.1 | - | 0 | 0 | 90 | 464.0 MB | 2026-10-16 | `sha256:1deedd1c6e2e` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:1deedd1c6e2ea1cdc885325d6b96be087aef43b1db66be8d84c060c33956665a` |
+| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.4.1 | - | 0 | 0 | 90 | 509.0 MB | 2026-10-16 | `sha256:80f3656b4581` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:80f3656b458111134f99fe2102ec47a741c4a468f39e9043a489a82d5a0ffc16` |
 
 ## Node
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/azurelinux/base/nodejs:24.21` | 24.21.0 | :24 | 0 | 0 | 0 | 199.0 MB | 2026-10-10 | `sha256:b4f6866da097` | `mcr.microsoft.com/azurelinux/base/nodejs:24.21@sha256:b4f6866da0977e1bbf9ad4c5cdf265cb841bca03dcc2ea55cfa6a71ab655860b` |
-| 2 | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21-nonroot` | 24.21.0 | :24-nonroot | 0 | 8 | 21 | 158.0 MB | 2026-10-10 | `sha256:b6eb40885d72` | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21-nonroot@sha256:b6eb40885d725facba8541cdbfe29a20c4bb8be1eff5a2a542a8d28494e97de2` |
-| 3 | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21` | 24.21.0 | :24 | 0 | 8 | 21 | 158.0 MB | 2026-10-10 | `sha256:7df99cb1dab0` | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21@sha256:7df99cb1dab062ae3f12e0804e7cb8b0aa013c238dd1dd43320ab08a6bb5027d` |
+| 1 | `mcr.microsoft.com/azurelinux/base/nodejs:24.21` | 24.21.0 | :24 | 0 | 0 | 0 | 199.0 MB | 2026-10-16 | `sha256:74d685815e58` | `mcr.microsoft.com/azurelinux/base/nodejs:24.21@sha256:74d685815e58a5bce05088452adfccd3091368511236fbff1c7ad328b4a21b63` |
+| 2 | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21-nonroot` | 24.21.0 | :24-nonroot | 0 | 8 | 21 | 158.0 MB | 2026-10-16 | `sha256:c1f9ccc08d03` | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21-nonroot@sha256:c1f9ccc08d03674c7644bd395e82584e0d16ce65bbb15a26eae4ea02239eec57` |
+| 3 | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21` | 24.21.0 | :24 | 0 | 8 | 21 | 158.0 MB | 2026-10-16 | `sha256:802db036c3a8` | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.21@sha256:802db036c3a84ddd010267727c85b582b61a378fe538368de6c611506b7475ec` |
 | 4 | `mcr.microsoft.com/azurelinux/base/nodejs:24.20` | 24.20.0 | - | 0 | 17 | 65 | 199.0 MB | 2026-09-11 | `sha256:65efb6be4323` | `mcr.microsoft.com/azurelinux/base/nodejs:24.20@sha256:65efb6be4323d2da4f73531a37d84fff0e451cddc82e4dabc4b55d78ac85261b` |
 | 5 | `mcr.microsoft.com/azurelinux/base/nodejs:24.18` | 24.18.1 | - | 0 | 19 | 84 | 197.0 MB | 2026-08-25 | `sha256:adfee798b577` | `mcr.microsoft.com/azurelinux/base/nodejs:24.18@sha256:adfee798b577f7f2d037dbb0c96d13fb78082aa1cff2598f1cd0417bf1b9e7ad` |
 | 6 | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.20-nonroot` | 24.20.0 | - | 0 | 21 | 80 | 158.0 MB | 2026-09-11 | `sha256:6538b9fc8550` | `mcr.microsoft.com/azurelinux/distroless/nodejs:24.20-nonroot@sha256:6538b9fc85501e2de5f68037b15eb7d08a7fe6220c1667861c79874238a5f9db` |
@@ -152,9 +152,9 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot` | 3.12.15 | :3-nonroot | 0 | 0 | 0 | 84.0 MB | 2026-10-10 | `sha256:0395d881de0e` | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:0395d881de0e233e193733d135982ecd603f5f84ddbd8101774c25e973f470c4` |
-| 2 | `mcr.microsoft.com/azurelinux/distroless/python:3.12` | 3.12.15 | :3 | 0 | 0 | 0 | 84.0 MB | 2026-10-10 | `sha256:a51284a102e3` | `mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:a51284a102e3f6b295fd94d29bf9f21f664878b40904d588694cffd9c4423d6c` |
-| 3 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.15 | :3 | 0 | 0 | 0 | 140.0 MB | 2026-10-10 | `sha256:313afe87b11a` | `mcr.microsoft.com/azurelinux/base/python:3.12@sha256:313afe87b11a0651a0dc64651b49922947a8eadd2a0305ef0b833baa4059dc3c` |
+| 1 | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot` | 3.12.15 | :3-nonroot | 0 | 0 | 0 | 84.0 MB | 2026-10-16 | `sha256:b266b38f7faa` | `mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:b266b38f7faad1d2baf06901d709bf53db1052f6a0b35043d39216ae9df204a7` |
+| 2 | `mcr.microsoft.com/azurelinux/distroless/python:3.12` | 3.12.15 | :3 | 0 | 0 | 0 | 84.0 MB | 2026-10-16 | `sha256:21f2c8ce7b64` | `mcr.microsoft.com/azurelinux/distroless/python:3.12@sha256:21f2c8ce7b64860535298ae3907ec56affb9667ce6f1c793aa11ecfc8fbe07d1` |
+| 3 | `mcr.microsoft.com/azurelinux/base/python:3.12` | 3.12.15 | :3 | 0 | 0 | 0 | 140.0 MB | 2026-10-16 | `sha256:98a774c86033` | `mcr.microsoft.com/azurelinux/base/python:3.12@sha256:98a774c86033b17a976da188757e57b2ab976379f1233fe21f02bbdf550458c0` |
 
 ## Base / No Runtime
 
@@ -162,4 +162,4 @@ This report includes analysis from **37 configured sources** across 8 groups (se
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
 | 1 | `mcr.microsoft.com/azurelinux/distroless/minimal:3.0` | 3.0 | - | 0 | 0 | 0 | 3.8 MB | 2026-09-23 | `sha256:792ea6ed971a` | `mcr.microsoft.com/azurelinux/distroless/minimal:3.0@sha256:792ea6ed971a69bbca863882354d4ff197ca461e0f699d0256653f7886a62d42` |
 | 2 | `mcr.microsoft.com/azurelinux/distroless/base:3.0` | 3.0 | - | 0 | 0 | 0 | 34.3 MB | 2026-10-10 | `sha256:431ae1dc2924` | `mcr.microsoft.com/azurelinux/distroless/base:3.0@sha256:431ae1dc2924c41ae54c97c25676990f0c61d6295f42f5d07783c6976f58f1ef` |
-| 3 | `mcr.microsoft.com/azurelinux/base/core:3.0` | 3.0 | - | 0 | 0 | 0 | 76.8 MB | 2026-10-10 | `sha256:7292f2bcf52c` | `mcr.microsoft.com/azurelinux/base/core:3.0@sha256:7292f2bcf52c3916758f1a45aba6e4dcb93f466027d7786900ea96c2d23c48e2` |
+| 3 | `mcr.microsoft.com/azurelinux/base/core:3.0` | 3.0 | - | 0 | 0 | 0 | 76.8 MB | 2026-10-15 | `sha256:af39b0587a0f` | `mcr.microsoft.com/azurelinux/base/core:3.0@sha256:af39b0587a0fd132e574faabf9aaf56833d69908b9ff227131d519ee219759e7` |
