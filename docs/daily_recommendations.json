@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T02:16:45Z",
+  "generatedAt": "2026-10-21T02:18:55Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -208,7 +208,7 @@
       "version": "8.0.426",
       "criticalVulnerabilities": 1,
       "highVulnerabilities": 96,
-      "totalVulnerabilities": 454,
+      "totalVulnerabilities": 455,
       "sizeBytes": 917504000,
       "sizeHuman": "875.0 MB",
       "createdDate": "2026-10-13T20:46:23.917899008Z",
@@ -225,7 +225,7 @@
       "version": "8.0.32",
       "criticalVulnerabilities": 4,
       "highVulnerabilities": 62,
-      "totalVulnerabilities": 255,
+      "totalVulnerabilities": 256,
       "sizeBytes": 203423744,
       "sizeHuman": "194.0 MB",
       "createdDate": "2026-10-13T20:45:33.429032031Z",
@@ -242,7 +242,7 @@
       "version": "8.0.32",
       "criticalVulnerabilities": 4,
       "highVulnerabilities": 62,
-      "totalVulnerabilities": 255,
+      "totalVulnerabilities": 256,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
       "createdDate": "2026-10-13T20:45:39.083273352Z",
@@ -409,17 +409,17 @@
       "language": "go",
       "baseOS": "Azure Linux",
       "name": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0",
-      "version": "1.26.9",
+      "version": "1.26.10",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
       "totalVulnerabilities": 0,
       "sizeBytes": 883949568,
       "sizeHuman": "843.0 MB",
-      "createdDate": "2026-10-19T20:03:42.604379485Z",
-      "digest": "sha256:d5a3cfc0ed790887f779575ad0889de08c9290f21dd6893fcd90f9746ebab0f8",
-      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:d5a3cfc0ed790887f779575ad0889de08c9290f21dd6893fcd90f9746ebab0f8",
+      "createdDate": "2026-10-20T19:55:24.65226157Z",
+      "digest": "sha256:873d1016f38c1cf8d56d327ccd6edc9de2984bcdcb430492160aeeeea9b0a27c",
+      "pinnedReference": "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:873d1016f38c1cf8d56d327ccd6edc9de2984bcdcb430492160aeeeea9b0a27c",
       "stableTag": "mcr.microsoft.com/oss/go/microsoft/golang:1.26",
-      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:d5a3cfc0ed790887f779575ad0889de08c9290f21dd6893fcd90f9746ebab0f8"
+      "dockerfileFrom": "FROM mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0@sha256:873d1016f38c1cf8d56d327ccd6edc9de2984bcdcb430492160aeeeea9b0a27c"
     },
     {
       "rank": 2,
