@@ -30,7 +30,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Test fixtures built from real syft analysis of container images (2026-02-25).
+// Test fixtures built from real syft analysis of container images (2026-02-25,
+// unless otherwise noted).
 // Each fixture contains only the language-relevant packages extracted from the
 // full syft JSON output, keeping tests fast while exercising real-world data.
 
@@ -276,6 +277,21 @@ func goAzureLinux125Artifacts() []syftArtifact {
 	})
 }
 
+// ---------- Rust fixtures ----------
+
+func rustBaseAzureLinuxArtifacts() []syftArtifact {
+	// From mcr.microsoft.com/azurelinux/base/rust:1 (arm64, 236 packages, 2026-10-26).
+	// Image index: sha256:7213b3568301584c836dc63d8c61653439d6cedf4d0fc30fe66ebabf95e3a1e1
+	return makeArtifacts([]struct{ name, version, typ, lang string }{
+		{"gcc", "13.2.0-7.azl3", "rpm", ""},
+		{"glibc", "2.38-21.azl3", "rpm", ""},
+		{"p11-kit-trust", "0.26.5-1.azl3", "rpm", ""},
+		{"python3", "3.12.15-1.azl3", "rpm", ""},
+		{"python3-libs", "3.12.15-1.azl3", "rpm", ""},
+		{"rust", "1.98.1-1.azl3", "rpm", ""},
+	})
+}
+
 // ============================================================================
 // Tests for parseSyftResult — current behaviour
 // ============================================================================
@@ -362,6 +378,59 @@ func TestParseSyftResult_DotnetRuntimeDistroless(t *testing.T) {
 	require.Contains(t, langs, "dotnet")
 	assert.Equal(t, "Microsoft.NETCore.App.Runtime.linux-arm64", langs["dotnet"].PackageName)
 	assert.Equal(t, "9.0.13", langs["dotnet"].Version)
+}
+
+func TestParseSyftResult_DotnetRuntimeDepsNoRuntime(t *testing.T) {
+	// Complete inventories captured from the linux/amd64 images with Syft 1.54.1.
+	tests := []struct {
+		name string
+		pkgs []struct{ name, version, typ, lang string }
+	}{
+		{
+			name: "10.0-noble-chiseled",
+			pkgs: []struct{ name, version, typ, lang string }{
+				{"base-files", "13ubuntu10.5", "deb", ""},
+				{"ca-certificates", "20260816ubuntu0.24.04.1", "deb", ""},
+				{"gcc-14", "14.2.0-4ubuntu2~24.04.1", "deb", ""},
+				{"gcc-14-base", "14.2.0-4ubuntu2~24.04.1", "deb", ""},
+				{"libc6", "2.39-0ubuntu8.9", "deb", ""},
+				{"libgcc-s1", "14.2.0-4ubuntu2~24.04.1", "deb", ""},
+				{"libssl3t64", "3.0.13-0ubuntu3.16", "deb", ""},
+				{"libstdc++6", "14.2.0-4ubuntu2~24.04.1", "deb", ""},
+				{"openssl", "3.0.13-0ubuntu3.16", "deb", ""},
+			},
+		},
+		{
+			name: "10.0-azurelinux3.0-distroless",
+			pkgs: []struct{ name, version, typ, lang string }{
+				{"SymCrypt", "103.8.0-1.azl3", "rpm", ""},
+				{"SymCrypt", "103.8.0-1.azl3", "rpm", ""},
+				{"SymCrypt-OpenSSL", "1.10.2-1.azl3", "rpm", ""},
+				{"SymCrypt-OpenSSL", "1.10.2-1.azl3", "rpm", ""},
+				{"azurelinux-release", "3.0-51.azl3", "rpm", ""},
+				{"distroless-packages-minimal", "3.0-5.azl3", "rpm", ""},
+				{"filesystem", "1.1-21.azl3", "rpm", ""},
+				{"glibc", "2.38-21.azl3", "rpm", ""},
+				{"glibc", "2.38-21.azl3", "rpm", ""},
+				{"libgcc", "13.2.0-7.azl3", "rpm", ""},
+				{"libstdc++", "13.2.0-7.azl3", "rpm", ""},
+				{"openssl", "3.3.7-7.azl3", "rpm", ""},
+				{"openssl", "3.3.7-7.azl3", "rpm", ""},
+				{"openssl-libs", "3.3.7-7.azl3", "rpm", ""},
+				{"prebuilt-ca-certificates", "1:3.0.0-19.azl3", "rpm", ""},
+				{"tzdata", "2026c-1.azl3", "rpm", ""},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := parseSyftResult(&syftOutput{Artifacts: makeArtifacts(tt.pkgs)})
+			assert.Empty(t, result.Languages)
+			assert.Len(t, result.SystemPackages, len(tt.pkgs))
+			merged := mergeLanguages(result.Languages, nil, "mcr.microsoft.com/dotnet/runtime-deps:"+tt.name)
+			assert.Empty(t, merged, "runtime-deps must remain eligible for the synthetic base language")
+		})
+	}
 }
 
 func TestParseSyftResult_DotnetAspnetDebian(t *testing.T) {
@@ -473,6 +542,42 @@ func TestParseSyftResult_GoAzureLinux125(t *testing.T) {
 	assert.Equal(t, "go", langs["go"].PackageName)
 	assert.Equal(t, "1.25.7", langs["go"].Version)
 	require.Contains(t, langs, "python")
+}
+
+func TestParseSyftResult_RustBaseAzureLinux(t *testing.T) {
+	result := parseSyftResult(&syftOutput{Artifacts: rustBaseAzureLinuxArtifacts()})
+
+	langs := langMap(result)
+	require.Contains(t, langs, "rust")
+	assert.Equal(t, "rust", langs["rust"].PackageName)
+	assert.Equal(t, "rpm", langs["rust"].PackageType)
+	assert.Equal(t, "1.98.1", langs["rust"].Version)
+	assert.Equal(t, "1.98", langs["rust"].MajorMinor)
+	assert.False(t, langs["rust"].Verified)
+	require.Contains(t, langs, "python")
+	assert.Equal(t, "3.12.15", langs["python"].Version)
+	assert.NotContains(t, langs, "go")
+	assert.NotContains(t, langs, "dotnet")
+}
+
+func TestRustBaseAzureLinux_RuntimeVerification(t *testing.T) {
+	// Output captured by running rustc --version inside the pulled image.
+	output := "rustc 1.98.1 (48a229cea 2026-09-01) (Azure Linux 1.98.1-1.azl3)\n"
+	assert.Equal(t, []string{"rustc", "--version"}, runtimeCommands["rust"])
+	matches := versionPatterns["rust"].FindStringSubmatch(output)
+	require.Len(t, matches, 2)
+	assert.Equal(t, "1.98.1", matches[1])
+
+	result := parseSyftResult(&syftOutput{Artifacts: rustBaseAzureLinuxArtifacts()})
+	merged := mergeLanguages(result.Languages, nil, "mcr.microsoft.com/azurelinux/base/rust:1")
+	verified := applyRuntimeVersions(merged, map[string]string{"rust": matches[1]})
+	langs := langMapFromSlice(verified)
+	require.Contains(t, langs, "rust")
+	assert.Equal(t, "1.98.1", langs["rust"].Version)
+	assert.Equal(t, "1.98", langs["rust"].MajorMinor)
+	assert.True(t, langs["rust"].Verified)
+	require.Contains(t, langs, "python")
+	assert.False(t, langs["python"].Verified)
 }
 
 // ============================================================================

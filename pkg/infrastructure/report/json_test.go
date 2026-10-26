@@ -376,6 +376,82 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | - | 0 | 0 | 3 | - | - | `` | `-` |")
 }
 
+func TestReports_RuntimeDepsBaseImages(t *testing.T) {
+	for _, multipleOSes := range []bool{false, true} {
+		name := "single OS"
+		if multipleOSes {
+			name = "multiple OSes"
+		}
+		t.Run(name, func(t *testing.T) {
+			db, repo := setupTestDB(t)
+			defer func() { _ = db.Close() }()
+
+			images := []domain.ImageRecord{
+				{
+					Name:     "mcr.microsoft.com/dotnet/runtime-deps:10.0-azurelinux3.0-distroless",
+					Registry: "mcr.microsoft.com", Repository: "dotnet/runtime-deps", Tag: "10.0-azurelinux3.0-distroless",
+					BaseOSName: "azurelinux", BaseOSVersion: "3.0",
+					Languages: []domain.Language{{Language: "base", Version: "3.0", PackageType: "base"}},
+				},
+				{
+					Name:     "mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless",
+					Registry: "mcr.microsoft.com", Repository: "dotnet/runtime", Tag: "10.0-azurelinux3.0-distroless",
+					BaseOSName: "azurelinux", BaseOSVersion: "3.0",
+					Languages: []domain.Language{{Language: "dotnet", Version: "10.0.0"}},
+				},
+			}
+			if multipleOSes {
+				images = append(images, domain.ImageRecord{
+					Name:     "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled",
+					Registry: "mcr.microsoft.com", Repository: "dotnet/runtime-deps", Tag: "10.0-noble-chiseled",
+					BaseOSName: "ubuntu", BaseOSVersion: "24.04",
+					Languages: []domain.Language{{Language: "base", Version: "24.04", PackageType: "base"}},
+				})
+			}
+			for i := range images {
+				require.NoError(t, repo.InsertImage(&images[i]))
+			}
+
+			dir := t.TempDir()
+			mdPath := filepath.Join(dir, "report.md")
+			require.NoError(t, GenerateReport(repo, mdPath, 10, nil))
+			data, err := os.ReadFile(mdPath)
+			require.NoError(t, err)
+			dotnetSection, baseSection, found := strings.Cut(string(data), "## Base / No Runtime\n")
+			require.True(t, found, "runtime-deps must appear in the base section")
+			assert.Contains(t, dotnetSection, images[1].Name)
+			assert.NotContains(t, dotnetSection, "dotnet/runtime-deps")
+			assert.NotContains(t, baseSection, images[1].Name)
+			for _, img := range images {
+				if img.Languages[0].Language == "base" {
+					assert.Contains(t, baseSection, img.Name)
+				}
+			}
+
+			jsonPath := filepath.Join(dir, "report.json")
+			require.NoError(t, GenerateJSONReport(repo, jsonPath, 10, nil))
+			data, err = os.ReadFile(jsonPath)
+			require.NoError(t, err)
+			var result JSONReport
+			require.NoError(t, json.Unmarshal(data, &result))
+			require.Len(t, result.Images, len(images))
+			for _, img := range images {
+				var entry *JSONImageEntry
+				for i := range result.Images {
+					if result.Images[i].Name == img.Name {
+						entry = &result.Images[i]
+						break
+					}
+				}
+				require.NotNil(t, entry, img.Name)
+				assert.Equal(t, img.Languages[0].Language, entry.Language)
+				assert.Equal(t, DisplayOSName(img.BaseOSName), entry.BaseOS)
+				assert.Equal(t, 1, entry.Rank)
+			}
+		})
+	}
+}
+
 func TestDisplayLanguageName(t *testing.T) {
 	tests := []struct {
 		input    string
