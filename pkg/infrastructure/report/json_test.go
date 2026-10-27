@@ -376,6 +376,62 @@ func TestGenerateMarkdownReport_BaseLanguageSection(t *testing.T) {
 	assert.Contains(t, content, "| 1 | `python-img:3.12` | 3.12 | - | 0 | 0 | 3 | - | - | `` | `-` |")
 }
 
+func TestGenerateJSONReport_BaseStableTagPreservesImageTag(t *testing.T) {
+	tests := []struct {
+		name    string
+		version string
+		want    string
+	}{
+		{
+			name:    "mcr.microsoft.com/azurelinux/busybox:1.36",
+			version: "3.0",
+			want:    "mcr.microsoft.com/azurelinux/busybox:1.36",
+		},
+		{
+			name:    "mcr.microsoft.com/azurelinux/base/core:3.0",
+			version: "3.0",
+			want:    "mcr.microsoft.com/azurelinux/base/core:3.0",
+		},
+		{
+			name:    "localhost:5000/base:3.0-minimal@sha256:abc",
+			version: "3.0",
+			want:    "localhost:5000/base:3.0-minimal",
+		},
+		{
+			name:    "localhost:5000/base@sha256:abc",
+			version: "3.0",
+		},
+		{
+			name:    "localhost:5000/base",
+			version: "3.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, repo := setupTestDB(t)
+			defer func() { _ = db.Close() }()
+
+			image := domain.ImageRecord{
+				Name: tt.name, BaseOSName: "azurelinux",
+				Languages: []domain.Language{{Language: "base", Version: tt.version, PackageType: "base"}},
+			}
+			require.NoError(t, repo.InsertImage(&image))
+			path := filepath.Join(t.TempDir(), "report.json")
+			require.NoError(t, GenerateJSONReport(repo, path, 10, nil))
+			data, err := os.ReadFile(path)
+			require.NoError(t, err)
+			var result JSONReport
+			require.NoError(t, json.Unmarshal(data, &result))
+			require.Len(t, result.Images, 1)
+			assert.Equal(t, tt.want, result.Images[0].StableTag)
+			assert.Equal(t, tt.version, result.Images[0].Version)
+			if tt.want == "" {
+				assert.NotContains(t, string(data), `"stableTag"`)
+			}
+		})
+	}
+}
+
 func TestReports_RuntimeDepsBaseImages(t *testing.T) {
 	for _, multipleOSes := range []bool{false, true} {
 		name := "single OS"
@@ -447,6 +503,11 @@ func TestReports_RuntimeDepsBaseImages(t *testing.T) {
 				assert.Equal(t, img.Languages[0].Language, entry.Language)
 				assert.Equal(t, DisplayOSName(img.BaseOSName), entry.BaseOS)
 				assert.Equal(t, 1, entry.Rank)
+				if entry.Language == "base" {
+					assert.Equal(t, img.Name, entry.StableTag)
+				} else {
+					assert.Equal(t, "mcr.microsoft.com/dotnet/runtime:10.0", entry.StableTag)
+				}
 			}
 		})
 	}
