@@ -19,7 +19,16 @@
       "images": [
         "mcr.microsoft.com/azurelinux/base/core:3.0",
         "mcr.microsoft.com/azurelinux/distroless/base:3.0",
-        "mcr.microsoft.com/azurelinux/distroless/minimal:3.0"
+        "mcr.microsoft.com/azurelinux/distroless/minimal:3.0",
+        "mcr.microsoft.com/azurelinux/busybox:1.36"
+      ]
+    },
+    {
+      "description": ".NET self-contained / Native AOT deployment bases",
+      "category": "base",
+      "images": [
+        "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled",
+        "mcr.microsoft.com/dotnet/runtime-deps:10.0-azurelinux3.0-distroless"
       ]
     },
     {
@@ -44,8 +53,10 @@
         "mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless",
         "mcr.microsoft.com/dotnet/runtime:10.0-azurelinux3.0-distroless",
         "mcr.microsoft.com/dotnet/runtime:9.0-azurelinux3.0-distroless",
+        "mcr.microsoft.com/dotnet/runtime:8.0-azurelinux3.0-distroless",
         "mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0",
-        "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0"
+        "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0",
+        "mcr.microsoft.com/dotnet/sdk:8.0-azurelinux3.0"
       ]
     },
     {
@@ -63,6 +74,19 @@
       ]
     },
     {
+      "description": ".NET Ubuntu Chiseled images",
+      "images": [
+        "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled",
+        "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra"
+      ]
+    },
+    {
+      "description": ".NET Alpine images",
+      "images": [
+        "mcr.microsoft.com/dotnet/aspnet:10.0-alpine"
+      ]
+    },
+    {
       "description": ".NET Debian images",
       "images": [
         "mcr.microsoft.com/dotnet/aspnet:8.0",
@@ -75,6 +99,12 @@
       "images": [
         "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0",
         "mcr.microsoft.com/oss/go/microsoft/golang:1.25-azurelinux3.0"
+      ]
+    },
+    {
+      "description": "Rust build images",
+      "images": [
+        "mcr.microsoft.com/azurelinux/base/rust:1"
       ]
     },
     {

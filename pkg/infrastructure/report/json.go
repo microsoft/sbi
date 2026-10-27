@@ -117,6 +117,14 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 			}
 
 			for idx, img := range images {
+				stableTag := FormatStableTag(img.Name, img.Version)
+				if strings.EqualFold(lang, "base") {
+					// Base versions describe the OS, not the image's tag.
+					stableTag = ""
+					if extractTag(img.Name) != "" {
+						stableTag, _, _ = strings.Cut(img.Name, "@")
+					}
+				}
 				report.Images = append(report.Images, JSONImageEntry{
 					Rank:                    idx + 1,
 					Language:                strings.ToLower(lang),
@@ -131,7 +139,7 @@ func GenerateJSONReport(repo *database.Repository, outputPath string, topN int, 
 					CreatedDate:             img.CreatedDate,
 					Digest:                  img.Digest,
 					PinnedReference:         FormatPinnedReference(img.Name, img.Digest),
-					StableTag:               FormatStableTag(img.Name, img.Version),
+					StableTag:               stableTag,
 					DockerfileFrom:          FormatDockerfileFrom(img.Name, img.Digest),
 					AlternateTags:           img.AlternateTags,
 				})

@@ -29,7 +29,9 @@ A nightly [GitHub Actions workflow](.github/workflows/nightly-scan.yml) runs the
 
 ### What Gets Scanned
 
-Image sources and tag filtering rules are configured in [`config/repositories.json`](config/repositories.json). Currently scans Azure Linux base/distroless images, .NET, Go, and OpenJDK images from MCR.
+Image sources and tag filtering rules are configured in [`config/repositories.json`](config/repositories.json). Currently scans Azure Linux base/distroless images, BusyBox, .NET (including Ubuntu Chiseled and Alpine variants), Go, Rust, and OpenJDK images from MCR.
+
+.NET `runtime-deps` images contain native dependencies for self-contained and Native AOT applications, not the .NET runtime. They are scanned with `"category": "base"` and appear in the **Base / No Runtime** recommendations rather than the .NET runtime rankings.
 
 > **Note:** The daily reports will be updated on the next scheduled nightly run after merge.
 

@@ -47,11 +47,14 @@ var primaryLanguageSegments = map[string]string{
 }
 
 // InferPrimaryLanguage infers the primary language of an image from its
-// repository path. Returns the language name (matching the DB convention)
-// or "" if no primary language can be determined.
+// repository path. Returns "base" for .NET runtime-deps, the language name
+// (matching the DB convention), or "" if no primary language can be determined.
 func InferPrimaryLanguage(imageName string) string {
-	repo := imageRepo(imageName)
-	segments := strings.SplitSeq(strings.ToLower(repo), "/")
+	repo := strings.ToLower(imageRepo(imageName))
+	if repo == "dotnet/runtime-deps" || strings.HasSuffix(repo, "/dotnet/runtime-deps") {
+		return "base"
+	}
+	segments := strings.SplitSeq(repo, "/")
 
 	for seg := range segments {
 		if lang, ok := primaryLanguageSegments[seg]; ok {

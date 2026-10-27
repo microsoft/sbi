@@ -54,8 +54,18 @@ func TestInferPrimaryLanguage(t *testing.T) {
 		{"dotnet sdk", "mcr.microsoft.com/dotnet/sdk:9.0-azurelinux3.0", "dotnet"},
 		{"dotnet aspnet debian", "mcr.microsoft.com/dotnet/aspnet:8.0", "dotnet"},
 
+		// .NET deployment bases contain native dependencies, not the runtime.
+		{"runtime deps chiseled", "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled", "base"},
+		{"runtime deps azurelinux", "mcr.microsoft.com/dotnet/runtime-deps:10.0-azurelinux3.0-distroless", "base"},
+		{"runtime deps digest", "mcr.microsoft.com/dotnet/runtime-deps:10.0@sha256:abc", "base"},
+		{"runtime deps short name", "dotnet/runtime-deps:10.0", "base"},
+		{"runtime deps case insensitive", "mcr.microsoft.com/DOTNET/RUNTIME-DEPS:10.0", "base"},
+		{"runtime deps similar name", "mcr.microsoft.com/dotnet/runtime-deps-custom:10.0", "dotnet"},
+
 		// Go images
 		{"golang azurelinux", "mcr.microsoft.com/oss/go/microsoft/golang:1.26-azurelinux3.0", "go"},
+
+		{"rust azurelinux", "mcr.microsoft.com/azurelinux/base/rust:1", "rust"},
 
 		// No match — safe fallback
 		{"base core image", "mcr.microsoft.com/azurelinux/base/core:3.0", ""},
@@ -126,5 +136,24 @@ func TestFilterIncidentalImages(t *testing.T) {
 		result := FilterIncidentalImages(images, "python")
 		assert.Len(t, result, 1)
 		assert.Equal(t, pythonImage.Name, result[0].Name)
+	})
+
+	t.Run("runtime deps kept only in base results", func(t *testing.T) {
+		image := domain.RecommendedImage{
+			Name: "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled",
+		}
+		images := []domain.RecommendedImage{image}
+		assert.Equal(t, images, FilterIncidentalImages(images, "base"))
+		assert.Empty(t, FilterIncidentalImages(images, "dotnet"))
+		assert.Empty(t, FilterIncidentalImages(images, "python"))
+	})
+
+	t.Run("rust image excluded from incidental python results", func(t *testing.T) {
+		image := domain.RecommendedImage{
+			Name: "mcr.microsoft.com/azurelinux/base/rust:1",
+		}
+		images := []domain.RecommendedImage{image}
+		assert.Equal(t, images, FilterIncidentalImages(images, "rust"))
+		assert.Empty(t, FilterIncidentalImages(images, "python"))
 	})
 }
