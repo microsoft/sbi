@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T02:17:37Z",
+  "generatedAt": "2026-11-25T02:17:42Z",
   "topN": 20,
   "scannedRepositories": [
     {
@@ -287,8 +287,8 @@
       "name": "mcr.microsoft.com/dotnet/runtime:8.0",
       "version": "8.0.34",
       "criticalVulnerabilities": 1,
-      "highVulnerabilities": 39,
-      "totalVulnerabilities": 266,
+      "highVulnerabilities": 37,
+      "totalVulnerabilities": 261,
       "sizeBytes": 203423744,
       "sizeHuman": "194.0 MB",
       "createdDate": "2026-11-10T15:56:15.090569913Z",
@@ -304,8 +304,8 @@
       "name": "mcr.microsoft.com/dotnet/aspnet:8.0",
       "version": "8.0.34",
       "criticalVulnerabilities": 1,
-      "highVulnerabilities": 39,
-      "totalVulnerabilities": 266,
+      "highVulnerabilities": 37,
+      "totalVulnerabilities": 261,
       "sizeBytes": 228589568,
       "sizeHuman": "218.0 MB",
       "createdDate": "2026-11-10T15:56:19.940311013Z",
@@ -321,8 +321,8 @@
       "name": "mcr.microsoft.com/dotnet/sdk:8.0",
       "version": "8.0.428",
       "criticalVulnerabilities": 1,
-      "highVulnerabilities": 142,
-      "totalVulnerabilities": 568,
+      "highVulnerabilities": 140,
+      "totalVulnerabilities": 563,
       "sizeBytes": 910163968,
       "sizeHuman": "868.0 MB",
       "createdDate": "2026-11-10T15:56:56.382848203Z",
@@ -339,14 +339,14 @@
       "version": "10.0.15",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 6,
+      "totalVulnerabilities": 0,
       "sizeBytes": 130023424,
       "sizeHuman": "124.0 MB",
-      "createdDate": "2026-11-10T16:01:29.742018717Z",
-      "digest": "sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1",
+      "createdDate": "2026-11-24T18:42:24.019604616Z",
+      "digest": "sha256:bcdfe6b8e923ad3d05f01dfa805ab97c99d742823ce030856002a6db38122712",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:bcdfe6b8e923ad3d05f01dfa805ab97c99d742823ce030856002a6db38122712",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:10.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:bcdfe6b8e923ad3d05f01dfa805ab97c99d742823ce030856002a6db38122712"
     },
     {
       "rank": 2,
@@ -356,14 +356,14 @@
       "version": "10.0.15",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 7,
+      "totalVulnerabilities": 1,
       "sizeBytes": 169869312,
       "sizeHuman": "162.0 MB",
-      "createdDate": "2026-11-10T16:01:31.381137076Z",
-      "digest": "sha256:cae5b962bfb786606def03d250c6a645cc98839095c89e806e4bd8978a68115b",
-      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:cae5b962bfb786606def03d250c6a645cc98839095c89e806e4bd8978a68115b",
+      "createdDate": "2026-11-24T18:42:25.565940662Z",
+      "digest": "sha256:c8dd08a50d8ffd19bd8da72edee05a7ac15b486a5b1869cf46fdb370bf1fbc76",
+      "pinnedReference": "mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:c8dd08a50d8ffd19bd8da72edee05a7ac15b486a5b1869cf46fdb370bf1fbc76",
       "stableTag": "mcr.microsoft.com/dotnet/aspnet:10.0",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:cae5b962bfb786606def03d250c6a645cc98839095c89e806e4bd8978a68115b"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:c8dd08a50d8ffd19bd8da72edee05a7ac15b486a5b1869cf46fdb370bf1fbc76"
     },
     {
       "rank": 3,
@@ -1224,14 +1224,14 @@
       "version": "24.04",
       "criticalVulnerabilities": 0,
       "highVulnerabilities": 0,
-      "totalVulnerabilities": 6,
+      "totalVulnerabilities": 0,
       "sizeBytes": 14889779,
       "sizeHuman": "14.2 MB",
-      "createdDate": "2026-11-10T16:00:35.159981826Z",
-      "digest": "sha256:40eba5db69594d517c3a61e96bdacc2e3d6f8c99a44b52d55edee844d33518d0",
-      "pinnedReference": "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled@sha256:40eba5db69594d517c3a61e96bdacc2e3d6f8c99a44b52d55edee844d33518d0",
+      "createdDate": "2026-11-24T18:41:46.418070052Z",
+      "digest": "sha256:2bb1d484500b032aaafb75e876ffbea135b969d6259cacfcbf18a793e5d6e6ec",
+      "pinnedReference": "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled@sha256:2bb1d484500b032aaafb75e876ffbea135b969d6259cacfcbf18a793e5d6e6ec",
       "stableTag": "mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled",
-      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled@sha256:40eba5db69594d517c3a61e96bdacc2e3d6f8c99a44b52d55edee844d33518d0"
+      "dockerfileFrom": "FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled@sha256:2bb1d484500b032aaafb75e876ffbea135b969d6259cacfcbf18a793e5d6e6ec"
     }
   ]
 }
