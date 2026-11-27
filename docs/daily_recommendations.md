@@ -1,6 +1,6 @@
 # Daily Recommended Images by Language
 
-_Generated: 2026-11-26T02:20:03Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
+_Generated: 2026-11-27T02:17:00Z. Criteria: lowest critical → high → total vulnerabilities → size. Top 10 per language per base OS._
 
 **Note:** Image sizes are based on Linux amd64 platform as reported by `docker images` on GitHub runners. Actual sizes may vary significantly on other platforms (macOS, Windows, etc.).
 
@@ -159,9 +159,9 @@ This report includes analysis from **46 configured sources** across 12 groups (s
 
 | Rank | Image | Version | Also Tagged As | Crit | High | Total | Size | Created | Digest | Pinned Reference |
 |------|-------|---------|----------------|------|------|-------|------|---------|--------|------------------|
-| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.21.1 | - | 0 | 0 | 282 | 431.0 MB | 2026-11-25 | `sha256:25bcfda434d9` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:25bcfda434d99dae4adc797a0a954bd4f22611e7f383873bdb0acc0f7ae85b3b` |
-| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.13.1 | - | 0 | 0 | 282 | 458.0 MB | 2026-11-25 | `sha256:6a3d94f5b521` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:6a3d94f5b5212601654408a4de1624640389701e83aaa659660bf8b01a48df63` |
-| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.5.1 | - | 0 | 0 | 282 | 502.0 MB | 2026-11-25 | `sha256:ed9d057f8c95` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:ed9d057f8c95db6934a13d933a22cfcc6712d919e7b57848d81c15e99d89a40b` |
+| 1 | `mcr.microsoft.com/openjdk/jdk:17-ubuntu` | 17.0.21.1 | - | 0 | 0 | 283 | 431.0 MB | 2026-11-25 | `sha256:25bcfda434d9` | `mcr.microsoft.com/openjdk/jdk:17-ubuntu@sha256:25bcfda434d99dae4adc797a0a954bd4f22611e7f383873bdb0acc0f7ae85b3b` |
+| 2 | `mcr.microsoft.com/openjdk/jdk:21-ubuntu` | 21.0.13.1 | - | 0 | 0 | 283 | 458.0 MB | 2026-11-25 | `sha256:6a3d94f5b521` | `mcr.microsoft.com/openjdk/jdk:21-ubuntu@sha256:6a3d94f5b5212601654408a4de1624640389701e83aaa659660bf8b01a48df63` |
+| 3 | `mcr.microsoft.com/openjdk/jdk:25-ubuntu` | 25.0.5.1 | - | 0 | 0 | 283 | 502.0 MB | 2026-11-25 | `sha256:ed9d057f8c95` | `mcr.microsoft.com/openjdk/jdk:25-ubuntu@sha256:ed9d057f8c95db6934a13d933a22cfcc6712d919e7b57848d81c15e99d89a40b` |
 
 ## Node
 
