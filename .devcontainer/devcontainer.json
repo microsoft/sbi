@@ -2,7 +2,7 @@
   "name": "Secure Base Image",
   "image": "mcr.microsoft.com/devcontainers/go:1.27-trixie",
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2.7.1": {
+    "ghcr.io/devcontainers/features/common-utils:2.7.2": {
       "configureZshAsDefaultShell": false
     },
     "ghcr.io/devcontainers/features/docker-in-docker:4.1.3": {},
